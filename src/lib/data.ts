@@ -207,3 +207,20 @@ export const ROUTINES: Routine[] = [
   },
 ];
 export const routineById = (id: string) => ROUTINES.find((r) => r.id === id);
+
+/** What a shopper pays and earns back, with an optional pro code discount. */
+export function purchaseQuote(price: number, cashbackRate: number, discount = 0) {
+  const pay = round2(price * (1 - discount));
+  return { pay, cashback: cashbackFor(pay, cashbackRate) };
+}
+
+/** Wear tests within one depth step of the chosen tone, best Skin Twin first. */
+export function feedForTone(posts: FeedPost[], me: Profile) {
+  return posts
+    .filter((p) => Math.abs(DEPTHS.indexOf(p.creator.depth) - DEPTHS.indexOf(me.depth)) <= 1)
+    .sort((a, b) => skinTwinScore(b.creator, me) - skinTwinScore(a.creator, me));
+}
+
+export const PAYOUT_MIN = 10;
+export const REVIEW_REWARD = 2;
+export const CANVAS_DAYS = 30;
