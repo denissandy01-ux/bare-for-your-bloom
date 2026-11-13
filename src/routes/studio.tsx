@@ -1,0 +1,8 @@
+import { createFileRoute,Link } from '@tanstack/react-router';
+import { ArrowUpRight,Camera,ChartNoAxesCombined } from 'lucide-react';
+import { Page,BareHeader,SectionTitle } from '@/components/bare/kit';
+import { workspaceHead } from '@/lib/workspace';
+import nails from '@/assets/specialist-nails.jpg';
+import braids from '@/assets/service-braids.jpg';
+export const Route=createFileRoute('/studio')({head:()=>workspaceHead('Creator & Brand Studio','Creator content, product performance and permission-based UGC licensing workspaces.'),component:Studio});
+function Studio(){return <><BareHeader/><Page className="mt-6 space-y-6"><SectionTitle meta="Becoming Bare Studio">The people behind the care.</SectionTitle><div className="grid gap-5 md:grid-cols-2">{[{title:'Creator studio',text:'Content · partnerships · your product line',image:braids,to:'/creator' as const,icon:Camera},{title:'Brand portal',text:'Product performance · UGC licensing',image:nails,to:'/brand' as const,icon:ChartNoAxesCombined}].map(x=><Link key={x.title} to={x.to} className="overflow-hidden rounded-[28px] bg-oat text-cocoa"><img src={x.image} alt="" className="aspect-[4/3] w-full object-cover"/><div className="p-5"><x.icon className="h-5 w-5 text-clay"/><h2 className="mt-2 font-display text-2xl">{x.title}</h2><p className="mt-1 text-sm text-umber">{x.text}</p><span className="mt-4 flex items-center gap-2 text-clay">Enter workspace<ArrowUpRight className="h-4 w-4"/></span></div></Link>)}</div><p className="text-sm text-sand">Separate workspaces. Your own content and products. Licensing always needs the creator’s permission.</p></Page></>;}

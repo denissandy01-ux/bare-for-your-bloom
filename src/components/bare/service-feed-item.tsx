@@ -1,0 +1,15 @@
+import { Link } from '@tanstack/react-router';
+import { Bookmark,Share2,MapPin,ArrowUpRight } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { specialistById } from '@/lib/specialists';
+import { money } from '@/lib/data';
+import { useBare } from '@/lib/store';
+import type { ServicePost } from '@/lib/service-feed';
+export function ServiceFeedItem({post}:{post:ServicePost}){
+ const specialist=specialistById(post.specialistId),{state,toggleSpecialist}=useBare();
+ if(!specialist)return null;
+ const saved=state.savedSpecialists.includes(specialist.id);
+ async function share(){const url=`${window.location.origin}/specialist/${post.specialistId}`;try{if(navigator.share)await navigator.share({title:post.title,url});else{await navigator.clipboard.writeText(url);toast('Studio link copied');}}catch{/* dismissed */}}
+ return <section className="relative h-full snap-start overflow-hidden bg-cocoa" aria-label={`${post.category} service example`}><img src={post.image} width={768} height={1152} loading="lazy" alt={post.title} className="absolute inset-0 h-full w-full object-cover"/><div className="absolute inset-0 bg-gradient-to-t from-cocoa via-transparent to-cocoa/30"/><p className="absolute left-4 top-[76px] text-xs text-oat uppercase">{post.category} · Illustrative studio</p><Link to="/specialist/$id" params={{id:specialist.id}} className="feed-specialist absolute left-4 top-[105px] rounded-[20px] bg-cocoa/75 p-3 text-oat"><span className="flex items-center gap-2 text-sm">{specialist.name}<ArrowUpRight className="h-4 w-4"/></span><span className="text-xs text-sand">{specialist.city} · Not verified</span></Link><div className="feed-actions absolute right-3 bottom-[230px] flex flex-col gap-3"><Button variant="ghost" size="icon" title="Save specialist" aria-label="Save specialist" aria-pressed={saved} onClick={()=>{toggleSpecialist(specialist.id);toast(saved?'Specialist removed':'Specialist saved');}} className="h-12 w-12 rounded-full bg-cocoa/60 text-oat"><Bookmark className={saved?'fill-current':''}/></Button><Button variant="ghost" size="icon" title="Share specialist" aria-label="Share specialist" onClick={share} className="h-12 w-12 rounded-full bg-cocoa/60 text-oat"><Share2/></Button></div><div className="feed-shop absolute inset-x-3 bottom-3 space-y-3"><p className="font-display text-2xl text-oat">{post.title}</p><p className="text-sm text-sand max-w-[85%]">{post.caption}</p><div className="rounded-[28px] bg-oat/95 p-4 text-cocoa"><p className="text-xs text-umber">{specialist.discipline} · {post.texture||'Every tone welcome'}</p><p className="font-display text-xl">{specialist.studio}</p><p className="mt-1 flex gap-1 items-center text-xs text-umber"><MapPin className="h-3 w-3"/>{specialist.neighborhood} · {specialist.city}</p><p className="mt-2 text-xs text-umber">Sample menu from {money(Math.min(...specialist.services.map(s=>s.price)))}</p></div><Button asChild className="w-full min-h-14 rounded-full"><Link to="/specialist/$id" params={{id:specialist.id}}>Discover studio & services<ArrowUpRight/></Link></Button></div></section>;
+}

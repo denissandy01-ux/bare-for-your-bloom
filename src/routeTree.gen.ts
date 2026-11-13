@@ -10,13 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CanvasRouteImport } from './routes/canvas'
 import { Route as ConsultationRouteImport } from './routes/consultation'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as ProsRouteImport } from './routes/pros'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as AuthenticatedBrandRouteImport } from './routes/_authenticated/brand'
+import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as RoutineIdRouteImport } from './routes/routine.$id'
 import { Route as SpecialistIdRouteImport } from './routes/specialist.$id'
@@ -24,6 +30,15 @@ import { Route as SpecialistIdRouteImport } from './routes/specialist.$id'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CanvasRoute = CanvasRouteImport.update({
@@ -51,15 +66,35 @@ const ProsRoute = ProsRouteImport.update({
   path: '/pros',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WalletRoute = WalletRouteImport.update({
   id: '/wallet',
   path: '/wallet',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedBrandRoute = AuthenticatedBrandRouteImport.update({
+  id: '/brand',
+  path: '/brand',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCreatorRoute = AuthenticatedCreatorRouteImport.update({
+  id: '/creator',
+  path: '/creator',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
@@ -79,26 +114,36 @@ const SpecialistIdRoute = SpecialistIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
   '/discover': typeof DiscoverRoute
   '/me': typeof MeRoute
   '/pros': typeof ProsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/studio': typeof StudioRoute
   '/wallet': typeof WalletRoute
+  '/brand': typeof AuthenticatedBrandRoute
+  '/creator': typeof AuthenticatedCreatorRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
   '/discover': typeof DiscoverRoute
   '/me': typeof MeRoute
   '/pros': typeof ProsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/studio': typeof StudioRoute
   '/wallet': typeof WalletRoute
+  '/brand': typeof AuthenticatedBrandRoute
+  '/creator': typeof AuthenticatedCreatorRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
@@ -106,13 +151,19 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
   '/discover': typeof DiscoverRoute
   '/me': typeof MeRoute
   '/pros': typeof ProsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/studio': typeof StudioRoute
   '/wallet': typeof WalletRoute
+  '/_authenticated/brand': typeof AuthenticatedBrandRoute
+  '/_authenticated/creator': typeof AuthenticatedCreatorRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
@@ -121,39 +172,55 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/canvas'
     | '/consultation'
     | '/discover'
     | '/me'
     | '/pros'
+    | '/reset-password'
     | '/saved'
+    | '/studio'
     | '/wallet'
+    | '/brand'
+    | '/creator'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/canvas'
     | '/consultation'
     | '/discover'
     | '/me'
     | '/pros'
+    | '/reset-password'
     | '/saved'
+    | '/studio'
     | '/wallet'
+    | '/brand'
+    | '/creator'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/canvas'
     | '/consultation'
     | '/discover'
     | '/me'
     | '/pros'
+    | '/reset-password'
     | '/saved'
+    | '/studio'
     | '/wallet'
+    | '/_authenticated/brand'
+    | '/_authenticated/creator'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
@@ -161,12 +228,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   CanvasRoute: typeof CanvasRoute
   ConsultationRoute: typeof ConsultationRoute
   DiscoverRoute: typeof DiscoverRoute
   MeRoute: typeof MeRoute
   ProsRoute: typeof ProsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
+  StudioRoute: typeof StudioRoute
   WalletRoute: typeof WalletRoute
   ProductIdRoute: typeof ProductIdRoute
   RoutineIdRoute: typeof RoutineIdRoute
@@ -180,6 +251,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/canvas': {
@@ -217,11 +302,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/saved': {
       id: '/saved'
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wallet': {
@@ -230,6 +329,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/wallet'
       preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/brand': {
+      id: '/_authenticated/brand'
+      path: '/brand'
+      fullPath: '/brand'
+      preLoaderRoute: typeof AuthenticatedBrandRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/creator': {
+      id: '/_authenticated/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/product/$id': {
       id: '/product/$id'
@@ -255,14 +368,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBrandRoute: typeof AuthenticatedBrandRoute
+  AuthenticatedCreatorRoute: typeof AuthenticatedCreatorRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBrandRoute: AuthenticatedBrandRoute,
+  AuthenticatedCreatorRoute: AuthenticatedCreatorRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   CanvasRoute: CanvasRoute,
   ConsultationRoute: ConsultationRoute,
   DiscoverRoute: DiscoverRoute,
   MeRoute: MeRoute,
   ProsRoute: ProsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
+  StudioRoute: StudioRoute,
   WalletRoute: WalletRoute,
   ProductIdRoute: ProductIdRoute,
   RoutineIdRoute: RoutineIdRoute,

@@ -8,6 +8,8 @@ import { DEPTH_SWATCH, FEED, bestOffer, cashbackFor, feedForTone, money, product
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { FEED_SPECIALISTS, specialistById } from '@/lib/specialists';
+import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
+import { ServiceFeedItem } from '@/components/bare/service-feed-item';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -45,7 +47,7 @@ function Feed() {
         </div>
       ) : (
         <div className="no-scrollbar h-full snap-y snap-mandatory overflow-y-scroll">
-          {posts.map((p) => <FeedItem key={p.id} post={p} />)}
+          {mixFeed(posts, SERVICE_FEED).map(item => item.kind === 'product' ? <FeedItem key={item.post.id} post={item.post} /> : <ServiceFeedItem key={item.post.id} post={item.post} />)}
           {!showAll && matched.length < FEED.length && (
             <div className="flex h-full snap-start items-center px-6">
               <EmptyState title="You're all caught up" body="That's every wear test from your Skin Twins today. Want to see other tones too?" action={<button onClick={() => setShowAll(true)} className="h-11 rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Show all tones</button>} />

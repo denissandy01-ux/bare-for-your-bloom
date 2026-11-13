@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.create_profile(),public.has_workspace_role(text),public.join_workspace(text),public.licensing_catalog(),public.request_license(uuid,text,integer,numeric),public.respond_license(uuid,text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.create_profile() FROM PUBLIC,authenticated;

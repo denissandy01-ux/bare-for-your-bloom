@@ -13,11 +13,11 @@ describe('specialist discovery', () => {
   });
   it('supports deep skin and 4C hair filtering together', () => {
     const results = findSpecialists({ ...base, discipline: 'Hair', depth: 'Deep', hair: '4C Coily' });
-    expect(results.map(r => r.specialist.id)).toEqual(['sofia-reyes']);
+    expect(results.map(r => r.specialist.id)).toEqual(['amara-reed', 'sofia-reyes']);
   });
   it('limits results to the chosen proximity rather than city labels', () => {
     const origin = CITIES[0];
-    expect(findSpecialists({ ...base, origin, radius: 10 }).map(r => r.specialist.id)).toEqual(['maya-lin', 'dre-james']);
+    expect(findSpecialists({ ...base, origin, radius: 10 }).map(r => r.specialist.id)).toEqual(['maya-lin', 'amara-reed', 'dre-james']);
     expect(findSpecialists({ ...base, origin, radius: 50 }).map(r => r.specialist.id)).toContain('sofia-reyes');
     expect(findSpecialists({ ...base, origin, radius: 50 }).map(r => r.specialist.id)).not.toContain('hana-cho');
   });
