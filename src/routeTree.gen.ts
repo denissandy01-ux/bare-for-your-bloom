@@ -10,9 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CanvasRouteImport } from './routes/canvas'
+import { Route as ConsultationRouteImport } from './routes/consultation'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as MeRouteImport } from './routes/me'
 import { Route as ProsRouteImport } from './routes/pros'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as RoutineIdRouteImport } from './routes/routine.$id'
 
@@ -21,9 +25,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CanvasRoute = CanvasRouteImport.update({
+  id: '/canvas',
+  path: '/canvas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsultationRoute = ConsultationRouteImport.update({
+  id: '/consultation',
+  path: '/consultation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiscoverRoute = DiscoverRouteImport.update({
   id: '/discover',
   path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProsRoute = ProsRouteImport.update({
@@ -34,6 +53,11 @@ const ProsRoute = ProsRouteImport.update({
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductIdRoute = ProductIdRouteImport.update({
@@ -49,50 +73,89 @@ const RoutineIdRoute = RoutineIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/canvas': typeof CanvasRoute
+  '/consultation': typeof ConsultationRoute
   '/discover': typeof DiscoverRoute
+  '/me': typeof MeRoute
   '/pros': typeof ProsRoute
   '/saved': typeof SavedRoute
+  '/wallet': typeof WalletRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/canvas': typeof CanvasRoute
+  '/consultation': typeof ConsultationRoute
   '/discover': typeof DiscoverRoute
+  '/me': typeof MeRoute
   '/pros': typeof ProsRoute
   '/saved': typeof SavedRoute
+  '/wallet': typeof WalletRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/canvas': typeof CanvasRoute
+  '/consultation': typeof ConsultationRoute
   '/discover': typeof DiscoverRoute
+  '/me': typeof MeRoute
   '/pros': typeof ProsRoute
   '/saved': typeof SavedRoute
+  '/wallet': typeof WalletRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/discover' | '/pros' | '/saved' | '/product/$id' | '/routine/$id'
+    | '/'
+    | '/canvas'
+    | '/consultation'
+    | '/discover'
+    | '/me'
+    | '/pros'
+    | '/saved'
+    | '/wallet'
+    | '/product/$id'
+    | '/routine/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/discover' | '/pros' | '/saved' | '/product/$id' | '/routine/$id'
+  to:
+    | '/'
+    | '/canvas'
+    | '/consultation'
+    | '/discover'
+    | '/me'
+    | '/pros'
+    | '/saved'
+    | '/wallet'
+    | '/product/$id'
+    | '/routine/$id'
   id:
     | '__root__'
     | '/'
+    | '/canvas'
+    | '/consultation'
     | '/discover'
+    | '/me'
     | '/pros'
     | '/saved'
+    | '/wallet'
     | '/product/$id'
     | '/routine/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CanvasRoute: typeof CanvasRoute
+  ConsultationRoute: typeof ConsultationRoute
   DiscoverRoute: typeof DiscoverRoute
+  MeRoute: typeof MeRoute
   ProsRoute: typeof ProsRoute
   SavedRoute: typeof SavedRoute
+  WalletRoute: typeof WalletRoute
   ProductIdRoute: typeof ProductIdRoute
   RoutineIdRoute: typeof RoutineIdRoute
 }
@@ -106,11 +169,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/canvas': {
+      id: '/canvas'
+      path: '/canvas'
+      fullPath: '/canvas'
+      preLoaderRoute: typeof CanvasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consultation': {
+      id: '/consultation'
+      path: '/consultation'
+      fullPath: '/consultation'
+      preLoaderRoute: typeof ConsultationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/discover': {
       id: '/discover'
       path: '/discover'
       fullPath: '/discover'
       preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pros': {
@@ -125,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/product/$id': {
@@ -146,9 +237,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CanvasRoute: CanvasRoute,
+  ConsultationRoute: ConsultationRoute,
   DiscoverRoute: DiscoverRoute,
+  MeRoute: MeRoute,
   ProsRoute: ProsRoute,
   SavedRoute: SavedRoute,
+  WalletRoute: WalletRoute,
   ProductIdRoute: ProductIdRoute,
   RoutineIdRoute: RoutineIdRoute,
 }

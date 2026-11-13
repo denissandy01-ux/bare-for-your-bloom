@@ -36,7 +36,7 @@ function RoutineDetail() {
   const [t, setT] = useState(starts[Math.min(1, starts.length - 1)] + 40);
   const [playing, setPlaying] = useState(false);
   const stepIdx = starts.reduce((acc, s, i) => (s <= t ? i : acc), 0);
-  const step = routine.steps[stepIdx];
+  const step = routine.steps[stepIdx]!;
   const product = productById(step.productId)!;
   const saved = state.savedRoutines.includes(routine.id);
   const applied = state.appliedCodes.includes(pro.code);

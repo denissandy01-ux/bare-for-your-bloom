@@ -25,7 +25,7 @@ type Msg = { from: "agent" | "user"; text: string };
 function Consultation() {
   const { completeConsultation } = useBare();
   const [i, setI] = useState(0);
-  const [msgs, setMsgs] = useState<Msg[]>([{ from: "agent", text: STEPS[0].q }]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ from: "agent", text: STEPS[0]!.q }]);
   const [ans, setAns] = useState<Partial<Profile>>({});
   const [typing, setTyping] = useState(false);
   const [text, setText] = useState("");
@@ -35,11 +35,11 @@ function Consultation() {
 
   const answer = (v: string) => {
     if (!v.trim() || typing || done) return;
-    const step = STEPS[i]; const next = { ...ans, [step.key]: v.trim() };
+    const step = STEPS[i]!; const next = { ...ans, [step.key]: v.trim() };
     setAns(next); setMsgs((m) => [...m, { from: "user", text: v.trim() }]); setText(""); setTyping(true);
     setTimeout(() => {
       setTyping(false);
-      if (i + 1 < STEPS.length) setMsgs((m) => [...m, { from: "agent", text: STEPS[i + 1].q }]);
+      if (i + 1 < STEPS.length) setMsgs((m) => [...m, { from: "agent", text: STEPS[i + 1]!.q }]);
       else { completeConsultation({ ...next, depth: next.depth as Depth, undertone: next.undertone as Undertone } as Profile); setMsgs((m) => [...m, { from: "agent", text: `Thank you. I see a ${next.depth} ${next.undertone} canvas, ${next.skinType?.toLowerCase()} skin and ${next.hair} hair. Your feed is now tuned to Skin Twins like you.` }]); }
       setI(i + 1);
     }, 700);
