@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { DEPTH_SWATCH, toneLabel } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { ToneSheet } from "./sheets";
+import { Button } from '@/components/ui/button';
 
 export function Wordmark({ className }: { className?: string }) {
   return <Link to="/" className={cn("font-display text-[30px] italic leading-none text-oat", className)}>bare</Link>;
@@ -18,11 +19,11 @@ export function BareHeader({ title, overlay }: { title?: string; overlay?: boole
   return (
     <header className={cn("z-20 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 pt-3", overlay ? "absolute inset-x-0 top-0" : "relative")}>
       <Wordmark className="md:hidden" />
-      <button onClick={() => setOpen(true)} className="flex h-11 min-w-0 items-center gap-2 rounded-full bg-oat/95 pl-2.5 pr-3.5 text-[13px] font-medium text-cocoa md:col-start-1 md:col-end-3 md:justify-self-start" aria-label="Choose your skin tone">
+      <Button variant="secondary" onClick={() => setOpen(true)} className="flex h-11 min-w-0 items-center gap-2 whitespace-normal rounded-full bg-oat/95 pl-2.5 pr-3.5 text-[13px] font-medium text-cocoa md:col-start-1 md:col-end-3 md:justify-self-start" aria-label="Choose your skin tone">
         <span className="h-5 w-5 shrink-0 rounded-full ring-2 ring-oat" style={{ background: DEPTH_SWATCH[state.profile.depth] }} />
         <span className="min-w-0 flex-1 text-center leading-tight line-clamp-2">{label}</span>
         <ChevronDown className="h-3 w-3 shrink-0" />
-      </button>
+      </Button>
       <Link to="/discover" className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-clay px-3.5 text-[12px] font-semibold text-oat">
         <TrendingUp className="h-3.5 w-3.5" />Trending
       </Link>
@@ -51,7 +52,7 @@ export function TabBar() {
   const { state } = useBare();
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[var(--tabs-h)] items-start justify-around rounded-t-[28px] border-t border-sand bg-oat/95 px-2 pt-2 backdrop-blur md:hidden">
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-30 flex h-[var(--tabs-h)] items-start justify-around rounded-t-[28px] border-t border-sand bg-oat/95 px-2 pt-2 backdrop-blur md:hidden">
         {TABS.map((t) => {
           const active = isActive(path, t.to);
           return (
@@ -141,5 +142,5 @@ export function EmptyState({ title, body, action }: { title: string; body: strin
 }
 
 export function Page({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("mx-auto w-full max-w-3xl px-4 pb-[calc(var(--tabs-h)+24px)] md:pb-12", className)}>{children}</div>;
+  return <div className={cn("mx-auto w-full max-w-5xl px-4 pb-[calc(var(--tabs-h)+24px)] md:px-6 md:pb-12", className)}>{children}</div>;
 }

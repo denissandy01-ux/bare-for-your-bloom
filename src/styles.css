@@ -147,5 +147,36 @@
 @keyframes kenburns { from { transform: scale(1.04); } to { transform: scale(1.14) translateY(-2%); } }
 @utility animate-kenburns { animation: kenburns 14s ease-in-out infinite alternate; }
 
-:root { --tabs-h: 64px; }
+:root { --tabs-h: calc(64px + env(safe-area-inset-bottom, 0px)); }
 @media (min-width: 768px) { :root { --tabs-h: 0px; } }
+
+@layer base {
+  html { letter-spacing: 0; }
+  body { margin: 0; min-width: 320px; }
+  main, section, article, figure { min-width: 0; }
+  img { max-width: 100%; }
+  input[type="file"] { max-width: 100%; }
+  select { text-overflow: ellipsis; }
+  :focus-visible { outline: 2px solid var(--peach); outline-offset: 3px; }
+}
+
+/* Keep reels readable on landscape devices without enlarging portrait media. */
+@media (max-height: 620px) {
+  .bare-feed { max-width: min(100%, 760px); }
+  .bare-feed .feed-shop { left: 12px; right: 86px; bottom: 8px; }
+  .bare-feed .feed-actions { bottom: 14px; gap: 8px; }
+  .bare-feed .feed-actions > div:first-child { display: none; }
+  .bare-feed .feed-shop > div { padding: 8px; }
+  .bare-feed .feed-shop img { width: 40px; height: 40px; }
+  .bare-feed .feed-buy { min-height: 44px; font-size: 13px; }
+  .bare-feed .feed-specialist { top: 98px; padding-top: 5px; padding-bottom: 5px; }
+  .bare-feed .feed-shop { --tw-space-y-reverse: 0; }
+  .bare-feed .feed-shop > :not(:last-child) { margin-block-end: 6px; }
+}
+@media (max-width: 359px) {
+  .bare-feed .feed-buy { font-size: 12px; }
+  .bare-feed .feed-actions { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: 0.01ms !important; }
+}
