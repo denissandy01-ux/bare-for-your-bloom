@@ -9,6 +9,10 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
+import { BareProvider } from "@/lib/store";
+import { TabBar } from "@/components/bare/kit";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -81,20 +85,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Becoming Bare" },
+      { name: "description", content: "Beauty and grooming verified for your bare canvas." },
+      { property: "og:title", content: "Becoming Bare" },
+      { property: "og:description", content: "Beauty and grooming verified for your bare canvas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -124,7 +129,23 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <BareProvider>
+        <AppFrame />
+      </BareProvider>
     </QueryClientProvider>
+  );
+}
+
+function AppFrame() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const chrome = !path.startsWith("/consultation");
+  return (
+    <div className="min-h-dvh bg-cocoa text-oat">
+      {chrome && <TabBar />}
+      <main className={chrome ? "md:pl-56" : ""}>
+        <Outlet />
+      </main>
+      <Toaster position="top-center" />
+    </div>
   );
 }
