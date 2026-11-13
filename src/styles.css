@@ -146,3 +146,6 @@
 
 @keyframes kenburns { from { transform: scale(1.04); } to { transform: scale(1.14) translateY(-2%); } }
 @utility animate-kenburns { animation: kenburns 14s ease-in-out infinite alternate; }
+
+:root { --tabs-h: 64px; }
+@media (min-width: 768px) { :root { --tabs-h: 0px; } }
