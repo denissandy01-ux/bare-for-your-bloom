@@ -88,7 +88,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
       if (!active) return;
       if (error) { toast.error('Your saved canvas could not be loaded.'); return; }
       const p = data?.canvas;
-      if (p && typeof p === 'object' && !Array.isArray(p) && DEPTHS.some(d => d === p.depth) && UNDERTONES.some(u => u === p.undertone)) {
+      if (p && typeof p === 'object' && !Array.isArray(p) && DEPTHS.some(d => d === p['depth']) && UNDERTONES.some(u => u === p['undertone'])) {
         const profile = p as unknown as Profile;
         synced.current = JSON.stringify(profile);
         setState(s => ({...s, profile}));

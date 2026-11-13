@@ -32,3 +32,7 @@ use the editor.
 - Keep illustrative specialist listings and distance/filter logic in a browser-safe module; clearly distinguish sample credentials and prices from verified live listings.
 - Use a dedicated specialist detail route shared by Discover, Pros, and feed links so provider information has one presentation.
 - Use shared layout tokens for viewport sizing and safe-area navigation; keep the vertical feed portrait-framed on wide screens.
+- Keep creator and brand workspaces under the authenticated layout, with owner-scoped database policies and validated server functions; workspace enrollment grants access only to the caller's own records.
+- Treat content licensing as explicit creator opt-in and request/response interest, not a rights transfer or payment; expose only opt-in catalog fields to brands.
+- Keep illustrative service posts separate from product wear tests and interleave them without assigning Skin Twin scores to salon services.
+- Store signed-in canvas profiles in Cloud while retaining guest exploration locally; never expose canvas profiles to business workspaces or invent performance statistics.

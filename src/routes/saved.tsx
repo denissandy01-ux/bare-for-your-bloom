@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { BareHeader, EmptyState, ListRow, Page, SectionTitle } from "@/components/bare/kit";
 import { bestOffer, money, productById, proById, routineById } from "@/lib/data";
 import { useBare } from "@/lib/store";
+import { specialistById } from '@/lib/specialists';
 
 export const Route = createFileRoute("/saved")({
   head: () => ({ meta: [{ title: "Saved · Becoming Bare" }, { name: "description", content: "Your saved products and pro routines." }, { property: "og:title", content: "Saved · Becoming Bare" }, { property: "og:description", content: "Your saved products and pro routines." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -12,10 +13,12 @@ function Saved() {
   const { state } = useBare();
   const products = state.savedProducts.map(productById).filter((p) => !!p);
   const routines = state.savedRoutines.map(routineById).filter((r) => !!r);
+  const specialists=state.savedSpecialists.map(specialistById).filter(s=>!!s);
   return (
     <>
       <BareHeader />
       <Page className="mt-6 space-y-6">
+        <section className="space-y-3"><SectionTitle meta="Your studios">Saved specialists</SectionTitle>{specialists.length ? <div className="grid gap-2 md:grid-cols-2">{specialists.map(s=><ListRow key={s.id} to="/specialist/$id" params={{id:s.id}} image={s.image} title={s.studio} meta={`${s.name} · ${s.city} · Sample listing`}/>)}</div> : <p className="text-sm text-sand">No specialists saved yet.</p>}</section>
         <section className="space-y-3">
           <SectionTitle meta="Your shelf">Saved products</SectionTitle>
           {products.length === 0 ? (
