@@ -165,7 +165,10 @@
   .bare-feed { max-width: min(100%, 760px); }
   .bare-feed .feed-shop { left: 12px; right: 86px; bottom: 8px; }
   .bare-feed .feed-actions { bottom: 14px; gap: 8px; }
-  .bare-feed .feed-actions > div:first-child { display: none; }
+  .bare-feed .feed-actions > div:first-child > div { width: 44px; height: 44px; }
+  .bare-feed .feed-actions > div:first-child > div > div { width: 34px; height: 34px; font-size: 12px; }
+  .bare-feed .feed-actions > div:first-child > span { font-size: 10px; }
+  .bare-feed .feed-actions button > span:first-child { width: 36px; height: 36px; }
   .bare-feed .feed-shop > div { padding: 8px; }
   .bare-feed .feed-shop img { width: 40px; height: 40px; }
   .bare-feed .feed-buy { min-height: 44px; font-size: 13px; }
