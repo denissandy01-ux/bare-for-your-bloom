@@ -14,13 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      business_products: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_drafts: {
+        Row: {
+          caption: string
+          category: string
+          created_at: string
+          disclosure: string
+          id: string
+          license_available: boolean
+          owner_id: string
+          product_name: string
+          title: string
+        }
+        Insert: {
+          caption?: string
+          category: string
+          created_at?: string
+          disclosure?: string
+          id?: string
+          license_available?: boolean
+          owner_id: string
+          product_name?: string
+          title: string
+        }
+        Update: {
+          caption?: string
+          category?: string
+          created_at?: string
+          disclosure?: string
+          id?: string
+          license_available?: boolean
+          owner_id?: string
+          product_name?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_drafts_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      license_requests: {
+        Row: {
+          brand_id: string
+          budget: number
+          content_id: string
+          created_at: string
+          creator_id: string
+          duration_days: number
+          id: string
+          status: string
+          usage: string
+        }
+        Insert: {
+          brand_id: string
+          budget: number
+          content_id: string
+          created_at?: string
+          creator_id: string
+          duration_days: number
+          id?: string
+          status?: string
+          usage: string
+        }
+        Update: {
+          brand_id?: string
+          budget?: number
+          content_id?: string
+          created_at?: string
+          creator_id?: string
+          duration_days?: number
+          id?: string
+          status?: string
+          usage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_requests_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_requests_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_requests_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          analytics_consent: boolean
+          canvas: Json
+          display_name: string
+          id: string
+        }
+        Insert: {
+          analytics_consent?: boolean
+          canvas?: Json
+          display_name?: string
+          id: string
+        }
+        Update: {
+          analytics_consent?: boolean
+          canvas?: Json
+          display_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          role: string
+          user_id: string
+        }
+        Insert: {
+          role: string
+          user_id: string
+        }
+        Update: {
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_workspace_role: { Args: { kind: string }; Returns: boolean }
+      join_workspace: { Args: { kind: string }; Returns: undefined }
+      licensing_catalog: {
+        Args: never
+        Returns: {
+          category: string
+          creator_id: string
+          display_name: string
+          id: string
+          product_name: string
+          title: string
+        }[]
+      }
+      request_license: {
+        Args: {
+          content: string
+          days: number
+          offered_budget: number
+          requested_usage: string
+        }
+        Returns: undefined
+      }
+      respond_license: {
+        Args: { decision: string; request_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

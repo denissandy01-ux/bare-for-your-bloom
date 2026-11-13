@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794613241208,
+      "tag": "0000_creator_brand_workspaces",
+      "breakpoints": true
+    }
+  ]
 }
