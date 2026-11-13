@@ -1,0 +1,16 @@
+import { createServerFn } from '@tanstack/react-start';
+import { z } from 'zod';
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { draftSchema,licenseSchema } from './workspace';
+export const workspaceData=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
+ const s=context.supabase;
+ const [roles,profile,content,products,requests,catalog]=await Promise.all([s.from('user_roles').select('role'),s.from('profiles').select('display_name,analytics_consent').eq('id',context.userId).single(),s.from('content_drafts').select('*').order('created_at',{ascending:false}),s.from('business_products').select('*').order('created_at',{ascending:false}),s.from('license_requests').select('*').order('created_at',{ascending:false}),s.rpc('licensing_catalog')]);
+ for(const r of [roles,profile,content,products,requests,catalog])if(r.error)throw new Error(r.error.message);
+ return {roles:roles.data?.map(r=>r.role)??[],profile:profile.data,content:content.data??[],products:products.data??[],requests:requests.data??[],catalog:catalog.data??[],userId:context.userId};
+});
+export const joinWorkspace=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.enum(['creator','brand'])).handler(async({data,context})=>{const {error}=await context.supabase.rpc('join_workspace',{kind:data});if(error)throw new Error(error.message);});
+export const saveDraft=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(draftSchema).handler(async({data,context})=>{const {error}=await context.supabase.from('content_drafts').insert({...data,owner_id:context.userId});if(error)throw new Error(error.message);});
+export const addBusinessProduct=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({name:z.string().trim().min(1).max(160),category:z.enum(['Skincare','Hair','Makeup','Nails','Body'])})).handler(async({data,context})=>{const {error}=await context.supabase.from('business_products').insert({...data,owner_id:context.userId});if(error)throw new Error(error.message);});
+export const requestLicense=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(licenseSchema.extend({content:z.string().uuid()})).handler(async({data,context})=>{const {error}=await context.supabase.rpc('request_license',{content:data.content,requested_usage:data.usage,days:data.days,offered_budget:data.budget});if(error)throw new Error(error.message);});
+export const respondLicense=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid(),decision:z.enum(['accepted','declined'])})).handler(async({data,context})=>{const {error}=await context.supabase.rpc('respond_license',{request_id:data.id,decision:data.decision});if(error)throw new Error(error.message);});
+export const setLicenseAvailability=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid(),available:z.boolean()})).handler(async({data,context})=>{const {error}=await context.supabase.from('content_drafts').update({license_available:data.available}).eq('id',data.id).eq('owner_id',context.userId);if(error)throw new Error(error.message);});
