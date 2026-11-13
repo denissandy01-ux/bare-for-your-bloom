@@ -35,7 +35,7 @@ function RoutineDetail() {
   const starts = routine.steps.map((s) => toSec(s.at));
   const [t, setT] = useState(starts[Math.min(1, starts.length - 1)] + 40);
   const [playing, setPlaying] = useState(false);
-  const stepIdx = Math.max(0, starts.findLastIndex((s) => s <= t));
+  const stepIdx = starts.reduce((acc, s, i) => (s <= t ? i : acc), 0);
   const step = routine.steps[stepIdx];
   const product = productById(step.productId)!;
   const saved = state.savedRoutines.includes(routine.id);

@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProsRouteImport } from './routes/pros'
+import { Route as RoutineIdRouteImport } from './routes/routine.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProsRoute = ProsRouteImport.update({
+  id: '/pros',
+  path: '/pros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoutineIdRoute = RoutineIdRouteImport.update({
+  id: '/routine/$id',
+  path: '/routine/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/pros': typeof ProsRoute
+  '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/pros': typeof ProsRoute
+  '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/pros': typeof ProsRoute
+  '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/pros' | '/routine/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/pros' | '/routine/$id'
+  id: '__root__' | '/' | '/pros' | '/routine/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProsRoute: typeof ProsRoute
+  RoutineIdRoute: typeof RoutineIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pros': {
+      id: '/pros'
+      path: '/pros'
+      fullPath: '/pros'
+      preLoaderRoute: typeof ProsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/routine/$id': {
+      id: '/routine/$id'
+      path: '/routine/$id'
+      fullPath: '/routine/$id'
+      preLoaderRoute: typeof RoutineIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProsRoute: ProsRoute,
+  RoutineIdRoute: RoutineIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
