@@ -4,7 +4,7 @@ import { canvasCoverage, type Specialist } from '@/lib/specialists';
 import { money } from '@/lib/data';
 import { useBare } from '@/lib/store';
 
-export function SpecialistCard({ specialist: s, distance }: { specialist: Specialist; distance?: number }) {
+export function SpecialistCard({ specialist: s, distance }: { specialist: Specialist; distance?: number | undefined }) {
   const { state } = useBare();
   return <Link to="/specialist/$id" params={{ id: s.id }} className="group min-w-0 overflow-hidden rounded-[28px] bg-oat text-cocoa">
     <div className="relative aspect-[4/3] overflow-hidden">

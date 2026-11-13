@@ -41,7 +41,7 @@ export function distanceMiles(a: Point, b: Point) {
   const h = Math.sin(dlat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dlng / 2) ** 2;
   return 3958.8 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
 }
-export interface SpecialistFilters { query: string; discipline: Discipline; origin?: Point; radius: number; depth?: Depth; hair?: string; specialty?: string }
+export interface SpecialistFilters { query: string; discipline: Discipline; origin?: Point | undefined; radius: number; depth?: Depth | undefined; hair?: string; specialty?: string }
 export function findSpecialists(filters: SpecialistFilters) {
   const q = filters.query.trim().toLowerCase();
   return SPECIALISTS.map(s => ({ specialist: s, distance: filters.origin ? distanceMiles(filters.origin, s.point) : undefined }))
