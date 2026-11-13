@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bookmark, Play, Share2 } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Bookmark, Play, Share2, MapPin, ArrowUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
@@ -7,6 +7,7 @@ import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/compone
 import { DEPTH_SWATCH, FEED, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { FEED_SPECIALISTS, specialistById } from '@/lib/specialists';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,7 +32,7 @@ function Feed() {
   useEffect(() => setShowAll(false), [state.profile.depth, state.profile.undertone]);
 
   return (
-    <div className="relative mx-auto h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
+    <div className="bare-feed relative mx-auto h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
       <BareHeader overlay />
       {posts.length === 0 ? (
         <div className="flex h-full items-center px-6">
@@ -57,7 +58,7 @@ function Feed() {
 }
 
 function FeedItem({ post }: { post: FeedPost }) {
-  const product = productById(post.productId)!;
+  const product = productById(post.productId);
   const { state, toggleProduct } = useBare();
   const nav = useNavigate();
   const [paused, setPaused] = useState(false);
@@ -65,10 +66,12 @@ function FeedItem({ post }: { post: FeedPost }) {
   const [founder, setFounder] = useState(false);
   const [swatch, setSwatch] = useState(false);
   const ref = useRef<HTMLElement>(null);
-  const offer = bestOffer(product);
-  const back = cashbackFor(offer.price, product.cashbackRate);
+  const offer = product ? bestOffer(product) : undefined;
+  const back = product && offer ? cashbackFor(offer.price, product.cashbackRate) : 0;
   const score = skinTwinScore(post.creator, state.profile);
-  const saved = state.savedProducts.includes(product.id);
+  const saved = product ? state.savedProducts.includes(product.id) : false;
+  const specialistId = FEED_SPECIALISTS[post.id];
+  const specialist = specialistId ? specialistById(specialistId) : undefined;
 
   // Play only while on screen, like a reel.
   useEffect(() => {
@@ -78,6 +81,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   }, []);
 
   const share = async () => {
+    if (!product) return;
     const url = `${window.location.origin}/product/${product.id}`;
     try {
       if (navigator.share) await navigator.share({ title: `${product.brand} ${product.name}`, url });
@@ -85,6 +89,7 @@ function FeedItem({ post }: { post: FeedPost }) {
     } catch { /* share dismissed */ }
   };
 
+  if (!product || !offer) return null;
   return (
     <section ref={ref} className="relative h-full snap-start overflow-hidden bg-cocoa">
       <button onClick={() => setPaused((x) => !x)} className="absolute inset-0 block h-full w-full" aria-label={paused ? "Play wear test" : "Pause wear test"}>
@@ -94,11 +99,15 @@ function FeedItem({ post }: { post: FeedPost }) {
         {paused && <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-oat/90 text-cocoa"><Play className="ml-1 h-6 w-6 fill-current" /></span>}
       </button>
 
-      <p className="pointer-events-none absolute left-4 top-[76px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
+      <p className="feed-wear-label pointer-events-none absolute left-4 top-[76px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
         <span className="h-1.5 w-1.5 rounded-full bg-peach" />{post.wearTest}
       </p>
+      {specialist && <Link to="/specialist/$id" params={{ id: specialist.id }} className="feed-specialist absolute left-4 top-[105px] z-10 max-w-[calc(100%-32px)] rounded-[20px] bg-cocoa/75 px-3 py-2 text-oat backdrop-blur">
+        <span className="flex items-center gap-2 text-[12px] font-semibold">{specialist.name}<ArrowUpRight className="h-3.5 w-3.5" /></span>
+        <span className="mt-0.5 flex items-center gap-1 text-[10px] text-sand"><MapPin className="h-3 w-3" />{specialist.discipline} · {specialist.city} · Sample pro</span>
+      </Link>}
 
-      <div className="absolute bottom-[176px] right-3 z-10 flex flex-col items-center gap-4">
+      <div className="feed-actions absolute bottom-[176px] right-3 z-10 flex flex-col items-center gap-4">
         <div className="flex flex-col items-center gap-1">
           <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
             <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
@@ -118,7 +127,8 @@ function FeedItem({ post }: { post: FeedPost }) {
         <button onClick={share} className="grid h-10 w-10 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur" aria-label="Share"><Share2 className="h-4 w-4" /></button>
       </div>
 
-      <div className="absolute inset-x-3 bottom-3 z-10 space-y-3">
+      <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-3">
+        {specialist && <Link to="/specialist/$id" params={{ id: specialist.id }} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-oat/95 px-4 text-[12px] font-semibold text-cocoa"><MapPin className="h-3.5 w-3.5" />View studio & services<ArrowUpRight className="h-3.5 w-3.5" /></Link>}
         <div className="flex items-center gap-3 rounded-[28px] bg-oat/95 p-3 pr-3">
           <button onClick={() => nav({ to: "/product/$id", params: { id: product.id } })} className="flex min-w-0 flex-1 items-center gap-3 text-left">
             <img src={product.image} alt="" className="h-14 w-14 shrink-0 rounded-[16px] object-cover" />
@@ -130,7 +140,7 @@ function FeedItem({ post }: { post: FeedPost }) {
           </button>
           <SecondaryButton onClick={() => setFounder(true)} className="hidden min-[360px]:inline-flex">Founder Story</SecondaryButton>
         </div>
-        <button onClick={() => setBuy(true)} className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-clay text-[15px] font-semibold text-oat">
+        <button onClick={() => setBuy(true)} className="feed-buy flex min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-0 rounded-full bg-clay px-2 py-2 text-[15px] font-semibold text-oat">
           Shop & Earn {Math.round(product.cashbackRate * 100)}% Cashback <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">{money(back)} back</span>
         </button>
       </div>

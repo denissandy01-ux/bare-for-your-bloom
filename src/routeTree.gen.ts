@@ -19,6 +19,7 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as RoutineIdRouteImport } from './routes/routine.$id'
+import { Route as SpecialistIdRouteImport } from './routes/specialist.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +71,11 @@ const RoutineIdRoute = RoutineIdRouteImport.update({
   path: '/routine/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpecialistIdRoute = SpecialistIdRouteImport.update({
+  id: '/specialist/$id',
+  path: '/specialist/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
+  '/specialist/$id': typeof SpecialistIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
+  '/specialist/$id': typeof SpecialistIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
+  '/specialist/$id': typeof SpecialistIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/product/$id'
     | '/routine/$id'
+    | '/specialist/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/product/$id'
     | '/routine/$id'
+    | '/specialist/$id'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/product/$id'
     | '/routine/$id'
+    | '/specialist/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   ProductIdRoute: typeof ProductIdRoute
   RoutineIdRoute: typeof RoutineIdRoute
+  SpecialistIdRoute: typeof SpecialistIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoutineIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/specialist/$id': {
+      id: '/specialist/$id'
+      path: '/specialist/$id'
+      fullPath: '/specialist/$id'
+      preLoaderRoute: typeof SpecialistIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   ProductIdRoute: ProductIdRoute,
   RoutineIdRoute: RoutineIdRoute,
+  SpecialistIdRoute: SpecialistIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

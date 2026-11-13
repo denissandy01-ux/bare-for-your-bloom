@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { Bookmark, Check, Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -61,6 +61,7 @@ function RoutineDetail() {
       <div className="mt-5 flex items-start gap-3 px-4">
         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-sand font-display text-[15px] font-semibold text-cocoa">{pro.initials}</div>
         <div className="min-w-0">
+          <Link to="/specialist/$id" params={{ id: pro.id }} className="mb-1 block text-[12px] text-peach">View studio, services & products →</Link>
           <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-cocoa-soft px-3 py-1 text-[13px] font-medium text-oat"><Check className="h-3.5 w-3.5 shrink-0" />{pro.name}, {pro.license}</span>
           <p className="mt-1 font-display text-[14px] italic text-sand">{pro.specialty}</p>
         </div>

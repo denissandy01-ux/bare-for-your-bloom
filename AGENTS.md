@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Keep illustrative specialist listings and distance/filter logic in a browser-safe module; clearly distinguish sample credentials and prices from verified live listings.
+- Use a dedicated specialist detail route shared by Discover, Pros, and feed links so provider information has one presentation.
+- Use shared layout tokens for viewport sizing and safe-area navigation; keep the vertical feed portrait-framed on wide screens.
