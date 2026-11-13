@@ -154,7 +154,7 @@ export const money = (n: number) => `$${n.toFixed(2)}`;
 
 export function bestOffer(p: Product) {
   const avail = p.offers.filter((o) => o.stock !== "Out of Stock");
-  return (avail.length ? avail : p.offers)[0];
+  return (avail.length ? avail : p.offers)[0]!;
 }
 export function cheapestOffer(p: Product) {
   return [...p.offers].filter((o) => o.stock !== "Out of Stock").sort((a, b) => a.price - b.price)[0];

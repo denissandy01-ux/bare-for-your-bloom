@@ -24,7 +24,7 @@ export const Route = createFileRoute("/routine/$id")({
   component: RoutineDetail,
 });
 
-const toSec = (t: string) => { const [m, s] = t.split(":").map(Number); return m * 60 + s; };
+const toSec = (t: string) => { const [m, s] = t.split(":").map(Number); return (m ?? 0) * 60 + (s ?? 0); };
 
 function RoutineDetail() {
   const { routineId } = Route.useLoaderData();
@@ -33,7 +33,7 @@ function RoutineDetail() {
   const { state, toggleRoutine, applyCode } = useBare();
   const total = toSec(routine.duration);
   const starts = routine.steps.map((s) => toSec(s.at));
-  const [t, setT] = useState(starts[Math.min(1, starts.length - 1)] + 40);
+  const [t, setT] = useState((starts[Math.min(1, starts.length - 1)] ?? 0) + 40);
   const [playing, setPlaying] = useState(false);
   const stepIdx = starts.reduce((acc, s, i) => (s <= t ? i : acc), 0);
   const step = routine.steps[stepIdx]!;
@@ -78,9 +78,9 @@ function RoutineDetail() {
             <div className="mt-4 flex gap-1">
               {routine.steps.map((s, i) => {
                 const end = starts[i + 1] ?? total;
-                const pct = Math.min(1, Math.max(0, (t - starts[i]) / (end - starts[i])));
+                const pct = Math.min(1, Math.max(0, (t - starts[i]!) / (end - starts[i]!)));
                 return (
-                  <button key={s.title} onClick={() => setT(starts[i])} className="group flex-1 text-left" style={{ flexGrow: end - starts[i] }} aria-label={`Jump to ${s.title}`}>
+                  <button key={s.title} onClick={() => setT(starts[i]!)} className="group flex-1 text-left" style={{ flexGrow: end - starts[i]! }} aria-label={`Jump to ${s.title}`}>
                     <span className="block h-1 overflow-hidden rounded-full bg-oat/30"><span className="block h-full bg-clay" style={{ width: `${pct * 100}%` }} /></span>
                     <span className={cn("mt-2 block truncate text-[11px]", i === stepIdx ? "font-semibold text-oat" : "text-oat/75")}>{s.title}{i === routine.steps.length - 1 ? ` ${routine.duration}` : ""}</span>
                   </button>
@@ -102,7 +102,7 @@ function RoutineDetail() {
           <h2 className="font-display text-[20px] text-oat">Where to buy</h2>
           <span className="truncate text-[13px] text-sand/90">{product.name}</span>
         </div>
-        <OfferRows product={product} discount={applied ? pro.discount : 0} rate={applied ? pro.cashback : product.cashbackRate} code={applied ? pro.code : undefined} />
+        <OfferRows product={product} discount={applied ? pro.discount : 0} rate={applied ? pro.cashback : product.cashbackRate} {...(applied ? { code: pro.code } : {})} />
       </div>
 
       <div className="fixed inset-x-0 bottom-[calc(var(--tabs-h)+10px)] z-20 mx-auto flex max-w-[560px] items-center gap-3 px-3 md:bottom-4 md:pl-[calc(14rem+12px)] md:max-w-none md:justify-center">

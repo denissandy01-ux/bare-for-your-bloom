@@ -73,7 +73,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   // Play only while on screen, like a reel.
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => setPaused(!e.isIntersecting), { threshold: 0.6 });
+    const io = new IntersectionObserver(([e]) => setPaused(!e?.isIntersecting), { threshold: 0.6 });
     io.observe(el); return () => io.disconnect();
   }, []);
 

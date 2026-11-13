@@ -44,7 +44,7 @@ function Consultation() {
       setI(i + 1);
     }, 700);
   };
-  const step = STEPS[i];
+  const step = STEPS[i] as (typeof STEPS)[number] | undefined;
 
   return (
     <div className="mx-auto flex h-dvh max-w-[560px] flex-col">
@@ -54,7 +54,7 @@ function Consultation() {
           ? <div key={k} className="mr-auto max-w-[85%] rounded-[28px] rounded-bl-[10px] bg-oat/95 px-4 py-3 text-cocoa"><p className="text-[15px] leading-snug">{m.text}</p><p className="mt-1.5 text-[11px] uppercase tracking-[0.14em] text-umber">Canvas Consultation</p></div>
           : <div key={k} className="ml-auto max-w-[80%] rounded-[28px] rounded-br-[10px] bg-clay px-4 py-3 text-[15px] leading-snug text-oat">{m.text}</div>)}
         {typing && <div className="mr-auto rounded-[28px] bg-oat/95 px-4 py-3 text-umber">…</div>}
-        {!typing && !done && step.options && <div className="flex flex-wrap gap-2 pt-1">{step.options.map((o) => <button key={o} onClick={() => answer(o)} className="h-11 rounded-full bg-oat/95 px-3.5 text-[13px] font-medium text-cocoa">{o}</button>)}</div>}
+        {!typing && !done && step?.options && <div className="flex flex-wrap gap-2 pt-1">{step!.options!.map((o) => <button key={o} onClick={() => answer(o)} className="h-11 rounded-full bg-oat/95 px-3.5 text-[13px] font-medium text-cocoa">{o}</button>)}</div>}
         {done && !typing && <Link to="/" className="flex h-14 items-center justify-center rounded-full bg-clay font-semibold text-oat">See my feed</Link>}
         <div ref={end} />
       </div>
