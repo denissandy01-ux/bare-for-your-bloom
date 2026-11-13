@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as ProsRouteImport } from './routes/pros'
+import { Route as SavedRouteImport } from './routes/saved'
+import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as RoutineIdRouteImport } from './routes/routine.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +21,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProsRoute = ProsRouteImport.update({
   id: '/pros',
   path: '/pros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductIdRoute = ProductIdRouteImport.update({
+  id: '/product/$id',
+  path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoutineIdRoute = RoutineIdRouteImport.update({
@@ -31,31 +49,51 @@ const RoutineIdRoute = RoutineIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
   '/pros': typeof ProsRoute
+  '/saved': typeof SavedRoute
+  '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
   '/pros': typeof ProsRoute
+  '/saved': typeof SavedRoute
+  '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
   '/pros': typeof ProsRoute
+  '/saved': typeof SavedRoute
+  '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pros' | '/routine/$id'
+  fullPaths:
+    '/' | '/discover' | '/pros' | '/saved' | '/product/$id' | '/routine/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pros' | '/routine/$id'
-  id: '__root__' | '/' | '/pros' | '/routine/$id'
+  to: '/' | '/discover' | '/pros' | '/saved' | '/product/$id' | '/routine/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/discover'
+    | '/pros'
+    | '/saved'
+    | '/product/$id'
+    | '/routine/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DiscoverRoute: typeof DiscoverRoute
   ProsRoute: typeof ProsRoute
+  SavedRoute: typeof SavedRoute
+  ProductIdRoute: typeof ProductIdRoute
   RoutineIdRoute: typeof RoutineIdRoute
 }
 
@@ -68,11 +106,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pros': {
       id: '/pros'
       path: '/pros'
       fullPath: '/pros'
       preLoaderRoute: typeof ProsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$id': {
+      id: '/product/$id'
+      path: '/product/$id'
+      fullPath: '/product/$id'
+      preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/routine/$id': {
@@ -87,7 +146,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DiscoverRoute: DiscoverRoute,
   ProsRoute: ProsRoute,
+  SavedRoute: SavedRoute,
+  ProductIdRoute: ProductIdRoute,
   RoutineIdRoute: RoutineIdRoute,
 }
 export const routeTree = rootRouteImport
