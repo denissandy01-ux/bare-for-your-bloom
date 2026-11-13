@@ -5,10 +5,11 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  DEPTHS, DEPTH_SWATCH, FEED, UNDERTONES, money, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
+  DEPTHS, DEPTH_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_TYPES, money, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
   type Depth, type Offer, type Product, type Undertone,
 } from "@/lib/data";
 import { useBare } from "@/lib/store";
+import { Button } from '@/components/ui/button';
 
 function BareSheet({ open, onOpenChange, title, description, children }: { open: boolean; onOpenChange: (o: boolean) => void; title: string; description?: string; children: ReactNode }) {
   return (
@@ -25,10 +26,12 @@ function BareSheet({ open, onOpenChange, title, description, children }: { open:
 }
 
 export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { state, setTone } = useBare();
+  const { state, setCanvas } = useBare();
   const [d, setD] = useState<Depth>(state.profile.depth);
   const [u, setU] = useState<Undertone>(state.profile.undertone);
-  useEffect(() => { if (open) { setD(state.profile.depth); setU(state.profile.undertone); } }, [open, state.profile.depth, state.profile.undertone]);
+  const [hair,setHair] = useState(state.profile.hair ?? '');
+  const [skinType,setSkinType] = useState(state.profile.skinType ?? '');
+  useEffect(() => { if (open) { setD(state.profile.depth); setU(state.profile.undertone); setHair(state.profile.hair ?? ''); setSkinType(state.profile.skinType ?? ''); } }, [open, state.profile]);
   return (
     <BareSheet open={open} onOpenChange={onOpenChange} title="Your bare canvas" description="Wear tests are matched to creators within one tone of you.">
       <p className="text-[11px] uppercase tracking-[0.14em] text-umber">Depth</p>
@@ -46,9 +49,8 @@ export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
           <button key={x} onClick={() => setU(x)} aria-pressed={u === x} className={cn("h-11 rounded-full text-[13px] font-medium", u === x ? "bg-clay text-oat" : "bg-sand/60 text-cocoa")}>{x}</button>
         ))}
       </div>
-      <button onClick={() => { setTone(d, u); onOpenChange(false); toast(`Feed tuned to ${toneLabel(d, u)}`); }} className="mt-6 h-14 w-full rounded-full bg-clay text-[15px] font-semibold text-oat">
-        Show {toneLabel(d, u)}
-      </button>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2"><label className="text-sm">Hair texture<select value={hair} onChange={e=>setHair(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{HAIR_TYPES.map(x=><option key={x}>{x}</option>)}</select></label><label className="text-sm">Skin type<select value={skinType} onChange={e=>setSkinType(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{SKIN_TYPES.map(x=><option key={x}>{x}</option>)}</select></label></div>
+      <Button onClick={() => { setCanvas({...state.profile, depth:d, undertone:u, hair, skinType}); onOpenChange(false); toast('Your canvas updated'); }} className="mt-6 h-14 w-full rounded-full text-[15px] font-semibold">Save my canvas</Button>
       <Link to="/consultation" onClick={() => onOpenChange(false)} className="mt-3 block text-center font-display text-[15px] italic text-clay">Not sure? Take the Canvas Consultation</Link>
     </BareSheet>
   );

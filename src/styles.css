@@ -183,3 +183,8 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: 0.01ms !important; }
 }
+
+.bare-input { display:block; margin-top:8px; width:100%; min-height:44px; border:1px solid var(--sand); border-radius:12px; background:var(--oat); color:var(--cocoa); padding:10px 12px; }
+:root { --google-bg:#FFFFFF; --google-border:#747775; --google-text:#1F1F1F; }
+.google-auth { background:var(--google-bg); border:1px solid var(--google-border); color:var(--google-text); }
+.google-auth:hover { background:var(--google-bg); }
