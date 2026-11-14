@@ -51,7 +51,7 @@ function RoutineDetail() {
   const apply = async () => {
     try { await navigator.clipboard.writeText(pro.code); } catch { /* clipboard blocked */ }
     applyCode(pro.code);
-    toast(`${pro.code} applied`, { description: `Code copied. ${Math.round(pro.discount * 100)}% off at checkout, ${Math.round(pro.cashback * 100)}% back, and ${pro.name.split(" ")[0]} earns a commission.` });
+    toast(`${pro.code} applied`, { description: `Code copied. ${Math.round(pro.discount * 100)}% off at checkout, you earn Bare Points, and ${pro.name.split(" ")[0]} earns a commission.` });
   };
 
   return (
