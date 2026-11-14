@@ -1,58 +1,74 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { BareHeader, EmptyState, ListRow, Page, SectionTitle } from "@/components/bare/kit";
-import { FEED, bestOffer, money, productById, proById, routineById } from "@/lib/data";
+import { useState, type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Heart, Play, ImageOff } from "lucide-react";
+import { BareHeader, Page } from "@/components/bare/kit";
+import { FEED, productById, routineById } from "@/lib/data";
+import { specialistById } from "@/lib/specialists";
 import { useBare } from "@/lib/store";
-import { specialistById } from '@/lib/specialists';
-import { canvasInsights } from '@/lib/formula';
-import { BRANDS } from '@/lib/atlas';
-import { BrandCard } from '@/components/bare/atlas';
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { BareShelf, Comparison, EmptyBottleClub } from '@/components/bare/collections';
-import { communityOptions } from '@/lib/community-query';
+import { communityOptions } from "@/lib/community-query";
+import { cn } from "@/lib/utils";
 
+const desc = "All your saved beauty media, products, specialists and routines in one place.";
 export const Route = createFileRoute("/saved")({
-  head: () => ({ meta: [{ title: "Saved · Becoming Bare" }, { name: "description", content: "Your saved products and pro routines." }, { property: "og:title", content: "Saved · Becoming Bare" }, { property: "og:description", content: "Your saved products and pro routines." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Your Saves · Becoming Bare" }, { name: "description", content: desc }, { property: "og:title", content: "Your Saves · Becoming Bare" }, { property: "og:description", content: desc }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: Saved,
 });
 
+const TABS = ["Media", "Products", "Specialists", "Routines"] as const;
+type Tab = (typeof TABS)[number];
+
+function Tile({ link, image, video, label, onRemove }: { link: ReactNode; image?: string; video?: boolean; label: string; onRemove: () => void }) {
+  return <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-cocoa-soft">
+    {link}
+    {image ? null : <ImageOff className="pointer-events-none absolute inset-0 m-auto h-6 w-6 text-sand" />}
+    {video && <Play className="pointer-events-none absolute bottom-2 left-2 h-4 w-4 fill-oat text-oat drop-shadow" />}
+    <button type="button" aria-label={`Remove ${label} from Saved`} onClick={onRemove} className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-oat/90 text-cocoa"><Heart className="h-3.5 w-3.5 fill-cocoa" /></button>
+  </div>;
+}
+const img = (src?: string) => src ? <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" /> : null;
+const cover = "block h-full w-full";
+
 function Saved() {
-  const { state } = useBare();
-  const [tab,setTab]=useState('Saved items');
-  const posts=useQuery(communityOptions);
-  const products = state.savedProducts.map(productById).filter((p) => !!p);
-  const routines = state.savedRoutines.map(routineById).filter((r) => !!r);
-  const specialists=state.savedSpecialists.map(specialistById).filter(s=>!!s);
-  return (
-    <>
-      <BareHeader />
-      <Page className="mt-6 space-y-6">
-        <h1 className="font-display text-3xl">Your beauty collection</h1>
-        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-2">{['Saved items','My Bare Shelf','Bare or Buy?','Empty Bottle Club'].map(t=><Button key={t} variant={tab===t?'default':'secondary'} onClick={()=>setTab(t)}>{t}</Button>)}</div>
-        {tab==='My Bare Shelf'?<BareShelf/>:tab==='Bare or Buy?'?<Comparison/>:tab==='Empty Bottle Club'?<EmptyBottleClub/>:<>
-        {FEED.some(p=>state.savedPosts.includes(p.id))&&<section className="space-y-3"><SectionTitle meta="Wear tests">Saved feed posts</SectionTitle>{FEED.filter(p=>state.savedPosts.includes(p.id)).map(p=><Link key={p.id} to="/" search={{post:p.id}} className="flex gap-3 border-b border-oat/15 py-3"><img src={p.media} alt="" className="h-16 w-16 rounded-xl object-cover"/><span className="min-w-0"><span className="block text-xs text-peach">{p.creator.handle}</span><span className="block line-clamp-2 text-sm">{p.caption}</span></span></Link>)}</section>}
-        {state.savedPosts.length>0&&<section className="space-y-3"><SectionTitle meta="Your collection">Saved videos & photos</SectionTitle>{posts.data?.filter(p=>state.savedPosts.includes(p.id)).map(p=><Link key={p.id} to="/" search={{post:p.id}} className="flex gap-3 border-b border-oat/15 py-3">{p.media_type==='image'&&<img src={p.url} alt="" className="h-16 w-16 rounded-xl object-cover"/>}<span className="min-w-0"><span className="block text-xs text-peach">{p.kind} · {p.author}</span><span className="block line-clamp-2 text-sm">{p.caption}</span></span></Link>)}</section>}
-        <section className="space-y-3"><SectionTitle meta="Your studios">Saved specialists</SectionTitle>{specialists.length ? <div className="grid gap-2 md:grid-cols-2">{specialists.map(s=><ListRow key={s.id} to="/specialist/$id" params={{id:s.id}} image={s.image} title={s.studio} meta={`${s.name} · ${s.city} · Sample listing`}/>)}</div> : <p className="text-sm text-sand">No specialists saved yet.</p>}</section>
-        <section className="space-y-3">
-          <SectionTitle meta="Your shelf">Saved products</SectionTitle>
-          {products.length === 0 ? (
-            <EmptyState title="Your shelf is bare" body="Tap Save on any wear test to keep it here and compare prices later." action={<Link to="/" className="inline-flex h-11 items-center rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Browse the feed</Link>} />
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2">{products.map((p) => { const o = bestOffer(p); return <div key={p.id}><ListRow to="/product/$id" params={{ id: p.id }} image={p.image} title={p.name} meta={`${p.brand} · ${o.retailer} · ${money(o.price)}`} /><p className="mt-2 px-3 text-xs leading-relaxed text-sand">{canvasInsights(p,state.profile)[0]}</p><Link to="/product/$id" params={{id:p.id}} className="ml-3 mt-1 inline-block text-xs text-peach">Inside the Formula →</Link></div>; })}</div>
-          )}
-        </section>
-        {state.followedBrands.length>0&&<section><SectionTitle meta="Your global discoveries">Followed brands</SectionTitle><div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3">{BRANDS.filter(b=>state.followedBrands.includes(b.id)).map(b=><BrandCard key={b.id} brand={b}/>)}</div></section>}
-        <section className="space-y-3">
-          <SectionTitle meta="Prescriptions">Saved routines</SectionTitle>
-          {routines.length === 0 ? (
-            <EmptyState title="No routines yet" body="Save a pro's routine to keep their steps and code close." action={<Link to="/discover" className="inline-flex h-11 items-center rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Find a pro</Link>} />
-          ) : (
-            <div className="grid gap-2 md:grid-cols-2">{routines.map((r) => <ListRow key={r.id} to="/routine/$id" params={{ id: r.id }} image={r.media} title={r.title} meta={`${proById(r.proId)?.name} · ${r.steps.length} steps`} />)}</div>
-          )}
-        </section>
-        </>}
-      </Page>
-    </>
-  );
+  const { state, togglePost, toggleProduct, toggleSpecialist, toggleRoutine } = useBare();
+  const [tab, setTab] = useState<Tab>("Media");
+  const posts = useQuery(communityOptions);
+  const newest = (ids: string[]) => [...new Set(ids)];
+
+  let tiles: ReactNode[] = [];
+  if (tab === "Media") tiles = newest(state.savedPosts).flatMap(id => {
+    const f = FEED.find(p => p.id === id);
+    if (f) return [<Tile key={id} label={f.caption} image={f.media} onRemove={() => togglePost(id)} link={<Link to="/" search={{ post: id }} className={cover} aria-label={`Open post by ${f.creator.handle}`}>{img(f.media)}</Link>} />];
+    const c = posts.data?.find(p => p.id === id);
+    if (!c) return [];
+    const isVideo = c.media_type === "video";
+    return [<Tile key={id} label={c.caption ?? "post"} image={c.url} video={isVideo} onRemove={() => togglePost(id)} link={<Link to="/" search={{ post: id }} className={cover} aria-label={`Open post by ${c.author}`}>{isVideo ? <video src={c.url} muted playsInline preload="metadata" className="h-full w-full object-cover" /> : img(c.url)}</Link>} />];
+  });
+  if (tab === "Products") tiles = newest(state.savedProducts).flatMap(id => { const p = productById(id); return p ? [<Tile key={id} label={p.name} image={p.image} onRemove={() => toggleProduct(id)} link={<Link to="/product/$id" params={{ id }} className={cover} aria-label={`Open ${p.name}`}>{img(p.image)}</Link>} />] : []; });
+  if (tab === "Specialists") tiles = newest(state.savedSpecialists).flatMap(id => { const s = specialistById(id); return s ? [<Tile key={id} label={s.studio} image={s.image} onRemove={() => toggleSpecialist(id)} link={<Link to="/specialist/$id" params={{ id }} className={cover} aria-label={`Open ${s.studio}`}>{img(s.image)}</Link>} />] : []; });
+  if (tab === "Routines") tiles = newest(state.savedRoutines).flatMap(id => { const r = routineById(id); return r ? [<Tile key={id} label={r.title} image={r.media} video onRemove={() => toggleRoutine(id)} link={<Link to="/routine/$id" params={{ id }} className={cover} aria-label={`Open ${r.title}`}>{img(r.media)}</Link>} />] : []; });
+
+  const empty: Record<Tab, [string, string, "/" | "/discover"]> = {
+    Media: ["No saved media yet", "Save posts from For You or Explore to find them here.", "/"],
+    Products: ["No saved products yet", "Bookmark products in Discover to revisit them later.", "/discover"],
+    Specialists: ["No saved specialists yet", "Save studios and pros from Discover or Global Atlas.", "/discover"],
+    Routines: ["No saved routines yet", "Save step-by-step guides from the Learn feed.", "/"],
+  };
+  const [title, body, to] = empty[tab];
+
+  return <>
+    <BareHeader />
+    <div className="bg-cocoa px-4 pb-5 pt-6 md:mx-auto md:max-w-3xl">
+      <h1 className="font-display text-4xl">Your Saves</h1>
+      <p className="mt-1 text-sm text-sand">All your beauty finds, in one place.</p>
+      <div role="tablist" aria-label="Saved categories" className="no-scrollbar mt-5 flex gap-2 overflow-x-auto">
+        {TABS.map(t => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("h-10 shrink-0 rounded-full border px-4 text-sm transition-colors", tab === t ? "border-oat bg-oat font-semibold text-cocoa" : "border-oat/30 text-oat")}>{t}</button>)}
+      </div>
+    </div>
+    <Page className="space-y-4 rounded-t-[28px] bg-oat pt-5 text-cocoa">
+      <div className="flex items-baseline justify-between"><h2 className="font-display text-2xl">{tab}</h2><span className="text-xs text-umber">Newest first</span></div>
+      {tiles.length ? <div className="grid grid-cols-3 gap-1.5">{tiles}</div> : <div className="py-10 text-center"><p className="font-display text-xl">{title}</p><p className="mt-2 text-sm text-umber">{body}</p><Link to={to} className="mt-4 inline-flex h-11 items-center rounded-full bg-clay px-5 text-sm font-semibold text-oat">{to === "/" ? "Browse the feed" : "Go to Discover"}</Link></div>}
+      {tab === "Products" && tiles.length > 0 && <p className="text-[11px] text-umber">Saving is a bookmark, not a purchase — it won't add anything to your shelf.</p>}
+    </Page>
+  </>;
 }
