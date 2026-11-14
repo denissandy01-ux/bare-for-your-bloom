@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Check, ChevronDown, ChevronRight, TrendingUp } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Bell, Plus } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { DEPTH_SWATCH, toneLabel } from "@/lib/data";
@@ -24,8 +24,8 @@ export function BareHeader({ title, overlay }: { title?: string; overlay?: boole
         <span className="min-w-0 flex-1 text-center leading-tight line-clamp-2">{label}</span>
         <ChevronDown className="h-3 w-3 shrink-0" />
       </Button>
-      <Link to="/discover" className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-clay px-3.5 text-[12px] font-semibold text-oat">
-        <TrendingUp className="h-3.5 w-3.5" />Trending
+      <Link to="/notifications" aria-label="Notifications" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-cocoa-soft text-oat">
+        <Bell className="h-5 w-5" />
       </Link>
       <ToneSheet open={open} onOpenChange={setOpen} />
     </header>
@@ -35,14 +35,16 @@ export function BareHeader({ title, overlay }: { title?: string; overlay?: boole
 const TABS = [
   { to: "/", label: "Feed", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="6" y="3" width="12" height="18" rx="3" /><path d="M11 10l3 2-3 2z" /></svg>) },
   { to: "/discover", label: "Discover", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>) },
+  { to: "/create", label: "Create", icon: <Plus className="h-[22px] w-[22px]"/> },
   { to: "/saved", label: "Saved", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 3h12v18l-6-4-6 4z" /></svg>) },
   { to: "/me", label: "Me", icon: null },
 ] as const;
 
 function isActive(path: string, to: string) {
   if (to === "/") return path === "/";
+  if (to === '/saved') return ['/saved','/bare-or-buy','/empty-bottle'].some(p=>path.startsWith(p));
   if (to === "/me") return ["/me", "/wallet", "/canvas", "/consultation"].some((p) => path.startsWith(p));
-  if (to === "/discover") return path.startsWith("/discover") || path.startsWith("/routine") || path.startsWith("/specialist") || path.startsWith("/shade-finder");
+  if (to === "/discover") return path.startsWith("/discover") || path.startsWith('/atlas') || path.startsWith("/routine") || path.startsWith("/specialist") || path.startsWith("/shade-finder");
   return path.startsWith(to);
 }
 

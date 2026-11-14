@@ -6,6 +6,7 @@ import { useAccount } from '@/lib/account';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { BRANDS } from '@/lib/atlas';
 
 export const Route = createFileRoute("/me")({
   head: () => ({ meta: [{ title: "My Canvas · Becoming Bare" }, { name: "description", content: "Your canvas profile, Bare Points and 30-day check-in." }, { property: "og:title", content: "My Canvas · Becoming Bare" }, { property: "og:description", content: "Your canvas profile, Bare Points and 30-day check-in." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -34,7 +35,10 @@ function Me() {
         </div>
         <Link to="/consultation" className="flex h-14 items-center justify-center rounded-full bg-clay text-[15px] font-semibold text-oat">{state.consulted ? "Retake Canvas Consultation" : "Start Canvas Consultation"}</Link>
         <ListRow to="/wallet" title="Bare Points" meta={`${Math.round(w.available)} pts available · ${Math.round(w.pending)} pending`} />
-        <ListRow to="/canvas" title="30-Day Bare Canvas" meta={state.canvasStart ? `Day ${Math.min(30, daysSince(state.canvasStart))} of 30 · ${state.checkIns.length} check-ins` : "Track barrier, hair and bottle progress"} />
+        <ListRow to="/notifications" title="Notification preferences" meta="Community · brands · discoveries" />
+        <ListRow to="/create" title="My content" meta="Create a post · manage published stories" />
+        {state.followedBrands.length>0&&<section className="space-y-2"><h2 className="font-display text-xl">Followed brands</h2>{BRANDS.filter(b=>state.followedBrands.includes(b.id)).map(b=><Link key={b.id} to="/brand/$id" params={{id:b.id}} className="block border-b border-oat/15 py-3 text-sm">{b.name} →</Link>)}</section>}
+        <details className="border-y border-oat/15 py-4"><summary className="cursor-pointer font-display text-xl">My Beauty Journey</summary><div className="mt-4"><ListRow to="/canvas" title="30 Days Bare" meta={state.canvasStart ? `Day ${Math.min(30, daysSince(state.canvasStart))} of 30 · ${state.checkIns.length} check-ins` : "Track barrier, hair and bottle progress"} /></div></details>
         <section className="space-y-3 border-t border-oat/15 pt-5"><SectionTitle meta="Behind the care">Creator & brand workspaces</SectionTitle><ListRow to="/studio" title="Explore the studio" meta="Creator tools · brand portal · licensing"/><ListRow to="/creator" title="Creator studio" meta="Content, partnerships & your own product line"/><ListRow to="/brand" title="Brand portal" meta="Your products & permission-based UGC licensing"/></section>
       </Page>
     </>

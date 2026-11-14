@@ -13,10 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BareOrBuyRouteImport } from './routes/bare-or-buy'
 import { Route as CanvasRouteImport } from './routes/canvas'
 import { Route as ConsultationRouteImport } from './routes/consultation'
+import { Route as CreateRouteImport } from './routes/create'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as EmptyBottleRouteImport } from './routes/empty-bottle'
 import { Route as MeRouteImport } from './routes/me'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProsRouteImport } from './routes/pros'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -52,6 +56,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BareOrBuyRoute = BareOrBuyRouteImport.update({
+  id: '/bare-or-buy',
+  path: '/bare-or-buy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CanvasRoute = CanvasRouteImport.update({
   id: '/canvas',
   path: '/canvas',
@@ -62,14 +71,29 @@ const ConsultationRoute = ConsultationRouteImport.update({
   path: '/consultation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiscoverRoute = DiscoverRouteImport.update({
   id: '/discover',
   path: '/discover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmptyBottleRoute = EmptyBottleRouteImport.update({
+  id: '/empty-bottle',
+  path: '/empty-bottle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeRoute = MeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProsRoute = ProsRouteImport.update({
@@ -152,10 +176,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atlas': typeof AtlasRouteWithChildren
   '/auth': typeof AuthRoute
+  '/bare-or-buy': typeof BareOrBuyRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
+  '/create': typeof CreateRoute
   '/discover': typeof DiscoverRoute
+  '/empty-bottle': typeof EmptyBottleRoute
   '/me': typeof MeRoute
+  '/notifications': typeof NotificationsRoute
   '/pros': typeof ProsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
@@ -175,10 +203,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/bare-or-buy': typeof BareOrBuyRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
+  '/create': typeof CreateRoute
   '/discover': typeof DiscoverRoute
+  '/empty-bottle': typeof EmptyBottleRoute
   '/me': typeof MeRoute
+  '/notifications': typeof NotificationsRoute
   '/pros': typeof ProsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
@@ -201,10 +233,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/atlas': typeof AtlasRouteWithChildren
   '/auth': typeof AuthRoute
+  '/bare-or-buy': typeof BareOrBuyRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
+  '/create': typeof CreateRoute
   '/discover': typeof DiscoverRoute
+  '/empty-bottle': typeof EmptyBottleRoute
   '/me': typeof MeRoute
+  '/notifications': typeof NotificationsRoute
   '/pros': typeof ProsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
@@ -227,10 +263,14 @@ export interface FileRouteTypes {
     | '/'
     | '/atlas'
     | '/auth'
+    | '/bare-or-buy'
     | '/canvas'
     | '/consultation'
+    | '/create'
     | '/discover'
+    | '/empty-bottle'
     | '/me'
+    | '/notifications'
     | '/pros'
     | '/reset-password'
     | '/saved'
@@ -250,10 +290,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/bare-or-buy'
     | '/canvas'
     | '/consultation'
+    | '/create'
     | '/discover'
+    | '/empty-bottle'
     | '/me'
+    | '/notifications'
     | '/pros'
     | '/reset-password'
     | '/saved'
@@ -275,10 +319,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/atlas'
     | '/auth'
+    | '/bare-or-buy'
     | '/canvas'
     | '/consultation'
+    | '/create'
     | '/discover'
+    | '/empty-bottle'
     | '/me'
+    | '/notifications'
     | '/pros'
     | '/reset-password'
     | '/saved'
@@ -301,10 +349,14 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AtlasRoute: typeof AtlasRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BareOrBuyRoute: typeof BareOrBuyRoute
   CanvasRoute: typeof CanvasRoute
   ConsultationRoute: typeof ConsultationRoute
+  CreateRoute: typeof CreateRoute
   DiscoverRoute: typeof DiscoverRoute
+  EmptyBottleRoute: typeof EmptyBottleRoute
   MeRoute: typeof MeRoute
+  NotificationsRoute: typeof NotificationsRoute
   ProsRoute: typeof ProsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
@@ -347,6 +399,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bare-or-buy': {
+      id: '/bare-or-buy'
+      path: '/bare-or-buy'
+      fullPath: '/bare-or-buy'
+      preLoaderRoute: typeof BareOrBuyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/canvas': {
       id: '/canvas'
       path: '/canvas'
@@ -361,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsultationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/discover': {
       id: '/discover'
       path: '/discover'
@@ -368,11 +434,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/empty-bottle': {
+      id: '/empty-bottle'
+      path: '/empty-bottle'
+      fullPath: '/empty-bottle'
+      preLoaderRoute: typeof EmptyBottleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/me': {
       id: '/me'
       path: '/me'
       fullPath: '/me'
       preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pros': {
@@ -515,10 +595,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AtlasRoute: AtlasRouteWithChildren,
   AuthRoute: AuthRoute,
+  BareOrBuyRoute: BareOrBuyRoute,
   CanvasRoute: CanvasRoute,
   ConsultationRoute: ConsultationRoute,
+  CreateRoute: CreateRoute,
   DiscoverRoute: DiscoverRoute,
+  EmptyBottleRoute: EmptyBottleRoute,
   MeRoute: MeRoute,
+  NotificationsRoute: NotificationsRoute,
   ProsRoute: ProsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
