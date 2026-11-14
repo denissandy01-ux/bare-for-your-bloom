@@ -17,4 +17,4 @@ export function AtlasHub(){const [query,setQuery]=useState('');const result=sear
  <p className="border-t border-oat/15 pt-4 text-xs text-sand">Sample profiles and generated editorial imagery. Interest is not a purchase or confirmed market demand.</p>
  </div>;}
 
-export function AtlasBack({label}:{label:string}){const router=useRouter();const canGoBack=useCanGoBack();return <button type="button" aria-label={`Back to ${label}`} onClick={()=>canGoBack?router.history.back():router.navigate({to:'/discover'})} className="inline-flex h-11 items-center gap-2 rounded-full bg-cocoa-soft pl-3 pr-4 text-sm text-oat"><ArrowLeft className="h-5 w-5"/>{label}</button>;}
+export function AtlasBack({label}:{label:string}){const router=useRouter();const canGoBack=useCanGoBack();return <button type="button" aria-label="Go back" onClick={()=>canGoBack?router.history.back():router.navigate({to:'/discover'})} className="inline-flex h-11 items-center gap-2 rounded-full bg-cocoa-soft pl-3 pr-4 text-sm text-oat"><ArrowLeft className="h-5 w-5"/>{label}</button>;}
