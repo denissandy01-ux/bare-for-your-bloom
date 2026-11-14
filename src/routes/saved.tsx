@@ -34,7 +34,7 @@ function Saved() {
         <section className="space-y-3">
           <SectionTitle meta="Prescriptions">Saved routines</SectionTitle>
           {routines.length === 0 ? (
-            <EmptyState title="No routines yet" body="Save a pro's routine to keep their steps and code close." action={<Link to="/pros" className="inline-flex h-11 items-center rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Find a pro</Link>} />
+            <EmptyState title="No routines yet" body="Save a pro's routine to keep their steps and code close." action={<Link to="/discover" className="inline-flex h-11 items-center rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Find a pro</Link>} />
           ) : (
             <div className="grid gap-2 md:grid-cols-2">{routines.map((r) => <ListRow key={r.id} to="/routine/$id" params={{ id: r.id }} image={r.media} title={r.title} meta={`${proById(r.proId)?.name} · ${r.steps.length} steps`} />)}</div>
           )}
