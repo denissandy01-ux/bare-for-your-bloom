@@ -4,6 +4,7 @@ import { EmptyGallery } from '@/components/bare/empty-gallery';
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, Bell, Check, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FeedCompanion } from "@/components/bare/feed-companion";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
 import { CreatorSheet } from '@/components/bare/creator-sheet';
@@ -73,9 +74,18 @@ function Feed() {
     return false;
   });
   useEffect(() => setShowAll(false), [browseProfile.depth, browseProfile.undertone]);
+  const [active,setActive]=useState<string|undefined>();
+  const trackActive=(e:React.UIEvent<HTMLDivElement>)=>{
+    const el=e.currentTarget; const idx=Math.round(el.scrollTop/el.clientHeight);
+    const child=el.children[idx] as HTMLElement|undefined;
+    const id=child?.dataset['product']??child?.querySelector<HTMLElement>('[data-product]')?.dataset['product'];
+    if(id&&id!==active) setActive(id);
+  };
+  useEffect(()=>{ if(!active) setActive(posts[0]?.productId); },[posts,active]);
 
   return (
-    <div className="bare-feed relative mx-auto h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
+    <div className="flex justify-center lg:gap-6 lg:px-6">
+    <div className="bare-feed relative mx-auto lg:mx-0 shrink-0 h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
       <header className="absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-cocoa/80 to-transparent px-4 pt-4 pb-3">
         <div className="flex items-center justify-between gap-2"><Button variant="ghost" onClick={()=>setToneOpen(true)} aria-label="Choose your browsing canvas" className="h-auto min-w-0 gap-2 bg-transparent p-0 text-oat hover:bg-transparent hover:text-peach"><span className="h-6 w-6 shrink-0 rounded-full ring-1 ring-oat/60" style={{background:UNDERTONE_SWATCH[browseProfile.depth][browseProfile.undertone]}}/><span className="min-w-0 text-left"><span className="block font-display text-[22px] leading-tight">Becoming Bare</span>{temporaryCanvas && <span className="block text-[10px] text-sand">Browsing · {browseProfile.depth} {browseProfile.undertone}</span>}</span></Button><div className="flex shrink-0 gap-2"><Button variant="ghost" size="icon" aria-label="Search the feed" onClick={()=>setSearching(x=>!x)} className="h-10 w-10 rounded-full bg-cocoa/45 text-oat hover:bg-cocoa/60 hover:text-oat"><Search className="h-5 w-5"/></Button><Link to="/notifications" aria-label="Notifications" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-cocoa/45 text-oat"><Bell className="h-5 w-5"/></Link></div></div>
         <div role="tablist" aria-label="Feed categories" className="mt-3 grid grid-cols-4 gap-1 border-b border-oat/20">{FEED_TABS.map(t=><Button role="tab" aria-selected={tab===t} key={t} size="sm" variant="ghost" className={cn('h-9 rounded-none border-b-2 bg-transparent px-1 text-xs text-oat hover:bg-oat/10 hover:text-oat',tab===t?'border-peach font-semibold':'border-transparent text-oat/75')} onClick={()=>setTab(t)}>{t}</Button>)}</div>
@@ -94,7 +104,7 @@ function Feed() {
 
         </div>
       ) : (
-        <div className="no-scrollbar h-full snap-y snap-mandatory overflow-y-scroll">
+        <div onScroll={trackActive} className="no-scrollbar h-full snap-y snap-mandatory overflow-y-scroll">
           {shared.map(p=><CommunityFeedItem key={p.id} post={p}/>)}
           {mixFeed(posts, services).map(item => item.kind === 'product' ? <FeedItem key={item.post.id} post={item.post} /> : <ServiceFeedItem key={item.post.id} post={item.post} />)}
           {tab==='For You'&&!search.post&&!showAll && matched.length < FEED.length && (
@@ -104,6 +114,8 @@ function Feed() {
           )}
         </div>
       )}
+    </div>
+      <FeedCompanion productId={active}/>
     </div>
   );
 }
@@ -142,7 +154,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   if (!product || !offer) return null;
   const brand=brandForProduct(product.id);
   return (
-    <section ref={ref} className="relative h-full snap-start overflow-hidden bg-cocoa">
+    <section ref={ref} data-product={product.id} className="relative h-full snap-start overflow-hidden bg-cocoa">
       <Button variant="ghost" onDoubleClick={doubleTap.onDoubleClick} onTouchEnd={doubleTap.onTouchEnd} onClick={() => setPaused((x) => !x)} className="absolute inset-0 block h-full w-full rounded-none p-0 hover:bg-transparent" aria-label={paused ? "Play wear test" : "Pause wear test"}>
         <img src={post.media} alt={`${post.creator.handle} wear test of ${product.name}`} className={cn("h-full w-full object-cover animate-kenburns", paused && "[animation-play-state:paused]")} />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cocoa/70 to-transparent" />
@@ -152,7 +164,7 @@ function FeedItem({ post }: { post: FeedPost }) {
       <LikeBurst burst={doubleTap.burst}/>
 
       <p className="feed-wear-label pointer-events-none absolute left-4 top-[172px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
-        <span className="h-1.5 w-1.5 rounded-full bg-peach" />{post.wearTest}
+        <span className="h-1.5 w-1.5 rounded-full bg-peach" />{post.sample && !post.wearTest.startsWith("Sample") && "Sample · "}{post.wearTest}
       </p>
 
 

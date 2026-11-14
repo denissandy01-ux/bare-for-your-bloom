@@ -212,6 +212,8 @@ export interface FeedPost {
   likes?: number;
   /** Posted by the brand itself rather than a creator co-post. */
   official?: boolean;
+  /** Illustrative demo post, labelled Sample in the feed. */
+  sample?: boolean;
 }
 
 export const FEED: FeedPost[] = [
@@ -233,6 +235,14 @@ export const FEED: FeedPost[] = [
   { id: "p15", productId: "glow-toner-essence", media: dropper, likes: 640, wearTest: "Wear test · 14 days, calmer skin", swatches: 42, caption: "Small-batch find. Redness down after two weeks.", creator: { handle: "@nadia.tan", depth: "Tan", undertone: "Olive", skinType: "Sensitive", hair: "4A Coily" } },
   { id: "p16", productId: "leave-in-conditioner", media: deepSpf, likes: 4320, wearTest: "Wear test · 5 days, moisture held", swatches: 356, caption: "Wash day to day five, 4C still soft.", creator: { handle: "@amara.coils", depth: "Deep", undertone: "Cool", skinType: "Dry", hair: "4C Coily" } },
   { id: "p17", productId: "beard-oil", media: barber, likes: 1170, wearTest: "Wear test · 10 days, no itch", swatches: 97, caption: "Coarse beard, soft by day three, no flakes.", creator: { handle: "@kwame.groom", depth: "Deep", undertone: "Olive", skinType: "Oily", hair: "Shaved / beard focus" } },
+  { id: "s1", sample: true, productId: "niacinamide-serum", media: dropper, likes: 860, wearTest: "Sample · 21-day dark spot diary", swatches: 74, caption: "Week three: the marks from my last breakout are fading.", creator: { handle: "@sample.amaka", depth: "Deep", undertone: "Cool", skinType: "Acne-prone", hair: "4B Coily" } },
+  { id: "s2", sample: true, productId: "curl-defining-cream", media: oliveWaves, likes: 1310, wearTest: "Sample · Tutorial · wash-and-go", swatches: 112, caption: "Tutorial: section, rake, scrunch. Hands off until dry.", creator: { handle: "@sample.lucia", depth: "Medium", undertone: "Olive", skinType: "Combination", hair: "3C Curly" } },
+  { id: "s3", sample: true, productId: "calm-barrier-cream", media: pump, likes: 540, wearTest: "Sample · 10 days, less stinging", swatches: 58, caption: "Rosacea flare week. Simple routine, one cream, calmer cheeks.", creator: { handle: "@sample.ellie", depth: "Fair", undertone: "Cool", skinType: "Sensitive", hair: "1 Straight" } },
+  { id: "s4", sample: true, productId: "skin-tint", media: tanTint, likes: 2210, wearTest: "Sample · Tutorial · 2-minute base", swatches: 190, caption: "Tutorial: tint, concealer only where needed, done.", creator: { handle: "@sample.priya", depth: "Tan", undertone: "Neutral", skinType: "Oily", hair: "2B Wavy" } },
+  { id: "s5", sample: true, productId: "beard-oil", media: barber, likes: 720, wearTest: "Sample · 14 days, softer beard", swatches: 44, caption: "Locs up, beard oiled. Two weeks, no flakes.", creator: { handle: "@sample.kwame", depth: "Deep", undertone: "Warm", skinType: "Dry", hair: "4C Coily" } },
+  { id: "s6", sample: true, productId: "leave-in-conditioner", media: deepSpf, likes: 1680, wearTest: "Sample · 7 days, silver stays soft", swatches: 96, caption: "Embracing my grey. Leave-in keeps it bright, not brittle.", creator: { handle: "@sample.joan", depth: "Light", undertone: "Warm", skinType: "Dry", hair: "3A Curly" } },
+  { id: "s7", sample: true, productId: "brow-gel", media: tube, likes: 430, wearTest: "Sample · Tutorial · brushed-up brows", swatches: 39, caption: "Tutorial: brush up, press flat, set. Holds through a workout.", creator: { handle: "@sample.mei", depth: "Light", undertone: "Neutral", skinType: "Combination", hair: "1 Straight" } },
+  { id: "s8", sample: true, productId: "squalane", media: dropper, likes: 990, wearTest: "Sample · 30 days, scalp calmer", swatches: 67, caption: "Two drops on the scalp between braid installs. No itch.", creator: { handle: "@sample.ade", depth: "Deep", undertone: "Neutral", skinType: "Balanced", hair: "4A Coily" } },
 ];
 
 export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; skinTypes?: string[]; barrier?: string; hair?: string; hairLength?: string; ageStage?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string; referenceShade?: string }
