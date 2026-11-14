@@ -1,53 +1,125 @@
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BareHeader, ListRow, Page, SectionTitle } from "@/components/bare/kit";
-import { UNDERTONE_SWATCH, skinTags, toneLabel } from "@/lib/data";
-import { useBare, walletTotals } from "@/lib/store";
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { Bell, Settings, Pencil, Share2, Grid2X2, Sparkles, Repeat2, Tag, FileText, Play, UserRound, ChevronRight, Package, Droplets, Scale, Clapperboard, Coins, LogOut, Plus, Loader2, Lock } from 'lucide-react';
+import { UNDERTONE_SWATCH, skinTags, toneLabel } from '@/lib/data';
+import { useBare, walletTotals } from '@/lib/store';
 import { useJourney } from '@/lib/journey';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useAccount } from '@/lib/account';
 import { supabase } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
 import { BRANDS } from '@/lib/atlas';
-import { Bell, Coins, Pencil, Package, Clapperboard, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ProfileEditor } from '@/components/bare/profile-editor';
+import { BareShelf } from '@/components/bare/collections';
+import { ownedPosts, profileIdentity } from '@/lib/profile';
+import { cn } from '@/lib/utils';
 
-export const Route = createFileRoute("/me")({
-  head: () => ({ meta: [{ title: "Me · Becoming Bare" }, { name: "description", content: "Your canvas profile, Bare Points and Beauty Journey." }, { property: "og:title", content: "My Canvas · Becoming Bare" }, { property: "og:description", content: "Your canvas profile, Bare Points and Beauty Journey." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+export const Route = createFileRoute('/me')({
+  head: () => ({ meta: [{ title: 'My Profile · Becoming Bare' }, { name: 'description', content: 'Your beauty stories, private canvas and personal beauty collection.' }, { property: 'og:title', content: 'My Profile · Becoming Bare' }, { property: 'og:description', content: 'Your beauty stories, private canvas and personal beauty collection.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary' }] }),
   component: Me,
 });
 
 function Me() {
   const { state, reset, toggleCreator, toggleBrandSignal } = useBare();
-  const {user,ready}=useAccount();
-  const qc=useQueryClient(),nav=useNavigate();
-  const p = state.profile;
-  const w = walletTotals(state.wallet);
+  const { user, ready } = useAccount();
+  const qc = useQueryClient(), nav = useNavigate();
+  const [tab, setTab] = useState<'posts' | 'beauty'>('posts');
+  const [editing, setEditing] = useState(false), [showFollowing, setShowFollowing] = useState(false), [settings, setSettings] = useState(false), [shelf, setShelf] = useState(false), [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState('');
+  const [journey] = useJourney();
+  const identity = profileIdentity(user?.user_metadata ?? {}, user?.email);
+  const p = state.profile, totals = walletTotals(state.wallet);
   const following = state.followedCreators.length + state.followedBrands.length;
-  const [showFollowing,setShowFollowing]=useState(false);
-  const [journey]=useJourney();
-  const activeGoals=journey.goals.filter(g=>!g.done).length;
-  return (
-    <>
-      <BareHeader />
-      <Page className="mt-6 space-y-5">
-        <header className="flex items-center gap-4">
-          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-full p-1 ring-2 ring-peach/70" style={{ background: UNDERTONE_SWATCH[p.depth][p.undertone] }}><span className="font-display text-2xl text-oat drop-shadow">{(user?.email ?? 'G').charAt(0).toUpperCase()}</span></span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-display text-2xl">{user ? `@${user.email?.split('@')[0]}` : ready ? 'Guest' : 'Opening…'}</p>
-            <p className="mt-1 text-sm"><b>—</b> <span className="text-sand">Followers</span> · <button onClick={()=>setShowFollowing(true)} className="underline-offset-2 hover:underline"><b>{following}</b> <span className="text-sand">Following</span></button></p>
-            <div className="mt-2">{user ? <Button size="sm" variant="secondary" onClick={async()=>{await qc.cancelQueries();qc.clear();const {error}=await supabase.auth.signOut();if(error)return;reset();void nav({to:'/auth',replace:true});}}>Sign out</Button> : <Button size="sm" asChild><Link to="/auth">Sign in / Create account</Link></Button>}</div>
-          </div>
-        </header>
-        {state.consulted ? <Link to="/consultation" className="flex items-center gap-3 rounded-full border border-oat/20 px-4 py-3 text-sm"><span className="h-5 w-5 shrink-0 rounded-full" style={{ background: UNDERTONE_SWATCH[p.depth][p.undertone] }} /><span className="min-w-0 flex-1 truncate">{[toneLabel(p.depth, p.undertone), p.hair, ...skinTags(p)].filter(Boolean).join(' · ')}</span><Pencil className="h-4 w-4 shrink-0 text-sand" aria-label="Edit canvas" /></Link>
-          : <Link to="/consultation" className="flex items-center gap-4"><span className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-clay text-center text-[11px] font-semibold leading-tight text-oat ring-4 ring-peach/30">Start<br/>canvas</span><span className="min-w-0"><span className="block font-semibold">Start your Canvas Consultation</span><span className="block text-xs text-sand">Two minutes · tone, hair and skin · skip anything</span></span></Link>}
-        <div className="grid grid-cols-2 gap-3">
-          {([['/wallet', Coins, `${Math.round(w.available)} Bare Points`, `${Math.round(w.pending)} pending`], ['/notifications', Bell, 'Notifications', 'Manage alerts'], ['/saved', Package, 'Shelf & Empties', `${state.emptyBottles.length} empties logged`], ['/create', Clapperboard, 'My content', 'Create & manage']] as const).map(([to, Icon, t, m]) => <Link key={to} to={to} className="min-w-0 rounded-[24px] bg-oat p-4 text-cocoa"><Icon className="h-5 w-5 text-clay" /><p className="mt-2 truncate font-semibold">{t}</p><p className="truncate text-xs text-umber">{m}</p></Link>)}
+  const activeGoals = journey.goals.filter(goal => !goal.done).length;
+  const posts = useInfiniteQuery({
+    queryKey: ['my-profile-posts', user?.id], enabled: !!user, initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      if (!user) return [];
+      const { data, error } = await supabase.from('beauty_posts').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }).order('id').range(pageParam, pageParam + 23);
+      if (error) throw error;
+      const rows = ownedPosts(data ?? [], user.id);
+      if (!rows.length) return [];
+      const { data: media, error: mediaError } = await supabase.storage.from('beauty-posts').createSignedUrls(rows.map(post => post.media_path), 3600);
+      if (mediaError) throw mediaError;
+      return rows.map(post => ({ ...post, url: media?.find(item => item.path === post.media_path)?.signedUrl ?? '' }));
+    },
+    getNextPageParam: (lastPage, pages) => lastPage.length === 24 ? pages.length * 24 : undefined,
+    staleTime: 60_000,
+  });
+  const published = ownedPosts(posts.data?.pages.flat() ?? [], user?.id);
+  const summary = [toneLabel(p.depth, p.undertone), ...skinTags(p), p.hair].filter(Boolean).join(' · ');
+
+  async function signOut() {
+    setSigningOut(true); setSignOutError('');
+    const { error } = await supabase.auth.signOut();
+    if (error) { setSignOutError('Could not sign out. Please try again.'); setSigningOut(false); return; }
+    await qc.cancelQueries(); qc.clear(); reset(); void nav({ to: '/auth', replace: true });
+  }
+
+  return <div className="me-surface min-h-dvh pb-[calc(var(--tabs-h)+28px)] md:pb-12">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6">
+      <header className="flex min-h-20 items-center justify-between gap-2 py-4">
+        <Link to="/" className="min-w-0 font-display text-[25px] font-semibold italic leading-tight sm:text-[32px]">Becoming Bare</Link>
+        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+          <Button asChild variant="ghost" size="icon" className="h-11 w-11 rounded-full" title="Notification preferences"><Link to="/notifications" aria-label="Notifications"><Bell className="!h-6 !w-6" strokeWidth={1.6}/></Link></Button>
+          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full" aria-label="More and Settings" title="More & Settings" onClick={() => setSettings(true)}><Settings className="!h-6 !w-6" strokeWidth={1.6}/></Button>
         </div>
-        <Link to="/canvas" className="flex items-center gap-3 rounded-[24px] border border-oat/15 p-4"><Sparkles className="h-5 w-5 shrink-0 text-peach"/><span className="min-w-0 flex-1"><span className="block font-display text-xl">My Beauty Journey</span><span className="block truncate text-xs text-sand">{journey.goals.length?`${activeGoals} active goals · ${journey.entries.length} journal entries`:'Set personal goals and keep an optional journal'}</span></span><span className="text-sand">→</span></Link>
-        <Sheet open={showFollowing} onOpenChange={setShowFollowing}><SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto rounded-t-[28px]"><SheetHeader><SheetTitle>Following · {following}</SheetTitle></SheetHeader><div className="mt-4 space-y-1">{following===0&&<p className="text-sm text-muted-foreground">You're not following anyone yet. Tap Follow on a creator, specialist or brand.</p>}{state.followedCreators.map(h=><div key={h} className="flex items-center justify-between border-b py-3 text-sm"><span>{h}</span><button onClick={()=>toggleCreator(h)} className="rounded-full border px-3 py-1 text-xs">Unfollow</button></div>)}{BRANDS.filter(b=>state.followedBrands.includes(b.id)).map(b=><div key={b.id} className="flex items-center justify-between border-b py-3 text-sm"><Link to="/brand/$id" params={{id:b.id}} onClick={()=>setShowFollowing(false)}>{b.name} · Brand</Link><button onClick={()=>toggleBrandSignal('followedBrands',b.id)} className="rounded-full border px-3 py-1 text-xs">Unfollow</button></div>)}</div></SheetContent></Sheet>
-        <section className="space-y-3 border-t border-oat/15 pt-5"><SectionTitle meta="Behind the care">Creator & brand workspaces</SectionTitle><ListRow to="/studio" title="Explore the studio" meta="Creator tools · brand portal · licensing"/><ListRow to="/creator" title="Creator studio" meta="Content, partnerships & your own product line"/><ListRow to="/brand" title="Brand portal" meta="Your products & permission-based UGC licensing"/></section>
-      </Page>
-    </>
-  );
+      </header>
+
+      <section aria-label="Your profile" className="grid grid-cols-[88px_minmax(0,1fr)] gap-x-4 gap-y-3 py-3 sm:grid-cols-[136px_minmax(0,1fr)] sm:gap-x-5 sm:py-5">
+        <Button variant="ghost" className="row-span-2 h-[88px] w-[88px] overflow-hidden rounded-full border border-primary p-1 hover:bg-transparent sm:h-[136px] sm:w-[136px]" aria-label={user ? 'Change profile picture' : 'Profile picture'} disabled={!user} onClick={() => setEditing(true)}>
+          <span className="grid h-full w-full place-items-center overflow-hidden rounded-full bg-muted" style={state.consulted ? { background: UNDERTONE_SWATCH[p.depth][p.undertone] } : undefined}>{identity.avatar_url ? <img src={identity.avatar_url} alt="Your profile" className="h-full w-full object-cover"/> : <UserRound className={cn('!h-9 !w-9', state.consulted ? 'text-oat' : 'text-muted-foreground')}/>}</span>
+        </Button>
+        <div className="min-w-0 self-center">
+          <h1 className="break-words font-display text-[23px] font-semibold leading-tight sm:text-[28px]">{user ? `@${identity.username || 'bare.creator'}` : ready ? 'Your bare canvas' : 'Opening…'}</h1>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs sm:text-sm">
+            <span title="Follower counts are not connected">— <span className="text-muted-foreground">Followers</span></span><span aria-hidden="true">·</span>
+            <Button variant="ghost" className="h-7 rounded-none px-0 text-xs font-normal hover:bg-transparent hover:underline sm:text-sm" onClick={() => setShowFollowing(true)}>{following} <span className="text-muted-foreground">Following</span></Button>
+          </div>
+          {identity.bio && <p className="mt-1 break-words text-sm leading-relaxed">{identity.bio}</p>}
+          {!user && <p className="mt-1 text-xs text-muted-foreground">Your stories. Your beauty journey.</p>}
+        </div>
+        <div className="col-span-2 grid grid-cols-2 gap-2 sm:col-span-1 sm:col-start-2 sm:gap-3">
+          {user ? <Button className="h-11 rounded-full" onClick={() => setEditing(true)}><Pencil/>Edit Profile</Button> : <Button className="h-11 rounded-full" asChild><Link to="/auth">Sign in</Link></Button>}
+          <span title="Public creator profile links are not available yet"><Button variant="outline" disabled className="h-11 w-full rounded-full border-primary/35 bg-transparent text-foreground opacity-60"><Share2/>Share Profile</Button></span>
+        </div>
+      </section>
+
+      <section aria-label="My Canvas Profile" className="me-canvas my-5 flex items-center gap-3 rounded-[20px] border border-border/60 bg-card px-4 py-4 sm:my-6 sm:gap-4 sm:px-5">
+        {state.consulted ? <span className="relative h-12 w-14 shrink-0"><span className="absolute left-0 top-1 h-11 w-11 rounded-full border border-background" style={{ background: UNDERTONE_SWATCH[p.depth][p.undertone] }}/><span className="absolute left-5 top-1 h-11 w-11 rounded-full border-2 border-background/70 bg-peach/65"/></span> : <Button asChild className="h-14 w-14 shrink-0 rounded-full p-0 text-[10px] leading-tight"><Link to="/consultation"><span>Start<br/>canvas</span></Link></Button>}
+        <div className="min-w-0 flex-1"><h2 className="font-display text-xl font-semibold italic sm:text-2xl">My Canvas Profile</h2><p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">{state.consulted ? summary : 'Your tone, skin & hair'}</p></div>
+        <Button asChild variant="link" className="h-11 shrink-0 gap-1 px-0 text-xs sm:text-sm"><Link to="/consultation">{state.consulted ? 'Update' : 'Begin'}<ChevronRight/></Link></Button>
+      </section>
+
+      <div role="tablist" aria-label="Profile views" className="grid h-14 grid-cols-2 rounded-full bg-muted p-1">
+        <Button id="my-posts-tab" role="tab" aria-selected={tab === 'posts'} aria-controls="my-posts-panel" variant="ghost" onClick={() => setTab('posts')} className={cn('h-full rounded-full text-base', tab === 'posts' && 'bg-cocoa text-oat hover:bg-cocoa hover:text-oat')}><Grid2X2 className="!h-5 !w-5"/>My Posts</Button>
+        <Button id="my-beauty-tab" role="tab" aria-selected={tab === 'beauty'} aria-controls="my-beauty-panel" variant="ghost" onClick={() => setTab('beauty')} className={cn('h-full rounded-full font-display text-lg italic', tab === 'beauty' && 'bg-cocoa text-oat hover:bg-cocoa hover:text-oat')}><Sparkles className="!h-5 !w-5"/>My Beauty</Button>
+      </div>
+
+      {tab === 'posts' ? <section id="my-posts-panel" role="tabpanel" aria-labelledby="my-posts-tab">
+        <div className="mt-4 grid grid-cols-4 border-b border-border/70">
+          {([{ label: 'Posts', icon: Grid2X2, available: true }, { label: 'Reposts', icon: Repeat2, available: false }, { label: 'Tagged', icon: Tag, available: false }, ...(user ? [{ label: 'Drafts', icon: FileText, available: false }] : [])]).map(({ label, icon: Icon, available }) => <div key={label} title={available ? 'Your published posts' : `${label} are not available yet`}><Button variant="ghost" disabled={!available} aria-pressed={available} className={cn('h-[72px] w-full flex-col gap-1 rounded-none px-0 text-xs sm:text-sm', available && 'border-b-2 border-primary')}><Icon className="!h-5 !w-5" strokeWidth={1.7}/>{label}</Button></div>)}
+        </div>
+        {!user ? <div className="py-14 text-center"><Grid2X2 className="mx-auto h-8 w-8 text-primary"/><h2 className="mt-4 font-display text-xl">Your stories belong here</h2><p className="mt-2 text-sm text-muted-foreground">Sign in to see your published photos and videos.</p><Button asChild className="mt-5 rounded-full"><Link to="/auth">Sign in</Link></Button></div> : posts.isPending ? <p role="status" className="flex items-center justify-center gap-2 py-14 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/>Loading your stories…</p> : posts.error ? <div role="alert" className="py-12 text-center"><p>Your posts could not be loaded.</p><Button variant="link" onClick={() => posts.refetch()}>Try again</Button></div> : published.length ? <><div className="mt-5 grid grid-cols-3 gap-2">{published.map(post => <Link key={post.id} to="/" search={{ post: post.id }} className="relative aspect-square overflow-hidden rounded-lg bg-muted" aria-label={`Open post: ${post.caption}`}>
+          {post.url ? post.media_type === 'video' ? <><video src={post.url} preload="metadata" muted playsInline className="h-full w-full object-cover"/><Play className="absolute right-2 top-2 h-5 w-5 fill-oat text-oat"/></> : <img src={post.url} alt={post.caption} loading="lazy" className="h-full w-full object-cover"/> : <span className="grid h-full place-items-center p-2 text-center text-xs text-muted-foreground">Media unavailable</span>}
+        </Link>)}</div>{posts.hasNextPage && <Button variant="outline" disabled={posts.isFetchingNextPage} className="mx-auto mt-5 flex rounded-full bg-transparent" onClick={() => posts.fetchNextPage()}>{posts.isFetchingNextPage ? 'Loading…' : 'Load more posts'}</Button>}</> : <div className="py-12 text-center"><Grid2X2 className="mx-auto h-9 w-9 text-primary" strokeWidth={1.3}/><h2 className="mt-4 font-display text-2xl">A little bare, for now</h2><p className="mt-2 text-sm text-muted-foreground">Your published beauty stories will appear here.</p><Button asChild className="mt-5 rounded-full"><Link to="/create"><Plus/>Create your first post</Link></Button></div>}
+        <p className="mt-4 text-center text-[11px] text-muted-foreground">Reposts, tags{user ? ' and saved drafts' : ''} aren’t available yet.</p>
+      </section> : <section id="my-beauty-panel" role="tabpanel" aria-labelledby="my-beauty-tab" className="mt-5">
+        <div className="grid grid-cols-2 gap-3">
+          <Button variant="ghost" onClick={() => setShelf(true)} className="h-auto min-h-32 flex-col items-start gap-2 whitespace-normal rounded-lg border border-border/60 bg-card p-4 text-left"><Package className="!h-6 !w-6 text-primary"/><span className="font-display text-lg">My Bare Shelf</span><span className="text-xs font-normal text-muted-foreground">Your everyday essentials</span></Button>
+          {([{ to: '/empty-bottle', icon: Droplets, title: 'Empty Bottle Club', detail: 'The story of your last drop' }, { to: '/bare-or-buy', icon: Scale, title: 'Bare or Buy?', detail: 'Compare your next discovery' }, { to: '/create', icon: Clapperboard, title: 'Creator Studio', detail: 'Create & manage your stories' }] as const).map(({ to, icon: Icon, title, detail }) => <Button key={to} asChild variant="ghost" className="h-auto min-h-32 flex-col items-start gap-2 whitespace-normal rounded-lg border border-border/60 bg-card p-4 text-left"><Link to={to}><Icon className="!h-6 !w-6 text-primary"/><span className="font-display text-lg">{title}</span><span className="text-xs font-normal text-muted-foreground">{detail}</span></Link></Button>)}
+        </div>
+        <Button asChild className="mt-4 h-auto min-h-20 w-full justify-start gap-3 whitespace-normal rounded-lg px-4 py-4"><Link to="/canvas"><Sparkles className="!h-6 !w-6"/><span className="min-w-0 flex-1 text-left"><span className="block font-display text-xl italic">My Beauty Journey</span><span className="mt-1 block text-xs font-normal">{journey.goals.length ? `${activeGoals} active goals · ${journey.entries.length} journal entries` : 'Personal goals & moments of progress'}</span></span><ChevronRight/></Link></Button>
+      </section>}
+    </div>
+
+    {editing && user && <ProfileEditor key={user.id} identity={identity} onClose={() => setEditing(false)}/>}
+    <Sheet open={showFollowing} onOpenChange={setShowFollowing}><SheetContent side="bottom" className="me-surface max-h-[80vh] overflow-y-auto"><div className="mx-auto max-w-xl pb-6"><SheetHeader><SheetTitle className="font-display text-2xl">Following · {following}</SheetTitle><SheetDescription>Your creators, specialists and brands.</SheetDescription></SheetHeader><div className="mt-4">{!following && <p className="py-8 text-center text-sm text-muted-foreground">Your following list is still bare.</p>}{state.followedCreators.map(handle => <div key={handle} className="flex items-center justify-between gap-3 border-b py-3"><span className="min-w-0 break-words text-sm">{handle.startsWith('@') ? handle : 'Community creator'}</span><Button variant="outline" size="sm" className="rounded-full bg-transparent" onClick={() => toggleCreator(handle)}>Unfollow</Button></div>)}{BRANDS.filter(brand => state.followedBrands.includes(brand.id)).map(brand => <div key={brand.id} className="flex items-center justify-between gap-3 border-b py-3"><Link to="/brand/$id" params={{ id: brand.id }} className="text-sm" onClick={() => setShowFollowing(false)}>{brand.name}</Link><Button variant="outline" size="sm" className="rounded-full bg-transparent" onClick={() => toggleBrandSignal('followedBrands', brand.id)}>Unfollow</Button></div>)}</div></div></SheetContent></Sheet>
+    <Sheet open={settings} onOpenChange={setSettings}><SheetContent className="me-surface overflow-y-auto"><SheetHeader><SheetTitle className="font-display text-2xl">More & Settings</SheetTitle><SheetDescription>Your account and beauty preferences.</SheetDescription></SheetHeader><div className="mt-6 space-y-1">
+      {([{ to: '/wallet', icon: Coins, title: `${Math.round(totals.available)} Bare Points` }, { to: '/notifications', icon: Bell, title: 'Notification preferences' }, { to: '/consultation', icon: Lock, title: 'Private Canvas Profile' }, { to: '/saved', icon: Package, title: 'Saved collection' }, { to: '/studio', icon: Clapperboard, title: 'Creator & brand workspaces' }] as const).map(({ to, icon: Icon, title }) => <Button key={to} variant="ghost" asChild className="h-14 w-full justify-start whitespace-normal"><Link to={to} onClick={() => setSettings(false)}><Icon/><span className="flex-1 text-left">{title}</span><ChevronRight/></Link></Button>)}
+      {user ? <><Button variant="ghost" className="h-14 w-full justify-start" onClick={() => { setSettings(false); setEditing(true); }}><Pencil/>Edit account profile</Button><Button variant="ghost" disabled={signingOut} className="mt-4 h-14 w-full justify-start border-t text-primary" onClick={() => void signOut()}><LogOut/>{signingOut ? 'Signing out…' : 'Sign out'}</Button>{signOutError && <p role="alert" className="text-sm text-destructive">{signOutError}</p>}</> : <Button asChild className="mt-4 w-full rounded-full"><Link to="/auth">Sign in / Create account</Link></Button>}
+    </div></SheetContent></Sheet>
+    <Sheet open={shelf} onOpenChange={setShelf}><SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto bg-cocoa text-oat"><div className="mx-auto max-w-2xl pb-6"><SheetHeader className="mb-5"><SheetTitle className="text-oat">Your collection</SheetTitle><SheetDescription className="text-sand">Owned products · My Bare Shelf</SheetDescription></SheetHeader><BareShelf/></div></SheetContent></Sheet>
+  </div>;
 }
