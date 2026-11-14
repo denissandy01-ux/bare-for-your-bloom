@@ -49,7 +49,7 @@ export function distanceMiles(a: Point, b: Point) {
   return 3958.8 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
 }
 export const disciplineFilters = (d: Discipline) => ({ depth: ['All', 'Skin', 'Makeup'].includes(d), hair: ['All', 'Hair', 'Barbering'].includes(d) });
-export interface SpecialistFilters { query: string; discipline: Discipline; origin?: Point | undefined; radius: number; depth?: Depth | undefined; hair?: string; specialty?: string }
+export interface SpecialistFilters { query: string; discipline: Discipline; origin?: Point | undefined; radius: number; depth?: Depth | undefined; hair?: string; specialty?: string; specialties?: string[] }
 export function findSpecialists(filters: SpecialistFilters) {
   const q = filters.query.trim().toLowerCase();
   return SPECIALISTS.map(s => ({ specialist: s, distance: filters.origin ? distanceMiles(filters.origin, s.point) : undefined }))
@@ -59,6 +59,7 @@ export function findSpecialists(filters: SpecialistFilters) {
       (!disciplineFilters(filters.discipline).depth || !filters.depth || s.depths.includes(filters.depth)) &&
       (!disciplineFilters(filters.discipline).hair || !filters.hair || s.hair.includes(filters.hair)) &&
       (!filters.specialty || s.specialties.includes(filters.specialty)) &&
+      (!filters.specialties?.length || filters.specialties.some(x => s.specialties.includes(x))) &&
       (distance === undefined || distance <= filters.radius))
     .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
 }
