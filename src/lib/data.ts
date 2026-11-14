@@ -140,7 +140,7 @@ export const PRODUCTS: Product[] = [
     claims: ["Non-stripping", "Ceramides", "Dry & sensitive skin"], trendRank: 9, fits: { skinTypes: ["Dry", "Sensitive", "Rosacea-prone"] },
   },
   {
-    id: "glow-toner-essence", sub: "Toners & Essences", brand: "Lakou Botanics", name: "Moringa Calm Essence", category: "Skincare", image: dropper, cashbackRate: 0.1,
+    id: "glow-toner-essence", sub: "Toners & Essences", brand: "Kanaval Skin", name: "Moringa Calm Essence", category: "Skincare", image: dropper, cashbackRate: 0.1,
     offers: [{ retailer: "Brand site", price: 28.0, stock: "In Stock" }],
     founder: { name: "Sample founder", title: "Small-batch brand (sample)", story: "An illustrative small-business essence that shows how indie brands selling only on their own website appear on Becoming Bare." },
     claims: ["Small batch", "Moringa", "Fragrance-free"], launchpad: true, fits: { depths: ["Tan", "Deep"], skinTypes: ["Sensitive", "Combination"] },
