@@ -1,4 +1,8 @@
 # Becoming Bare
+- [ ] Make feed tabs subtle; add temporary browsing canvas and Atlas connection.
+- [ ] Add multi-select skin behavior and concerns throughout canvas and formula matching.
+- [ ] Refine product categories, store/price filters and visible formula summaries.
+- [ ] Make specialist filters discipline-aware and verify the updated flows across devices.
 - [x] Update five-tab navigation and For You / Following / Global / Tips feed.
 - [x] Add photo/video publishing with product tags and creator content management.
 - [x] Add Saved hub, owned shelf, product comparison and Empty Bottle Club logging.
