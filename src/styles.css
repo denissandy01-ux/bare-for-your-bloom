@@ -230,3 +230,31 @@
 }
 .me-canvas { box-shadow: 0 3px 12px color-mix(in oklch, var(--cocoa) 5%, transparent); }
 .me-surface .bare-input { background: var(--background); color: var(--foreground); border-color: var(--border); }
+
+/* Discover's reference surface is scoped; Feed, Saved and Me keep their own palettes. */
+.discover-surface {
+  --background: oklch(0.975 0.014 70);
+  --foreground: var(--cocoa);
+  --card: oklch(0.963 0.021 65);
+  --card-foreground: var(--cocoa);
+  --muted: oklch(0.934 0.033 57);
+  --muted-foreground: var(--umber);
+  --secondary: oklch(0.925 0.04 55);
+  --secondary-foreground: var(--cocoa);
+  --border: oklch(0.882 0.035 58);
+  --input: var(--border);
+  --accent: var(--secondary);
+  --accent-foreground: var(--cocoa);
+  --primary: var(--clay);
+  --primary-foreground: var(--oat);
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100dvh;
+}
+.discover-surface .bare-input { background: var(--background); color: var(--foreground); border-color: var(--border); }
+.discovery-canvas header { display: flex; padding: 0; }
+.discovery-canvas header > a { display: none; }
+.discovery-canvas header > button { font-size: 11px; height: 36px; padding-inline: 10px; border: 1px solid var(--border); background: var(--card); }
+.review-progress { accent-color: var(--primary); }
+.review-progress::-webkit-progress-bar { background: var(--secondary); border-radius: 8px; }
+.review-progress::-webkit-progress-value { background: var(--primary); border-radius: 8px; }
