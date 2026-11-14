@@ -16,6 +16,7 @@ export function canvasInsights(product: Product, profile: Profile): string[] {
  if(product.category==='Makeup') notes.push(`For your ${profile.depth} ${profile.undertone} canvas: compare a shade swatch in daylight. Formula ingredients do not determine your shade match.`);
  if(profile.fragrance==='Avoid fragrance') notes.push(f.recognition.some(x=>x.startsWith('Fragrance-free'))?'Your fragrance preference: the manufacturer describes this product as fragrance-free.':'Your fragrance preference: check the current package ingredient list; no fragrance certification is recorded here.');
  if(profile.exclusions?.trim()) notes.push(`Compare your exclusions (${profile.exclusions.trim()}) with the full label; synonyms and derivatives may need professional review.`);
+ if(profile.silicone==='Prefer silicone-free') notes.unshift(f.recognition.some(x=>x.startsWith('Silicone-free'))?'Your silicone preference: the manufacturer describes this formula as silicone-free.':'Your silicone preference: a silicone-free attribute has not been confirmed.');
  return (notes.length?notes:['Explore the ingredient functions below; your individual results may vary.']).slice(0,3);
 }
 export const formulaById=(id:string)=>FORMULAS[id];

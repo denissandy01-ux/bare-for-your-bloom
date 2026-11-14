@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Wordmark } from "@/components/bare/kit";
 import { BARRIER, DEPTHS, HAIR_TYPES, POROSITY, SKIN_TYPES, UNDERTONES, type Depth, type Profile, type Undertone } from "@/lib/data";
 import { useBare } from "@/lib/store";
+import { ToneSheet } from '@/components/bare/sheets';
+import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute("/consultation")({
   head: () => ({ meta: [{ title: "Canvas Consultation · Becoming Bare" }, { name: "description", content: "A warm, zero-judgment chat about your skin, tone and hair." }, { property: "og:title", content: "Canvas Consultation · Becoming Bare" }, { property: "og:description", content: "A warm, zero-judgment chat about your skin, tone and hair." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -29,6 +31,7 @@ function Consultation() {
   const [ans, setAns] = useState<Partial<Profile>>({});
   const [typing, setTyping] = useState(false);
   const [text, setText] = useState("");
+  const [preferences,setPreferences]=useState(false);
   const end = useRef<HTMLDivElement>(null);
   const done = i >= STEPS.length;
   useEffect(() => end.current?.scrollIntoView({ behavior: "smooth" }), [msgs, typing]);
@@ -55,7 +58,7 @@ function Consultation() {
           : <div key={k} className="ml-auto max-w-[80%] rounded-[28px] rounded-br-[10px] bg-clay px-4 py-3 text-[15px] leading-snug text-oat">{m.text}</div>)}
         {typing && <div className="mr-auto rounded-[28px] bg-oat/95 px-4 py-3 text-umber">…</div>}
         {!typing && !done && step?.options && <div className="flex flex-wrap gap-2 pt-1">{step!.options!.map((o) => <button key={o} onClick={() => answer(o)} className="h-11 rounded-full bg-oat/95 px-3.5 text-[13px] font-medium text-cocoa">{o}</button>)}</div>}
-        {done && !typing && <Link to="/" className="flex h-14 items-center justify-center rounded-full bg-clay font-semibold text-oat">See my feed</Link>}
+        {done && !typing && <><Button variant="secondary" onClick={()=>setPreferences(true)} className="h-11 rounded-full">Formula preferences · optional</Button><Link to="/" className="flex h-14 items-center justify-center rounded-full bg-clay font-semibold text-oat">See my feed</Link></>}
         <div ref={end} />
       </div>
       <form onSubmit={(e) => { e.preventDefault(); answer(text); }} className="px-3 pb-3 pt-2">
@@ -64,6 +67,7 @@ function Consultation() {
           <button type="submit" disabled={done || !text.trim()} className="grid h-11 w-11 place-items-center rounded-full bg-clay text-oat disabled:opacity-50" aria-label="Send"><ArrowRight className="h-4 w-4" /></button>
         </div>
       </form>
+      <ToneSheet open={preferences} onOpenChange={setPreferences}/>
     </div>
   );
 }
