@@ -216,4 +216,5 @@ function FeedItem({ post }: { post: FeedPost }) {
   );
 }
 
-export { FollowPill } from '@/components/bare/follow-pill';
+import { FollowPill } from '@/components/bare/follow-pill';
+export { FollowPill };
