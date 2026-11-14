@@ -18,6 +18,7 @@ import { communityOptions } from '@/lib/community-query';
 import { CommunityFeedItem } from '@/components/bare/community-feed';
 import { FEED_TABS, tabPosts } from '@/lib/feed-tabs';
 import { z } from 'zod';
+import { handleFor, specialistById } from '@/lib/specialists';
 
 export const Route = createFileRoute("/")({
   validateSearch: z.object({post: z.string().optional()}),
@@ -45,7 +46,7 @@ function Feed() {
   const base = showAll ? [...FEED].sort((a, b) => skinTwinScore(b.creator, state.profile) - skinTwinScore(a.creator, state.profile)) : matched;
   const posts = search.post ? FEED.filter(p=>p.id===search.post) : tabPosts(tab==='For You'?base:FEED,tab,state.followedBrands,state.followedCreators,state.shoppingCountry);
   const shared=community.data?.filter(p=>search.post ? p.id===search.post : tab==='Following' ? state.followedCreators.includes(p.owner_id)||(!!p.brand_id&&state.followedBrands.includes(p.brand_id)) : tab==='Global' ? p.country_id!==state.shoppingCountry : tab==='Tips' ? p.kind==='Tutorial' : true)??[];
-  const services=search.post?SERVICE_FEED.filter(p=>p.id===search.post):tab==='For You'?SERVICE_FEED:[];
+  const services=search.post?SERVICE_FEED.filter(p=>p.id===search.post):tab==='For You'?SERVICE_FEED:tab==='Following'?SERVICE_FEED.filter(p=>{const s=specialistById(p.specialistId);return s&&state.followedCreators.includes(handleFor(s));}):[];
   useEffect(() => setShowAll(false), [state.profile.depth, state.profile.undertone]);
 
   return (
