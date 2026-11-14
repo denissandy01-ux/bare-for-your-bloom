@@ -33,7 +33,7 @@ function Saved() {
   const { state, togglePost, toggleProduct, toggleSpecialist, toggleRoutine } = useBare();
   const [tab, setTab] = useState<Tab>("Media");
   const posts = useQuery(communityOptions);
-  const newest = (ids: string[]) => [...new Set(ids)].reverse();
+  const newest = (ids: string[]) => [...new Set(ids)];
 
   let tiles: ReactNode[] = [];
   if (tab === "Media") tiles = newest(state.savedPosts).flatMap(id => {
