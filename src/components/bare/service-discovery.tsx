@@ -27,7 +27,7 @@ export function ServiceDiscovery({ query }: { query: string }) {
   };
   const control = 'h-11 w-full min-w-0 rounded-full border border-sand bg-oat px-3 text-[13px] text-cocoa';
   return <div className="space-y-5">
-    <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4" aria-label="Service categories">{DISCIPLINES.map(d => <Button key={d} variant="secondary" aria-pressed={discipline === d} onClick={() => { setDiscipline(d); setSpecialty(''); setDepth(undefined); setHair(''); }} className={cn('h-11 shrink-0 rounded-full px-4', discipline === d ? 'bg-clay text-oat' : 'bg-oat text-cocoa')>{d === 'Barbering' ? 'Barbering & Grooming' : d}</Button>)}</div>
+    <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4" aria-label="Service categories">{DISCIPLINES.map(d => <Button key={d} variant="secondary" aria-pressed={discipline === d} onClick={() => { setDiscipline(d); setSpecialty(''); setDepth(undefined); setHair(''); }} className={cn('h-11 shrink-0 rounded-full px-4', discipline === d ? 'bg-clay text-oat' : 'bg-oat text-cocoa')}>{d === 'Barbering' ? 'Barbering & Grooming' : d}</Button>)}</div>
     <div className="space-y-3 border-y border-oat/15 py-4">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
         <label className="flex min-w-0 items-center gap-2"><MapPin className="h-4 w-4 shrink-0 text-peach" /><select aria-label="Location" value={location} onChange={e => { setLocation(e.target.value); setError(''); }} className={control}><option>Anywhere</option>{CITIES.map(c => <option key={c.name}>{c.name}</option>)}{gps && <option>Current location</option>}</select></label>

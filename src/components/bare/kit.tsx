@@ -13,21 +13,24 @@ export function Wordmark({ className }: { className?: string }) {
 
 /** Kit mobile header: wordmark, tone/title pill, Trending badge. */
 export function BareHeader({ title, overlay }: { title?: string; overlay?: boolean }) {
-  const { browseProfile, temporaryCanvas } = useBare();
+  const { state, browseProfile, temporaryCanvas } = useBare();
+  const path = useRouterState({select:s=>s.location.pathname});
+  const browsing = path !== "/me" && path !== "/canvas";
+  const canvas = browsing ? browseProfile : state.profile;
   const [open, setOpen] = useState(false);
-  const label = title ?? temporaryCanvas ? `Browsing · ${browseProfile.depth} ${browseProfile.undertone}` : toneLabel(browseProfile.depth, browseProfile.undertone);
+  const label = title ?? browsing && temporaryCanvas ? `Browsing · ${canvas.depth} ${canvas.undertone}` : toneLabel(canvas.depth, canvas.undertone);
   return (
     <header className={cn("z-20 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 pt-3", overlay ? "absolute inset-x-0 top-0" : "relative")}>
       <Wordmark className="md:hidden" />
       <Button variant="secondary" onClick={() => setOpen(true)} className="flex h-11 min-w-0 items-center gap-2 whitespace-normal rounded-full bg-oat/95 pl-2.5 pr-3.5 text-[13px] font-medium text-cocoa md:col-start-1 md:col-end-3 md:justify-self-start" aria-label="Choose your browsing canvas">
-        <span className="h-5 w-5 shrink-0 rounded-full ring-2 ring-oat" style={{ background: UNDERTONE_SWATCH[browseProfile.depth][browseProfile.undertone] }} />
+        <span className="h-5 w-5 shrink-0 rounded-full ring-2 ring-oat" style={{ background: UNDERTONE_SWATCH[canvas.depth][canvas.undertone] }} />
         <span className="min-w-0 flex-1 text-center leading-tight line-clamp-2">{label}</span>
         <ChevronDown className="h-3 w-3 shrink-0" />
       </Button>
       <Link to="/notifications" aria-label="Notifications" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-cocoa-soft text-oat">
         <Bell className="h-5 w-5" />
       </Link>
-      <ToneSheet open={open} onOpenChange={setOpen} browsing />
+      <ToneSheet open={open} onOpenChange={setOpen} browsing={browsing} />
     </header>
   );
 }
