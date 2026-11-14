@@ -84,7 +84,7 @@ function Feed() {
           <EmptyState
             title={query?'Nothing matches that yet':tab==='Following'?'Your people, your feed':tab==='Explore'&&topic==='Learn'?'Fresh lessons are on the way':tab==='Global'?'More global stories to come':tab==='Explore'?'Nothing here yet':'No wear tests for your tone yet'}
             body={query?'Try another word, ingredient or handle.':tab==='Following'?'Follow a creator or brand to keep their stories here.':tab==='Explore'&&topic==='Learn'?'Share a tutorial or explore ingredient education.':'Browse more discoveries or adjust your canvas.'}
-            action={tab==='Explore'&&topic==='Learn'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
+            action={query?<Button onClick={()=>setQuery('')}>Clear search</Button>:tab==='Explore'&&topic==='Learn'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
           />
 
         </div>
@@ -149,7 +149,7 @@ function FeedItem({ post }: { post: FeedPost }) {
         {paused && <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-oat/90 text-cocoa"><Play className="ml-1 h-6 w-6 fill-current" /></span>}
       </button>
 
-      <p className="feed-wear-label pointer-events-none absolute left-4 top-[126px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
+      <p className="feed-wear-label pointer-events-none absolute left-4 top-[172px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
         <span className="h-1.5 w-1.5 rounded-full bg-peach" />{post.wearTest}
       </p>
 
