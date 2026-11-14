@@ -27,7 +27,7 @@ export function toDiscoveryReview(r: BeautyReview): DiscoveryReview {
 export function publishedReviews(rows: BeautyReview[], posts: PublishedPost[] = []): DiscoveryReview[] {
   const publicRows = rows.filter(r => r.status === 'published');
   const linked = new Set(publicRows.map(r => r.legacy_post_id).filter(Boolean));
-  return [...publicRows.map(toDiscoveryReview), ...productReviews(posts.filter(p => !linked.has(p.id)))].sort((a,b) => b.date.localeCompare(a.date));
+  return [...publicRows.map(toDiscoveryReview), ...productReviews(posts.filter(p => !p.review_id && !linked.has(p.id)))].sort((a,b) => b.date.localeCompare(a.date));
 }
 export function emptyInsights(reviews: DiscoveryReview[]) {
   const finished = reviews.filter(r => r.kind === 'empty');
