@@ -29,6 +29,13 @@
       "when": 1794690873571,
       "tag": "0003_unified_beauty_reviews",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794691024642,
+      "tag": "0004_review_feed_links",
+      "breakpoints": true
     }
   ]
 }

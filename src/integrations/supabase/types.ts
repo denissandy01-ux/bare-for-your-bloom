@@ -30,6 +30,7 @@ export type Database = {
           owner_id: string
           product_id: string | null
           repurchase: boolean | null
+          review_id: string | null
         }
         Insert: {
           author: string
@@ -46,6 +47,7 @@ export type Database = {
           owner_id: string
           product_id?: string | null
           repurchase?: boolean | null
+          review_id?: string | null
         }
         Update: {
           author?: string
@@ -62,8 +64,17 @@ export type Database = {
           owner_id?: string
           product_id?: string | null
           repurchase?: boolean | null
+          review_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "beauty_posts_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "beauty_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       beauty_reviews: {
         Row: {

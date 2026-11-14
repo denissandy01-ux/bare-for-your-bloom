@@ -1,0 +1,4 @@
+ALTER TABLE public.beauty_posts ADD COLUMN review_id uuid REFERENCES public.beauty_reviews(id) ON DELETE SET NULL;
+CREATE INDEX beauty_posts_review_link ON public.beauty_posts(review_id);
+CREATE OR REPLACE FUNCTION public.guard_review_feed_link() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF NEW.review_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM public.beauty_reviews r WHERE r.id=NEW.review_id AND r.owner_id=NEW.owner_id AND r.status='published' AND r.media_path=NEW.media_path) THEN RAISE EXCEPTION 'Only your own published review attachment can be shared'; END IF; RETURN NEW; END $$;
+CREATE TRIGGER guard_review_feed_link BEFORE INSERT OR UPDATE ON public.beauty_posts FOR EACH ROW EXECUTE FUNCTION public.guard_review_feed_link();
