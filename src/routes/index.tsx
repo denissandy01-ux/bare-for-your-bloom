@@ -1,5 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bell, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
+import { Bell, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
@@ -16,7 +16,8 @@ import { FitSheet } from '@/components/bare/fit-sheet';
 import { useQuery } from '@tanstack/react-query';
 import { communityOptions } from '@/lib/community-query';
 import { CommunityFeedItem } from '@/components/bare/community-feed';
-import { FEED_TABS, tabPosts } from '@/lib/feed-tabs';
+import { EXPLORE_TOPICS, FEED_TABS, matchesSearch, tabPosts, topicForCategory, topicMatches, type ExploreTopic, type FeedTab } from '@/lib/feed-tabs';
+import { REGIONS, countryById, type RegionId } from '@/lib/atlas';
 import { z } from 'zod';
 import { handleFor, specialistById } from '@/lib/specialists';
 
@@ -39,30 +40,51 @@ function Feed() {
   const { state, browseProfile, temporaryCanvas } = useBare();
   const [showAll, setShowAll] = useState(false);
   const [toneOpen, setToneOpen] = useState(false);
-  const [tab,setTab]=useState<(typeof FEED_TABS)[number]>('For You');
+  const [tab,setTab]=useState<FeedTab>('For You');
+  const [topic,setTopic]=useState<ExploreTopic>('All');
+  const [region,setRegion]=useState<RegionId|'all'>('all');
+  const [query,setQuery]=useState('');
+  const [searching,setSearching]=useState(false);
   const community=useQuery(communityOptions);
   const search=Route.useSearch();
   const matched = feedForTone(FEED, browseProfile);
   const base = showAll ? [...FEED].sort((a, b) => skinTwinScore(b.creator, browseProfile) - skinTwinScore(a.creator, browseProfile)) : matched;
-  const posts = search.post ? FEED.filter(p=>p.id===search.post) : tabPosts(tab==='For You'?base:FEED,tab,state.followedBrands,state.followedCreators,state.shoppingCountry);
-  const shared=community.data?.filter(p=>search.post ? p.id===search.post : tab==='Following' ? state.followedCreators.includes(p.owner_id)||(!!p.brand_id&&state.followedBrands.includes(p.brand_id)) : tab==='Global' ? p.country_id!==state.shoppingCountry : tab==='Tips' ? p.kind==='Tutorial' : true)??[];
-  const services=search.post?SERVICE_FEED.filter(p=>p.id===search.post):tab==='For You'?SERVICE_FEED:tab==='Following'?SERVICE_FEED.filter(p=>{const s=specialistById(p.specialistId);return s&&state.followedCreators.includes(handleFor(s));}):[];
+  const filter={topic,region,query};
+  const posts = search.post ? FEED.filter(p=>p.id===search.post) : tabPosts(tab==='For You'?base:FEED,tab,state.followedBrands,state.followedCreators,state.shoppingCountry,filter);
+  const shared=community.data?.filter(p=>{
+    if(search.post) return p.id===search.post;
+    if(!matchesSearch(query,p.caption,p.author,p.kind)) return false;
+    if(tab==='Following') return state.followedCreators.includes(p.owner_id)||(!!p.brand_id&&state.followedBrands.includes(p.brand_id));
+    if(tab==='Global') return p.country_id!==state.shoppingCountry&&(region==='all'||!!countryById(p.country_id)?.regions.includes(region));
+    if(tab==='Explore') { const pr=p.product_id?productById(p.product_id):undefined; return topicMatches(topic,pr?topicForCategory(pr.category):undefined,p.kind==='Tutorial'); }
+    return true;
+  })??[];
+  const services=search.post?SERVICE_FEED.filter(p=>p.id===search.post):SERVICE_FEED.filter(p=>{
+    const s=specialistById(p.specialistId);
+    if(!matchesSearch(query,p.title,p.caption,p.category,s?.name,s?.studio,s&&handleFor(s))) return false;
+    if(tab==='For You') return true;
+    if(tab==='Following') return !!s&&state.followedCreators.includes(handleFor(s));
+    if(tab==='Explore') return topicMatches(topic,topicForCategory(p.category));
+    return false;
+  });
   useEffect(() => setShowAll(false), [browseProfile.depth, browseProfile.undertone]);
 
   return (
     <div className="bare-feed relative mx-auto h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
       <header className="absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-cocoa/80 to-transparent px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between gap-2"><Button variant="ghost" onClick={()=>setToneOpen(true)} aria-label="Choose your browsing canvas" className="h-auto min-w-0 gap-2 bg-transparent p-0 text-oat hover:bg-transparent hover:text-peach"><span className="h-6 w-6 shrink-0 rounded-full ring-1 ring-oat/60" style={{background:UNDERTONE_SWATCH[browseProfile.depth][browseProfile.undertone]}}/><span className="min-w-0 text-left"><span className="block font-display text-[22px] leading-tight">Becoming Bare</span>{temporaryCanvas && <span className="block text-[10px] text-sand">Browsing · {browseProfile.depth} {browseProfile.undertone}</span>}</span></Button><Link to="/notifications" aria-label="Notifications" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-cocoa/45 text-oat"><Bell className="h-5 w-5"/></Link></div>
+        <div className="flex items-center justify-between gap-2"><Button variant="ghost" onClick={()=>setToneOpen(true)} aria-label="Choose your browsing canvas" className="h-auto min-w-0 gap-2 bg-transparent p-0 text-oat hover:bg-transparent hover:text-peach"><span className="h-6 w-6 shrink-0 rounded-full ring-1 ring-oat/60" style={{background:UNDERTONE_SWATCH[browseProfile.depth][browseProfile.undertone]}}/><span className="min-w-0 text-left"><span className="block font-display text-[22px] leading-tight">Becoming Bare</span>{temporaryCanvas && <span className="block text-[10px] text-sand">Browsing · {browseProfile.depth} {browseProfile.undertone}</span>}</span></Button><div className="flex shrink-0 gap-2"><Button variant="ghost" size="icon" aria-label="Search the feed" onClick={()=>setSearching(x=>!x)} className="h-10 w-10 rounded-full bg-cocoa/45 text-oat hover:bg-cocoa/60 hover:text-oat"><Search className="h-5 w-5"/></Button><Link to="/notifications" aria-label="Notifications" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-cocoa/45 text-oat"><Bell className="h-5 w-5"/></Link></div></div>
         <div role="tablist" aria-label="Feed categories" className="mt-3 grid grid-cols-4 gap-1 border-b border-oat/20">{FEED_TABS.map(t=><Button role="tab" aria-selected={tab===t} key={t} size="sm" variant="ghost" className={cn('h-9 rounded-none border-b-2 bg-transparent px-1 text-xs text-oat hover:bg-oat/10 hover:text-oat',tab===t?'border-peach font-semibold':'border-transparent text-oat/75')} onClick={()=>setTab(t)}>{t}</Button>)}</div>
-        {tab==='Global' && <Link to="/atlas" className="mt-2 inline-flex items-center gap-1 text-xs text-oat">Explore Global Beauty Atlas →</Link>}
+        {searching && <div className="mt-2 flex h-10 items-center gap-2 rounded-full bg-cocoa/50 px-3 backdrop-blur-md"><Search className="h-4 w-4 shrink-0 text-sand"/><input autoFocus value={query} onChange={e=>setQuery(e.target.value)} aria-label="Search the feed" placeholder="Search locs, retinol, @creator…" className="min-w-0 flex-1 bg-transparent text-sm text-oat outline-none placeholder:text-sand"/><button aria-label="Close search" onClick={()=>{setQuery('');setSearching(false);}} className="text-sand"><X className="h-4 w-4"/></button></div>}
+        {tab==='Explore' && <div className="no-scrollbar mt-2 flex gap-2 overflow-x-auto">{EXPLORE_TOPICS.map(t=><button key={t} aria-pressed={topic===t} onClick={()=>setTopic(t)} className={cn('h-8 shrink-0 rounded-full px-3 text-xs backdrop-blur-md',topic===t?'bg-oat text-cocoa font-semibold':'bg-cocoa/40 text-oat')}>{t}</button>)}</div>}
+        {tab==='Global' && <div className="no-scrollbar mt-2 flex items-center gap-2 overflow-x-auto"><button aria-pressed={region==='all'} onClick={()=>setRegion('all')} className={cn('h-8 shrink-0 rounded-full px-3 text-xs backdrop-blur-md',region==='all'?'bg-oat text-cocoa font-semibold':'bg-cocoa/40 text-oat')}>All global</button>{REGIONS.map(r=><button key={r.id} aria-pressed={region===r.id} onClick={()=>setRegion(r.id)} className={cn('h-8 shrink-0 rounded-full px-3 text-xs backdrop-blur-md',region===r.id?'bg-oat text-cocoa font-semibold':'bg-cocoa/40 text-oat')}>{r.name}</button>)}<Link to="/atlas" className="shrink-0 text-xs text-sand underline-offset-2 hover:underline">Atlas →</Link></div>}
       </header>
       <ToneSheet open={toneOpen} onOpenChange={setToneOpen} browsing />
       {posts.length === 0 && shared.length===0 && services.length===0 ? (
         <div className="flex h-full items-center px-6">
           <EmptyState
-            title={tab==='Following'?'Your people, your feed':tab==='Tips'?'Fresh tips are on the way':tab==='Global'?'More global stories to come':'No wear tests for your tone yet'}
-            body={tab==='Following'?'Follow a creator or brand to keep their stories here.':tab==='Tips'?'Share a tutorial or explore ingredient education.':'Browse more discoveries or adjust your canvas.'}
-            action={tab==='Tips'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
+            title={query?'Nothing matches that yet':tab==='Following'?'Your people, your feed':tab==='Explore'&&topic==='Learn'?'Fresh lessons are on the way':tab==='Global'?'More global stories to come':tab==='Explore'?'Nothing here yet':'No wear tests for your tone yet'}
+            body={query?'Try another word, ingredient or handle.':tab==='Following'?'Follow a creator or brand to keep their stories here.':tab==='Explore'&&topic==='Learn'?'Share a tutorial or explore ingredient education.':'Browse more discoveries or adjust your canvas.'}
+            action={tab==='Explore'&&topic==='Learn'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
           />
 
         </div>
@@ -158,7 +180,7 @@ function FeedItem({ post }: { post: FeedPost }) {
 
       <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-2.5">
         <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-oat">
-          <Button variant="ghost" className="h-auto p-0 text-sm font-semibold text-oat hover:bg-transparent hover:text-peach" aria-label={`Follow ${post.creator.handle}`} onClick={()=>toggleCreator(post.creator.handle)}>{post.creator.handle}{state.followedCreators.includes(post.creator.handle)&&' ✓'}</Button>
+          <span className="font-semibold">{post.creator.handle}</span><FollowPill following={state.followedCreators.includes(post.creator.handle)} name={post.creator.handle} onToggle={()=>toggleCreator(post.creator.handle)}/>
           <span className="text-sand">·</span>
           {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="text-sand underline-offset-2 hover:underline">{product.brand}</Link> : <span className="text-sand">{product.brand}</span>}
         </p>
@@ -184,4 +206,8 @@ function FeedItem({ post }: { post: FeedPost }) {
       {kind === "shade" && <SwatchSheet product={product} count={post.swatches} open={swatch} onOpenChange={setSwatch} />}
     </section>
   );
+}
+
+export function FollowPill({following,name,onToggle}:{following:boolean;name:string;onToggle:()=>void}) {
+  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('inline-flex h-6 items-center gap-0.5 rounded-full px-2 text-[11px] font-semibold',following?'bg-oat/20 text-oat':'bg-oat text-cocoa')}>{following?'Following':<><Plus className="h-3 w-3"/>Follow</>}</button>;
 }
