@@ -83,7 +83,7 @@ export function TabBar() {
   );
 }
 
-export function SectionTitle({ meta, children, dark = true }: { meta: string; children: ReactNode; dark?: boolean }) {
+export function SectionTitle({ meta, children, dark = true }: { meta: ReactNode; children: ReactNode; dark?: boolean }) {
   return (
     <div className="px-1">
       <span className={cn("inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.16em]", dark ? "text-sand/80" : "text-umber")}>
