@@ -1,10 +1,10 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bookmark, Play, Share2, MapPin, ArrowUpRight } from "lucide-react";
+import { Bookmark, Heart, Play, Share2, MapPin, ArrowUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
-import { DEPTH_SWATCH, FEED, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, type FeedPost } from "@/lib/data";
+import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { FEED_SPECIALISTS, specialistById } from '@/lib/specialists';
@@ -64,7 +64,9 @@ function Feed() {
 
 function FeedItem({ post }: { post: FeedPost }) {
   const product = productById(post.productId);
-  const { state, toggleProduct } = useBare();
+  const { state, toggleProduct, toggleLike } = useBare();
+  const liked = state.likedPosts.includes(post.id);
+  const likeCount = (post.likes ?? 0) + (liked ? 1 : 0);
   const nav = useNavigate();
   const [paused, setPaused] = useState(false);
   const [buy, setBuy] = useState(false);
@@ -127,6 +129,10 @@ function FeedItem({ post }: { post: FeedPost }) {
           </span>
           <span className="text-[11px] text-oat/90">{post.swatches}</span>
         </button>
+        <button onClick={() => toggleLike(post.id)} className="flex flex-col items-center gap-1" aria-pressed={liked} aria-label={liked ? "Unlike post" : "Like post"}>
+          <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur"><Heart className={cn("h-5 w-5", liked && "fill-clay text-clay")} /></span>
+          <span className="text-[11px] text-oat/90">{likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}</span>
+        </button>
         <button onClick={() => { const added = toggleProduct(product.id); toast(added ? "Saved to your shelf" : "Removed from saved"); }} className="flex flex-col items-center gap-1" aria-pressed={saved}>
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur"><Bookmark className={cn("h-5 w-5", saved && "fill-current")} /></span>
           <span className="text-[11px] text-oat/90">Save</span>
@@ -142,7 +148,7 @@ function FeedItem({ post }: { post: FeedPost }) {
             <span className="min-w-0">
               {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="block text-[11px] uppercase tracking-[0.14em] text-umber">{product.brand}</Link> : <span className="block text-[11px] text-umber">{product.brand}</span>}
               <Link to="/product/$id" params={{id:product.id}} className="block truncate font-display text-[19px] leading-tight text-cocoa">{product.name}</Link>
-              <span className="block text-[13px] text-umber">{offer.retailer} · {money(offer.price)}</span>
+              <span className="block text-[13px] text-umber">{whereSold(product).label} · from {money(whereSold(product).from)}</span>
             </span>
           </div>
           <div className="flex shrink-0 flex-col gap-1"><Button variant="ghost" onClick={()=>setFormula(true)} className="h-9 rounded-full px-2 font-display text-xs italic text-clay">Formula</Button><Button variant="ghost" onClick={()=>setFounder(true)} className="h-8 rounded-full px-2 font-display text-[11px] italic text-clay">Founder Story</Button></div>
