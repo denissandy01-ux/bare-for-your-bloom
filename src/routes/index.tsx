@@ -1,5 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bell, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
+import { Bell, Check, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
@@ -156,7 +156,7 @@ function FeedItem({ post }: { post: FeedPost }) {
 
       <div className="feed-actions absolute bottom-[132px] right-3 z-10 flex flex-col items-center gap-4">
         <div className="relative flex flex-col items-center">
-        <button onClick={() => setFit(true)} className="flex flex-col items-center gap-1" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
+        <button onClick={() => setFit(true)} className="flex flex-col items-center gap-3" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
           <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
             <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
           </div>
