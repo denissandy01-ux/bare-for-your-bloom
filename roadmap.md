@@ -1,7 +1,7 @@
 # Becoming Bare
-- [ ] Add recorded Canvas relevance toggle to product and specialist discovery.
-- [ ] Polish empty galleries, native sharing with copy fallback, double-tap likes and save feedback.
-- [ ] Verify the four polish improvements on phone and desktop.
+- [x] Add recorded Canvas relevance toggle to product and specialist discovery.
+- [x] Polish empty galleries, native sharing with copy fallback, double-tap likes and save feedback.
+- [x] Verify the four polish improvements on phone and desktop; 105 tests passed, link copying and double-tap likes checked, no overflow at 320/393/620px.
 - [x] Rename My Beauty tools, preserve collection entries, and add product usage statuses and service visits.
 - [x] Build owner-private product/service reviews with optional publication and feed sharing.
 - [x] Consolidate Discover reviews and verify privacy, metrics, and signed-in flows.
