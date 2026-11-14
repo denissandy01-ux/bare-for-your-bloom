@@ -1,0 +1,12 @@
+CREATE TABLE public.beauty_posts (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), owner_id uuid NOT NULL, author text NOT NULL, caption text NOT NULL CHECK (char_length(caption) BETWEEN 1 AND 2000), kind text NOT NULL CHECK (kind IN ('Experience','Tutorial','Empty Bottle')), product_id text, brand_id text, media_path text NOT NULL, media_type text NOT NULL CHECK (media_type IN ('image','video')), country_id text NOT NULL, duration_weeks integer CHECK (duration_weeks BETWEEN 1 AND 520), repurchase boolean, disclosure text NOT NULL DEFAULT 'Not sponsored', created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.beauty_posts TO anon;
+GRANT SELECT, INSERT, DELETE ON public.beauty_posts TO authenticated;
+GRANT ALL ON public.beauty_posts TO service_role;
+ALTER TABLE public.beauty_posts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Published beauty posts are public" ON public.beauty_posts FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Publish own beauty posts" ON public.beauty_posts FOR INSERT TO authenticated WITH CHECK (owner_id = auth.uid() AND media_path LIKE auth.uid()::text || '/%');
+CREATE POLICY "Remove own beauty posts" ON public.beauty_posts FOR DELETE TO authenticated USING (owner_id = auth.uid());
+CREATE INDEX beauty_posts_created_idx ON public.beauty_posts (created_at DESC);
+CREATE POLICY "Upload own beauty media" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'beauty-posts' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "Read own or published beauty media" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'beauty-posts' AND ((storage.foldername(name))[1] = auth.uid()::text OR EXISTS (SELECT 1 FROM public.beauty_posts p WHERE p.media_path = name)));
+CREATE POLICY "Delete own beauty media" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'beauty-posts' AND (storage.foldername(name))[1] = auth.uid()::text);
