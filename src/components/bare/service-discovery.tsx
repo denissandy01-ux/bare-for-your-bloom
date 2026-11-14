@@ -1,3 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
+import { beautyReviewsOptions } from '@/lib/beauty-reviews-query';
+import { publishedReviews } from '@/lib/beauty-reviews';
 import { useState } from 'react';
 import { ArrowLeft, LocateFixed, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,11 +8,13 @@ import { CITIES, DISCIPLINES, SPECIALISTS, canvasCoverage, disciplineFilters, fi
 import { DEPTHS, HAIR_TYPES, type Depth } from '@/lib/data';
 import { useBare } from '@/lib/store';
 import { cn } from '@/lib/utils';
-import { publishedServiceReviews, serviceReviews } from '@/lib/discover-reviews';
+import { serviceReviews } from '@/lib/discover-reviews';
 import { ReviewSection } from './discovery-reviews';
 import { SpecialistCard } from './specialist-card';
 export function ServiceDiscovery({ query }: { query: string }) {
   const { browseProfile } = useBare();
+  const records = useQuery(beautyReviewsOptions());
+  const reviews = publishedReviews(records.data ?? []);
   const [discipline, setDiscipline] = useState<Discipline>('All');
   const [location, setLocation] = useState('Anywhere');
   const [gps, setGps] = useState<Point>();
@@ -37,7 +42,7 @@ export function ServiceDiscovery({ query }: { query: string }) {
     <div className="no-scrollbar flex gap-2 overflow-x-auto">{DISCIPLINES.map(d => <Button key={d} variant={discipline === d ? 'default' : 'outline'} className="shrink-0 rounded-full text-xs" onClick={() => choose(d)}>{d}</Button>)}</div>
     <div className="grid grid-cols-2 gap-3"><label className="text-xs">Distance<select aria-label="Search radius" value={radius} disabled={!origin} onChange={e => setRadius(Number(e.target.value))} className="bare-input disabled:opacity-50">{[10,25,50,100].map(n => <option key={n} value={n}>Within {n} miles</option>)}</select></label>{relevant.depth && <label className="text-xs">Skin tone<select aria-label="Skin tone filter" value={depth ?? ''} onChange={e => setDepth(DEPTHS.find(d => d === e.target.value))} className="bare-input"><option value="">All tones</option>{DEPTHS.map(d => <option key={d}>{d}</option>)}</select></label>}{relevant.hair && <label className="text-xs">Hair texture<select aria-label="Hair texture filter" value={hair} onChange={e => setHair(e.target.value)} className="bare-input"><option value="">All textures</option>{HAIR_TYPES.map(h => <option key={h}>{h}</option>)}</select></label>}</div>
     <div className="space-y-2"><p className="text-xs text-muted-foreground">What are you booking?</p><div className="no-scrollbar flex gap-2 overflow-x-auto">{specialties.map(s => <Button key={s} variant={picked.includes(s) ? 'default' : 'outline'} aria-pressed={picked.includes(s)} className={cn('h-9 shrink-0 rounded-full text-xs')} onClick={() => setPicked(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])}>{s}</Button>)}</div></div>
-    {reviewsView ? <ReviewSection title="Service Reviews" reviews={serviceReviews(publishedServiceReviews, list.map(r => r.specialist.id))}/> : <><p className="text-xs text-muted-foreground">{list.length} results</p>{list.length ? <div className="grid gap-3 sm:grid-cols-2">{list.map(r => <SpecialistCard key={r.specialist.id} specialist={r.specialist} distance={r.distance}/>)}</div> : <p className="py-8 text-center text-sm text-muted-foreground">No specialists match. Try another city or fewer filters.</p>}</>}
+    {reviewsView ? <ReviewSection title="Service Reviews" loading={records.isPending} error={!!records.error} onRetry={()=>records.refetch()} reviews={serviceReviews(reviews, list.map(r => r.specialist.id))}/> : <><p className="text-xs text-muted-foreground">{list.length} results</p>{list.length ? <div className="grid gap-3 sm:grid-cols-2">{list.map(r => <SpecialistCard key={r.specialist.id} specialist={r.specialist} distance={r.distance}/>)}</div> : <p className="py-8 text-center text-sm text-muted-foreground">No specialists match. Try another city or fewer filters.</p>}</>}
     </>}
   </div>;
 }

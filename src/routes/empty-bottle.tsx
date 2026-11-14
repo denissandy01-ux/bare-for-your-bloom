@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { BareHeader, Page } from '@/components/bare/kit';
-import { EmptyBottleClub } from '@/components/bare/collections';
+import { MyReviews } from '@/components/bare/my-reviews';
 import { workspaceHead } from '@/lib/workspace';
-export const Route = createFileRoute('/empty-bottle')({ head: () => workspaceHead('Empty Bottle Club', 'Log finished beauty products, lifespan and repurchase decisions.'), component: () => <><BareHeader/><Page className="mt-6 max-w-2xl"><EmptyBottleClub/></Page></> });
+export const Route = createFileRoute('/empty-bottle')({ head: () => workspaceHead('My Reviews', 'Your private and published product and service reviews.'), component: () => <><BareHeader/><div className="me-surface"><Page className="mt-6 max-w-2xl"><MyReviews/></Page></div></> });
