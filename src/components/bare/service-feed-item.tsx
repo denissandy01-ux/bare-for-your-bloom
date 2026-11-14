@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Bookmark, Share2, MapPin, ChevronRight } from 'lucide-react';
+import { Bookmark, Heart, Share2, MapPin, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { BareSheet } from '@/components/bare/sheets';
@@ -14,6 +14,7 @@ export function ServiceFeedItem({ post }: { post: ServicePost }) {
   const specialist = specialistById(post.specialistId), { state, toggleSpecialist } = useBare();
   const [roster, setRoster] = useState(false);
   if (!specialist) return null;
+  const liked = state.likedPosts.includes(post.id);
   const saved = state.savedSpecialists.includes(specialist.id);
   const first = specialist.name.split(' ')[0];
   const from = Math.min(...specialist.services.map(s => s.price));
@@ -23,6 +24,7 @@ export function ServiceFeedItem({ post }: { post: ServicePost }) {
     <img src={post.image} width={768} height={1152} loading="lazy" alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
     <div className="absolute inset-0 bg-gradient-to-t from-cocoa via-transparent to-cocoa/20" />
     <div className="feed-actions absolute right-3 bottom-[200px] flex flex-col gap-3">
+      <Button variant="ghost" size="icon" aria-label={liked ? 'Unlike post' : 'Like post'} aria-pressed={liked} onClick={() => toggleLike(post.id)} className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"><Heart className={liked ? 'fill-clay text-clay' : ''} /></Button>
       <Button variant="ghost" size="icon" aria-label="Save artist" aria-pressed={saved} onClick={() => { toggleSpecialist(specialist.id); toast(saved ? 'Removed from saves' : `${first} saved`); }} className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"><Bookmark className={saved ? 'fill-current' : ''} /></Button>
       <Button variant="ghost" size="icon" aria-label="Share artist" onClick={share} className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"><Share2 /></Button>
     </div>
