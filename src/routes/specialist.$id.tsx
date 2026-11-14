@@ -3,7 +3,7 @@ import { ArrowLeft, ExternalLink, MapPin, Clock, Shield, Check } from 'lucide-re
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { BareHeader, Page, SectionTitle, ListRow } from '@/components/bare/kit';
-import { specialistById } from '@/lib/specialists';
+import { handleFor, specialistById } from '@/lib/specialists';
 import { ROUTINES, money, productById, proById } from '@/lib/data';
 import { useBare } from '@/lib/store';
 
@@ -21,12 +21,13 @@ export const Route = createFileRoute('/specialist/$id')({
 function SpecialistPage() {
   const { id } = Route.useLoaderData();
   const s = specialistById(id);
-  const { state, applyCode } = useBare();
+  const { state, applyCode, toggleCreator } = useBare();
   const [view, setView] = useState<'services' | 'portfolio' | 'shelf'>('services');
   if (!s) return null;
   const routines = ROUTINES.filter(r => r.proId === s.id);
   const pro = proById(s.id);
   const applied = pro ? state.appliedCodes.includes(pro.code) : false;
+  const following = state.followedCreators.includes(handleFor(s));
   return <><BareHeader title="Specialist & studio" /><Page className="mt-5 space-y-6">
     <Link to="/discover" className="inline-flex min-h-11 items-center gap-2 text-[13px] text-sand"><ArrowLeft className="h-4 w-4" />Back to Discover</Link>
     <div className="grid items-center gap-6 lg:grid-cols-2">
