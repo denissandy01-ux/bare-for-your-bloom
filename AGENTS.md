@@ -50,6 +50,9 @@ use the editor.
 - Keep temporary discovery canvases in provider memory, separate from persisted profiles; browsing must never overwrite the account canvas.
 - Read skin needs through the shared legacy-compatible tag helper and derive discipline filters centrally; multiple selections and hidden filters must behave consistently.
 - Group product discovery without changing shade-specific catalog types, and filter stores only from recorded offers; do not infer unlisted stockists.
-- Keep Me as an owner-only profile surface: query published posts by owner with pagination, store editable identity in existing auth metadata, and link beauty tools to existing collection systems; unsupported public sharing, reposts, tags and consumer draft persistence stay unavailable rather than simulated.
+- Keep Me as an owner-only profile surface: query published posts by owner with pagination, store editable identity in existing auth metadata, and link beauty tools to existing collection systems; unsupported reposts and public sharing stay unavailable rather than simulated.
 - Store unified product/service reviews in beauty_reviews with owner read paths and public published-only reads; deduplicate legacy post links, never expose local logs, and share records across Discover and Atlas.
 - Keep collection usage statuses and received-service visits owner-keyed locally, separate from bookmarks; private review media is readable only by its owner until publication.
+
+- Keep Create drafts owner-keyed in IndexedDB with media blobs; local drafts never upload publicly, and Feed/Learn text posts and multiple catalog tags share the existing published post table.
+- Derive taggable community creators only from published posts; never expose private profile canvas data for account search.

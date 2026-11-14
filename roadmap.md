@@ -1,4 +1,7 @@
 # Becoming Bare
+- [x] Build the reference-matched Video, Photo, Text Create flow with permission-based capture and preview.
+- [x] Connect multiple tags, Feed/Learn publication, and owner-private resumable drafts.
+- [x] Verify signed-in text/photo publication, product/service tag readback, video draft restoration and 320/393/1280px layouts; 111 tests passed. Physical-device camera recording remains unverified.
 - [x] Add recorded Canvas relevance toggle to product and specialist discovery.
 - [x] Polish empty galleries, native sharing with copy fallback, double-tap likes and save feedback.
 - [x] Verify the four polish improvements on phone and desktop; 105 tests passed, link copying and double-tap likes checked, no overflow at 320/393/620px.
