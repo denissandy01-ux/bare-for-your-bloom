@@ -154,9 +154,9 @@ function FeedItem({ post }: { post: FeedPost }) {
       </p>
 
 
-      <div className="feed-actions absolute bottom-[132px] right-3 z-10 flex flex-col items-center gap-4">
+      <div className="feed-actions absolute bottom-[118px] right-3 z-10 flex flex-col items-center gap-4">
         <div className="relative flex flex-col items-center">
-        <button onClick={() => setFit(true)} className="flex flex-col items-center gap-3" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
+        <button onClick={() => setFit(true)} className="flex flex-col items-center gap-[18px]" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
           <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
             <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
           </div>
@@ -211,5 +211,5 @@ function FeedItem({ post }: { post: FeedPost }) {
 }
 
 export function FollowPill({following,name,onToggle}:{following:boolean;name:string;onToggle:()=>void}) {
-  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('absolute left-1/2 top-[46px] grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full ring-2 ring-cocoa/80 shadow-sm transition-transform active:scale-90',following?'bg-oat text-clay':'bg-peach text-cocoa')}>{following?<Check className="h-3.5 w-3.5" strokeWidth={3}/>:<Plus className="h-3.5 w-3.5" strokeWidth={3}/>}</button>;
+  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('absolute left-1/2 top-[44px] grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full ring-2 ring-cocoa/80 shadow-sm transition-transform active:scale-90',following?'bg-oat text-clay':'bg-peach text-cocoa')}>{following?<Check className="h-3.5 w-3.5" strokeWidth={3}/>:<Plus className="h-3.5 w-3.5" strokeWidth={3}/>}</button>;
 }
