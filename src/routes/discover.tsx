@@ -53,6 +53,8 @@ function Discover() {
   const list = PRODUCTS.filter((p) => (cat === "All" || p.category === cat) && (sub === "All" || productGroup(p) === sub) && matchesStore(p, store) && matchesPrice(p, price) && (!ql || `${p.brand} ${p.name} ${p.claims.join(" ")} ${p.category} ${p.sub ?? ''}`.toLowerCase().includes(ql)))
     .sort((a, b) => (a.trendRank ?? 99) - (b.trendRank ?? 99));
   const browsing = cat === "All" && !ql && store === "All stores" && price === "All prices";
+  const community = useQuery(communityOptions);
+  const fame = hallOfFame(collectEmpties(community.data ?? [], state.emptyBottles));
   const suggested = suggestFor(browseProfile, loved).slice(0, 4);
   const fromLoved = PRODUCTS.filter((p) => loved.includes(p.brand) && !state.savedProducts.includes(p.id)).slice(0, 4);
   const launch = PRODUCTS.filter((p) => p.launchpad);
