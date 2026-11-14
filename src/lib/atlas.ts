@@ -37,6 +37,15 @@ const origins:Record<string,{id:string;countryId:string;region:RegionId;philosop
  'ILIA':{id:'ilia',countryId:'united-states',region:'north-america',philosophy:'Let real skin show through.'},
  'Bump Patrol':{id:'bump-patrol',countryId:'united-states',region:'north-america',philosophy:'Grooming centered on skin comfort.'},
  'The Ordinary':{id:'the-ordinary',countryId:'canada',region:'north-america',philosophy:'Clear ingredient names. Straightforward care.'},
+ 'CeraVe':{id:'cerave',countryId:'united-states',region:'north-america',philosophy:'Ceramide-first care for a comfortable barrier.'},
+ 'Kanaval Skin':{id:'kanaval-skin',countryId:'haiti',region:'caribbean',philosophy:'Sample small-batch brand: island botanicals, sold direct on the web.'},
+ 'The Inkey List':{id:'the-inkey-list',countryId:'united-kingdom',region:'europe',philosophy:'Plain ingredient names at fair prices.'},
+ 'Benefit':{id:'benefit',countryId:'united-states',region:'north-america',philosophy:'Playful makeup for every brow.'},
+ 'SheaMoisture':{id:'sheamoisture',countryId:'united-states',region:'north-america',philosophy:'Heritage recipes for curly and coily hair.'},
+ 'Briogeo':{id:'briogeo',countryId:'united-states',region:'north-america',philosophy:'Hair care for every texture.'},
+ 'Mielle':{id:'mielle',countryId:'united-states',region:'north-america',philosophy:'Moisture-first care for coils and curls.'},
+ 'Revlon':{id:'revlon',countryId:'united-states',region:'north-america',philosophy:'Salon results at home.'},
+ 'Scotch Porter':{id:'scotch-porter',countryId:'united-states',region:'north-america',philosophy:'Grooming for coarse, curly beards.'},
 };
 const existing:Brand[]=PRODUCTS.map(p=>{const o=origins[p.brand];if(!o)throw new Error('Missing brand origin');return {...o,regions:[o.region],name:p.brand,image:p.image,founder:p.founder,productIds:[p.id],demo:true,emerging:!!p.launchpad,countriesServed:[],shoppingLinks:[]};});
 const samples=[
