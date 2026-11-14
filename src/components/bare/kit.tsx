@@ -35,15 +35,14 @@ export function BareHeader({ title, overlay }: { title?: string; overlay?: boole
 const TABS = [
   { to: "/", label: "Feed", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="6" y="3" width="12" height="18" rx="3" /><path d="M11 10l3 2-3 2z" /></svg>) },
   { to: "/discover", label: "Discover", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>) },
-  { to: "/pros", label: "Pros", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="8" r="4" /><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" /></svg>) },
   { to: "/saved", label: "Saved", icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 3h12v18l-6-4-6 4z" /></svg>) },
   { to: "/me", label: "Me", icon: null },
 ] as const;
 
 function isActive(path: string, to: string) {
   if (to === "/") return path === "/";
-  if (to === "/pros") return path.startsWith("/pros") || path.startsWith("/routine");
   if (to === "/me") return ["/me", "/wallet", "/canvas", "/consultation"].some((p) => path.startsWith(p));
+  if (to === "/discover") return path.startsWith("/discover") || path.startsWith("/routine") || path.startsWith("/specialist") || path.startsWith("/shade-finder");
   return path.startsWith(to);
 }
 
