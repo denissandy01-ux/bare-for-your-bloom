@@ -47,3 +47,4 @@ use the editor.
 - Keep temporary discovery canvases in provider memory, separate from persisted profiles; browsing must never overwrite the account canvas.
 - Read skin needs through the shared legacy-compatible tag helper and derive discipline filters centrally; multiple selections and hidden filters must behave consistently.
 - Group product discovery without changing shade-specific catalog types, and filter stores only from recorded offers; do not infer unlisted stockists.
+- Keep Me as an owner-only profile surface: query published posts by owner with pagination, store editable identity in existing auth metadata, and link beauty tools to existing collection systems; unsupported public sharing, reposts, tags and consumer draft persistence stay unavailable rather than simulated.
