@@ -27,5 +27,6 @@
 - [x] Me profile header, metric grid and slim canvas strip; Empty Bottle verdicts on products and Hall of Fame in Discover; multi-select studio services.
 - [x] Goal-based Beauty Journey with optional journal entries and replies.
 - Studio map view remains unbuilt.
-- [ ] Redesign Me to match the profile reference, with editable identity and real owner-only posts.
-- [ ] Connect My Beauty and settings to existing tools; verify editing, tabs and navigation.
+- [x] Redesign Me to match the profile reference, with editable identity and real owner-only posts.
+- [x] Connect My Beauty and settings to existing tools; verify signed-in editing, reload persistence, tabs and navigation at desktop, 620, 393 and 320px.
+- Public creator profile links, follower counts, reposts, user tags and consumer saved drafts remain unavailable; the profile does not simulate them.
