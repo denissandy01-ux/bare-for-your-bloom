@@ -13,7 +13,10 @@ export const SKIN_TYPES = ["Sensitive", "Acne-prone", "Dry", "Oily", "Combinatio
 export const SKIN_BEHAVIORS = ["Balanced", "Dry", "Oily", "Combination"] as const;
 export const SKIN_CONCERNS = ["Sensitive", "Acne-prone", "Rosacea-prone", "Dehydrated", "Reactive / easily irritated"] as const;
 export const BARRIER = ["Calm", "Sometimes reactive", "Very reactive"] as const;
-export const HAIR_TYPES = ["1 Straight", "2 Wavy", "3 Curly", "4A Coily", "4B Coily", "4C Coily", "Shaved / beard focus"] as const;
+export const HAIR_TYPES = ["1 Straight", "2 Wavy", "3 Curly", "4A Coily", "4B Coily", "4C Coily", "Starter locs", "Traditional locs", "Sisterlocks / microlocs", "Silver / grey texture", "Shaved / beard focus"] as const;
+export const HAIR_LENGTHS = ["Short / TWA", "Chin length", "Shoulder length", "Long"] as const;
+/** Private life stage; only used to quietly rank content, never shown on posts. */
+export const AGE_STAGES = ["18–24", "25–34", "35–44", "45–54", "55+"] as const;
 export const POROSITY = ["Low", "Normal", "High", "Not sure"] as const;
 
 export type Depth = (typeof DEPTHS)[number];
@@ -195,7 +198,7 @@ export const PRODUCTS: Product[] = [
 
 export const productById = (id: string) => PRODUCTS.find((p) => p.id === id);
 
-export interface Creator { handle: string; depth: Depth; undertone: Undertone; skinType: string; hair: string; shade?: string }
+export interface Creator { handle: string; depth: Depth; undertone: Undertone; skinType: string; hair: string; shade?: string; ageStage?: string }
 
 export interface FeedPost {
   id: string;
@@ -229,7 +232,7 @@ export const FEED: FeedPost[] = [
   { id: "p17", productId: "beard-oil", media: barber, likes: 1170, wearTest: "Wear test · 10 days, no itch", swatches: 97, caption: "Coarse beard, soft by day three, no flakes.", creator: { handle: "@kwame.groom", depth: "Deep", undertone: "Olive", skinType: "Oily", hair: "Shaved / beard focus" } },
 ];
 
-export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; skinTypes?: string[]; barrier?: string; hair?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string; referenceShade?: string }
+export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; skinTypes?: string[]; barrier?: string; hair?: string; hairLength?: string; ageStage?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string; referenceShade?: string }
 
 /** Skin Twin score: how closely a wear-test creator's canvas matches yours. */
 export function skinTwinScore(creator: Creator, me: Profile) {
@@ -310,7 +313,7 @@ export function purchaseQuote(price: number, cashbackRate: number, discount = 0)
 export function feedForTone(posts: FeedPost[], me: Profile) {
   return posts
     .filter((p) => { const product = productById(p.productId); return product && (matchKind(product) === "hair" ? !me.hair || p.creator.hair === me.hair : Math.abs(DEPTHS.indexOf(p.creator.depth) - DEPTHS.indexOf(me.depth)) <= 1); })
-    .sort((a, b) => { const ap = productById(a.productId), bp = productById(b.productId); return (bp ? fitScore(bp, b.creator, me) : 0) - (ap ? fitScore(ap, a.creator, me) : 0); });
+    .sort((a, b) => { const ap = productById(a.productId), bp = productById(b.productId); return (bp ? fitScore(bp, b.creator, me) : 0) + lifeStageBoost(b.creator, me) - (ap ? fitScore(ap, a.creator, me) : 0) - lifeStageBoost(a.creator, me); });
 }
 
 // Bare Points: brand-funded rewards, not bank cashback.
@@ -423,3 +426,6 @@ export function matchesPrice(p: Product, band: string) {
   const price = whereSold(p).from;
   return band === "All prices" || (band === "Under $15" ? price < 15 : band === "$15–$35" ? price >= 15 && price < 35 : band === "$35–$70" ? price >= 35 && price < 70 : price >= 70);
 }
+
+/** Quiet ranking nudge for a shared life stage; never displayed as a label or score. */
+export function lifeStageBoost(c: { ageStage?: string }, me: Profile) { return me.ageStage && c.ageStage === me.ageStage ? 5 : 0; }

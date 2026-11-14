@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Wordmark } from "@/components/bare/kit";
-import { BARRIER, DEPTHS, HAIR_TYPES, POROSITY, SKIN_BEHAVIORS, SKIN_CONCERNS, UNDERTONES, type Depth, type Profile, type Undertone } from "@/lib/data";
+import { BARRIER, DEPTHS, AGE_STAGES, HAIR_LENGTHS, HAIR_TYPES, POROSITY, SKIN_BEHAVIORS, SKIN_CONCERNS, UNDERTONES, type Depth, type Profile, type Undertone } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { ToneSheet } from '@/components/bare/sheets';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,8 @@ const STEPS: { key: keyof Profile; q: string; options?: readonly string[] }[] = 
   { key: "skinTypes", q: "How does your skin behave, and what needs care? Choose every tag that fits.", options: [...SKIN_BEHAVIORS, ...SKIN_CONCERNS] },
   { key: "barrier", q: "When you try something new, how does your barrier react?", options: BARRIER },
   { key: "hair", q: "Tell me about your hair or beard texture.", options: HAIR_TYPES },
+  { key: "hairLength", q: "And the length you're working with right now?", options: HAIR_LENGTHS },
+  { key: "ageStage", q: "Which life stage are you in? This stays private. It only helps us show care that fits, like mature skin or silver strands.", options: AGE_STAGES },
   { key: "porosity", q: "Does water bead on your hair or soak right in? That's porosity.", options: POROSITY },
   { key: "goal", q: "Last one: in your own words, what do you want your canvas to feel like in 30 days?" },
 ];
