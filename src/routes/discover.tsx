@@ -9,6 +9,9 @@ import { cn } from '@/lib/utils';
 import { AtlasHub } from '@/components/bare/atlas';
 import { useBare } from '@/lib/store';
 import { formulaById } from '@/lib/formula';
+import { useQuery } from '@tanstack/react-query';
+import { communityOptions } from '@/lib/community-query';
+import { collectEmpties, hallOfFame } from '@/lib/empties';
 
 export const Route = createFileRoute("/discover")({
   head: () => ({ meta: [{ title: "Discover Products & Specialists · Becoming Bare" }, { name: "description", content: "Products suggested for your canvas, brands you love, and local specialists." }, { property: "og:title", content: "Discover Products & Specialists · Becoming Bare" }, { property: "og:description", content: "Products suggested for your canvas, brands you love, and local specialists." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
@@ -50,6 +53,8 @@ function Discover() {
   const list = PRODUCTS.filter((p) => (cat === "All" || p.category === cat) && (sub === "All" || productGroup(p) === sub) && matchesStore(p, store) && matchesPrice(p, price) && (!ql || `${p.brand} ${p.name} ${p.claims.join(" ")} ${p.category} ${p.sub ?? ''}`.toLowerCase().includes(ql)))
     .sort((a, b) => (a.trendRank ?? 99) - (b.trendRank ?? 99));
   const browsing = cat === "All" && !ql && store === "All stores" && price === "All prices";
+  const community = useQuery(communityOptions);
+  const fame = hallOfFame(collectEmpties(community.data ?? [], state.emptyBottles));
   const suggested = suggestFor(browseProfile, loved).slice(0, 4);
   const fromLoved = PRODUCTS.filter((p) => loved.includes(p.brand) && !state.savedProducts.includes(p.id)).slice(0, 4);
   const launch = PRODUCTS.filter((p) => p.launchpad);
@@ -80,6 +85,11 @@ function Discover() {
         {browsing && suggested.length > 0 && <section className="space-y-3">
           <SectionTitle meta={<span className="inline-flex items-center gap-1"><Sparkles className="h-3 w-3" />{toneLabel(browseProfile.depth, browseProfile.undertone)}</span>}>Suggested for your canvas</SectionTitle>
           <div className="grid gap-2 md:grid-cols-2">{suggested.map((p) => <ProductTile key={p.id} p={p} reason={loved.includes(p.brand) ? "From a brand you love" : "Suggested from the sample catalog"} />)}</div>
+        </section>}
+
+        {browsing && fame.length > 0 && <section className="space-y-3">
+          <SectionTitle meta="85%+ would buy again">Empty Bottle Hall of Fame</SectionTitle>
+          <div className="grid gap-2 md:grid-cols-2">{fame.map(({ id, v }) => { const fp = PRODUCTS.find(x => x.id === id); return fp ? <ProductTile key={id} p={fp} reason={`${v.repurchasePct}% would repurchase · ${v.avgWeeks} wks to finish`} /> : null; })}</div>
         </section>}
 
         {browsing && <section className="space-y-3">
