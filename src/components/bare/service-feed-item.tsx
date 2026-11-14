@@ -23,7 +23,7 @@ export function ServiceFeedItem({ post }: { post: ServicePost }) {
   const first = specialist.name.split(' ')[0];
   const from = Math.min(...specialist.services.map(s => s.price));
   const team = studioTeam(specialist);
-  return <section className="relative h-full snap-start overflow-hidden bg-cocoa" aria-label={`${post.category} service by ${specialist.name}`}>
+  return <section data-specialist={specialist.id} className="relative h-full snap-start overflow-hidden bg-cocoa" aria-label={`${post.category} service by ${specialist.name}`}>
     <img src={post.image} width={768} height={1152} loading="lazy" onDoubleClick={doubleTap.onDoubleClick} onTouchEnd={doubleTap.onTouchEnd} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
     <LikeBurst burst={doubleTap.burst}/>
     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-cocoa via-transparent to-cocoa/20" />

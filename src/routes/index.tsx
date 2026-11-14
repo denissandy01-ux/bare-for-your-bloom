@@ -78,10 +78,12 @@ function Feed() {
   const trackActive=(e:React.UIEvent<HTMLDivElement>)=>{
     const el=e.currentTarget; const idx=Math.round(el.scrollTop/el.clientHeight);
     const child=el.children[idx] as HTMLElement|undefined;
-    const id=child?.dataset['product']??child?.querySelector<HTMLElement>('[data-product]')?.dataset['product'];
+    const pid=child?.dataset['product']??child?.querySelector<HTMLElement>('[data-product]')?.dataset['product'];
+    const sid=child?.dataset['specialist'];
+    const id=sid?`s:${sid}`:pid?`p:${pid}`:undefined;
     if(id&&id!==active) setActive(id);
   };
-  useEffect(()=>{ if(!active) setActive(posts[0]?.productId); },[posts,active]);
+  useEffect(()=>{ if(!active) setActive(posts[0]?`p:${posts[0].productId}`:undefined); },[posts,active]);
 
   return (
     <div className="flex justify-center lg:gap-6 lg:px-6">
@@ -115,7 +117,7 @@ function Feed() {
         </div>
       )}
     </div>
-      <FeedCompanion productId={active}/>
+      <FeedCompanion productId={active?.startsWith('p:')?active.slice(2):undefined} specialistId={active?.startsWith('s:')?active.slice(2):undefined}/>
     </div>
   );
 }
