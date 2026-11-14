@@ -142,7 +142,7 @@ export function SwatchSheet({ product, count, open, onOpenChange }: { product: P
         <div className="mt-4 rounded-[22px] border border-sand p-4">
           <p className="text-[12px] uppercase tracking-[0.14em] text-umber">Shade to try</p>
           <p className="mt-1 font-display text-[24px]">{suggestion.code} <span className="text-[14px] text-umber">· {suggestion.depth} {suggestion.undertone}</span></p>
-          {shadeCreators.map((p) => <p key={p.id} className="mt-1 text-[13px]">{p.creator.handle} wears {p.creator.shade} · {skinTwinScore(p.creator, me)}% Skin Twin</p>)}
+          {shadeCreators.map((p) => <p key={p.id} className="mt-1 text-[13px]">{p.creator.handle} wears {p.creator.shade}{p.creator.shade === suggestion.code ? " · same as your shade" : ""} · {skinTwinScore(p.creator, me)}% Skin Twin</p>)}
           {me.referenceShade && <p className="mt-1 text-[13px] text-umber">Your go-to: {me.referenceShade}</p>}
           <p className="mt-2 text-[12px] text-umber">A starting point, not a guarantee. Swatch on your jaw in daylight.</p>
         </div>
@@ -155,7 +155,7 @@ export function SwatchSheet({ product, count, open, onOpenChange }: { product: P
             <li key={d} className="flex items-center gap-3">
               <span className={cn("h-8 w-8 shrink-0 rounded-full ring-2", me.depth === d ? "ring-clay" : "ring-oat")} style={{ background: DEPTH_SWATCH[d] }} />
               <span className="w-16 text-[14px]">{d}</span>
-              <span className="h-2 flex-1 overflow-hidden rounded-full bg-sand"><span className="block h-full rounded-full bg-clay" style={{ width: `${share * 100}%` }} /></span>
+              <span className="h-2 flex-1 overflow-hidden rounded-full bg-sand"><span className="block h-full rounded-full bg-clay" style={{ width: `${(share / Math.max(...split.map((x) => x.share))) * 100}%` }} /></span>
               <span className="w-10 text-right text-[13px] tabular-nums text-umber">{n}</span>
             </li>
           ))}
