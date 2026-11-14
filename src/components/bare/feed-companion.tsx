@@ -13,13 +13,13 @@ export function FeedCompanion({ productId, specialistId }: { productId?: string 
   const { state, toggleProduct, browseProfile } = useBare();
   if (specialistId) return <StudioCompanion id={specialistId} />;
   const p = productId ? productById(productId) : undefined;
-  if (!p) return <aside className="hidden lg:block w-[360px]" />;
+  if (!p) return <aside className="hidden lg:block w-[380px] xl:w-[420px]" />;
   const sold = whereSold(p);
   const f = formulaById(p.id);
   const saved = state.savedProducts.includes(p.id);
   const related = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id).slice(0, 3);
   return (
-    <aside aria-label="Product from this post" className="hidden lg:flex h-dvh w-[360px] shrink-0 flex-col gap-4 overflow-y-auto py-6 text-oat">
+    <aside aria-label="Product from this post" className="hidden lg:flex h-dvh w-[380px] xl:w-[420px] shrink-0 flex-col gap-4 overflow-y-auto py-10 text-oat">
       <p className="text-xs uppercase tracking-[0.2em] text-sand">In this post</p>
       <img src={p.image} alt={p.name} className="aspect-square w-full rounded-2xl object-cover" />
       <div><p className="text-xs text-peach">{p.brand} · {p.category}</p><h2 className="font-display text-2xl leading-tight">{p.name}</h2><p className="mt-1 text-sm text-sand">From {money(sold.from)} · {sold.label}</p></div>
@@ -41,13 +41,13 @@ export function FeedCompanion({ productId, specialistId }: { productId?: string 
 function StudioCompanion({ id }: { id: string }) {
   const { state, toggleSpecialist, toggleCreator } = useBare();
   const s = specialistById(id);
-  if (!s) return <aside className="hidden lg:block w-[360px]" />;
+  if (!s) return <aside className="hidden lg:block w-[380px] xl:w-[420px]" />;
   const saved = state.savedSpecialists.includes(s.id);
   const handle = handleFor(s);
   const maps = `https://www.google.com/maps/search/?api=1&query=${s.point.lat},${s.point.lng}`;
   const shelf = s.shelf.map(x => ({ ...x, p: productById(x.productId) })).filter(x => x.p);
   return (
-    <aside key={s.id} aria-label="Studio from this post" className="hidden lg:flex h-dvh w-[360px] shrink-0 flex-col gap-4 overflow-y-auto py-6 text-oat animate-in fade-in duration-300">
+    <aside key={s.id} aria-label="Studio from this post" className="hidden lg:flex h-dvh w-[380px] xl:w-[420px] shrink-0 flex-col gap-4 overflow-y-auto py-10 text-oat animate-in fade-in duration-300">
       <p className="text-xs uppercase tracking-[0.2em] text-sand">Studio in this post</p>
       <div className="flex flex-col items-center text-center">
         <img src={s.image} alt={s.name} className="h-24 w-24 rounded-full object-cover ring-2 ring-peach" />

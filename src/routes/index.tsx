@@ -86,7 +86,7 @@ function Feed() {
   useEffect(()=>{ if(!active) setActive(posts[0]?`p:${posts[0].productId}`:undefined); },[posts,active]);
 
   return (
-    <div className="flex justify-center lg:gap-6 lg:px-6">
+    <div className="flex justify-center lg:mx-auto lg:max-w-6xl lg:justify-evenly lg:gap-10 lg:px-10 xl:gap-16">
     <div className="bare-feed relative mx-auto lg:mx-0 shrink-0 h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
       <header className="absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-cocoa/80 to-transparent px-4 pt-4 pb-3">
         <div className="flex items-center justify-between gap-2"><Button variant="ghost" onClick={()=>setToneOpen(true)} aria-label="Choose your browsing canvas" className="h-auto min-w-0 gap-2 bg-transparent p-0 text-oat hover:bg-transparent hover:text-peach"><span className="h-6 w-6 shrink-0 rounded-full ring-1 ring-oat/60" style={{background:UNDERTONE_SWATCH[browseProfile.depth][browseProfile.undertone]}}/><span className="min-w-0 text-left"><span className="block font-display text-[22px] leading-tight">Becoming Bare</span>{temporaryCanvas && <span className="block text-[10px] text-sand">Browsing · {browseProfile.depth} {browseProfile.undertone}</span>}</span></Button><div className="flex shrink-0 gap-2"><Button variant="ghost" size="icon" aria-label="Search the feed" onClick={()=>setSearching(x=>!x)} className="h-10 w-10 rounded-full bg-cocoa/45 text-oat hover:bg-cocoa/60 hover:text-oat"><Search className="h-5 w-5"/></Button><Link to="/notifications" aria-label="Notifications" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-cocoa/45 text-oat"><Bell className="h-5 w-5"/></Link></div></div>
