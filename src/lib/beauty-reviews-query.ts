@@ -10,6 +10,6 @@ export function beautyReviewsOptions(owner?: string) {
     if(!paths.length) return rows;
     const {data:urls,error:mediaError} = await supabase.storage.from('beauty-posts').createSignedUrls(paths,3600);
     if(mediaError) throw new Error(mediaError.message);
-    return rows.map(r => ({...r,url:urls?.find(u => u.path === r.media_path)?.signedUrl}));
+    return rows.map(r => ({...r,url:urls?.find(u => u.path === r.media_path)?.signedUrl ?? ''}));
   }, staleTime: 30_000};
 }

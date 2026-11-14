@@ -22,7 +22,7 @@ export function toDiscoveryReview(r: BeautyReview): DiscoveryReview {
     ...(r.product_id ? { productId: r.product_id } : {}), ...(r.specialist_id ? { specialistId: r.specialist_id } : {}),
     ...(r.rating ? { rating: r.rating } : {}), ...(r.decision ? { decision: r.decision as 'Yes' | 'Maybe' | 'No' } : {}),
     ...(r.kind === 'service' && r.decision ? { bookAgain: r.decision as 'Yes' | 'Maybe' | 'No' } : {}),
-    service: r.service, url: r.url, mediaType: r.media_type ?? undefined, date: r.created_at };
+    service: r.service, ...(r.url ? {url:r.url} : {}), ...(r.media_type ? {mediaType:r.media_type} : {}), date: r.created_at };
 }
 export function publishedReviews(rows: BeautyReview[], posts: PublishedPost[] = []): DiscoveryReview[] {
   const publicRows = rows.filter(r => r.status === 'published');

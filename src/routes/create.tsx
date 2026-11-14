@@ -15,7 +15,7 @@ import { publishPost, removePost } from '@/lib/community.functions';
 import { communityOptions } from '@/lib/community-query';
 import { supabase } from '@/integrations/supabase/client';
 import { workspaceHead } from '@/lib/workspace';
-export const Route = createFileRoute('/create')({ validateSearch: (search: Record<string, unknown>) => ({review: typeof search['review'] === 'string' ? search['review'] : undefined}), head: () => workspaceHead('Create', 'Upload beauty photos, videos, tutorials and Empty Bottle Club reviews.'), component: Create });
+export const Route = createFileRoute('/create')({ validateSearch: (search: Record<string, unknown>): {review?:string} => (typeof search['review'] === 'string' ? {review:search['review']} : {}), head: () => workspaceHead('Create', 'Upload beauty photos, videos, tutorials and Empty Bottle Club reviews.'), component: Create });
 function Create() {
   const { user, ready } = useAccount(), { state } = useBare();
   const publish = useServerFn(publishPost), remove = useServerFn(removePost), qc = useQueryClient();
