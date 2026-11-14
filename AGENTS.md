@@ -40,3 +40,6 @@ use the editor.
 - Keep ingredient education source-backed and separate from illustrative product claims; absent verification must produce an unknown state, never a compatibility score.
 - Render founder biographies only on the shared brand detail page; product and feed entry points link there rather than duplicating the story.
 - Persist Atlas follows and destination-specific interest locally until notification delivery is connected; never describe saved interest as delivered alerts or purchases.
+- Publish consumer media through owner-validated server functions and a private bucket with public read access only for published posts; keep licensing opt-in separate from publication.
+- Keep owned shelf, wishlist, empty-bottle logs and notification preferences distinct in local collection state; never treat enabling preferences or logging empties as delivered notifications or verified rewards.
+- Filter feed tabs using explicit tutorial types and followed author/brand IDs; do not relabel illustrative wear tests as educational tutorials.

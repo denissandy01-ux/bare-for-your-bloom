@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      beauty_posts: {
+        Row: {
+          author: string
+          brand_id: string | null
+          caption: string
+          country_id: string
+          created_at: string
+          disclosure: string
+          duration_weeks: number | null
+          id: string
+          kind: string
+          media_path: string
+          media_type: string
+          owner_id: string
+          product_id: string | null
+          repurchase: boolean | null
+        }
+        Insert: {
+          author: string
+          brand_id?: string | null
+          caption: string
+          country_id: string
+          created_at?: string
+          disclosure?: string
+          duration_weeks?: number | null
+          id?: string
+          kind: string
+          media_path: string
+          media_type: string
+          owner_id: string
+          product_id?: string | null
+          repurchase?: boolean | null
+        }
+        Update: {
+          author?: string
+          brand_id?: string | null
+          caption?: string
+          country_id?: string
+          created_at?: string
+          disclosure?: string
+          duration_weeks?: number | null
+          id?: string
+          kind?: string
+          media_path?: string
+          media_type?: string
+          owner_id?: string
+          product_id?: string | null
+          repurchase?: boolean | null
+        }
+        Relationships: []
+      }
       business_products: {
         Row: {
           category: string

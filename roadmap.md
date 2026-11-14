@@ -1,4 +1,9 @@
 # Becoming Bare
+- [x] Update five-tab navigation and For You / Following / Global / Tips feed.
+- [x] Add photo/video publishing with product tags and creator content management.
+- [x] Add Saved hub, owned shelf, product comparison and Empty Bottle Club logging.
+- [x] Refine formula presentation, notification preferences and optional Beauty Journey.
+- [x] Verify photo/video publishing, tutorial readback, collection persistence and layouts at 320, 393, 620, 764 and 1280px widths.
 - [x] Add Inside the Formula to products, feed sheets and saved shelf using existing canvas answers.
 - [x] Add the Global Beauty Atlas, region/country navigation and centralized brand profiles.
 - [x] Add shopping destination, follow, try-interest and local notification requests without inventing availability.
@@ -13,4 +18,4 @@
 - [x] Add hair texture and skin type to the quick canvas editor.
 - [x] Add public accounts, saved profiles and separate creator / brand workspaces.
 - [x] Add content drafts, product performance and permission-based licensing interfaces; verify flows.
-- Live publishing, measured engagement, confirmed commissions and executed licensing payments require a follow-up connection; current workspaces show this explicitly.
+- Measured engagement, confirmed commissions, live notifications and executed licensing payments remain unconnected; published consumer media is now available through Create.

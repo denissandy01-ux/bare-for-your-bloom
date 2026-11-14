@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAccount } from './account';
 import { DEPTHS, UNDERTONES } from './data';
 import { toast } from 'sonner';
+import type { EmptyBottle, NotificationTopic } from './community';
 
 export type TxnKind = "purchase" | "review" | "payout";
 export interface Txn { id: string; kind: TxnKind; label: string; amount: number; status: "pending" | "available" | "requested"; date: string }
@@ -11,6 +12,11 @@ export interface CheckIn { id: string; date: string; photo?: string; barrier: nu
 export interface Review { productId: string; rating: number; text: string; date: string }
 
 export interface BareState {
+  ownedProducts: string[];
+  savedPosts: string[];
+  followedCreators: string[];
+  emptyBottles: EmptyBottle[];
+  notificationPrefs: Record<NotificationTopic, boolean>;
   profile: Profile;
   consulted: boolean;
   savedProducts: string[];
@@ -30,6 +36,8 @@ export interface BareState {
 }
 
 const DEFAULT: BareState = {
+  ownedProducts: [], savedPosts: [], followedCreators: [], emptyBottles: [],
+  notificationPrefs: { community: true, brands: true, global: true, prices: false, empties: true },
   profile: { depth: "Deep", undertone: "Neutral" },
   consulted: false,
   savedProducts: [],
@@ -51,6 +59,12 @@ const KEY = "becoming-bare:v1";
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 interface Ctx {
+  toggleOwned: (id: string) => boolean;
+  togglePost: (id: string) => boolean;
+  toggleCreator: (id: string) => boolean;
+  setNotification: (topic: NotificationTopic, enabled: boolean) => void;
+  addEmpty: (entry: Omit<EmptyBottle, 'id' | 'date'>) => void;
+  removeEmpty: (id: string) => void;
   state: BareState;
   ready: boolean;
   setTone: (d: Depth, u: Undertone) => void;
@@ -123,7 +137,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [state.profile, user?.id, cloudReady]);
 
-  const toggleIn = useCallback((key: "savedProducts" | "savedRoutines" | "savedSpecialists" | 'likedPosts' | 'followedBrands' | 'brandInterest' | 'brandNotifications', id: string) => {
+  const toggleIn = useCallback((key: "savedProducts" | "savedRoutines" | "savedSpecialists" | 'likedPosts' | 'followedBrands' | 'brandInterest' | 'brandNotifications' | 'ownedProducts' | 'savedPosts' | 'followedCreators', id: string) => {
     let added = false;
     setState((s) => {
       const has = s[key].includes(id);
@@ -135,6 +149,12 @@ export function BareProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<Ctx>(() => ({
     state, ready,
+    toggleOwned: id => toggleIn('ownedProducts', id),
+    togglePost: id => toggleIn('savedPosts', id),
+    toggleCreator: id => toggleIn('followedCreators', id),
+    setNotification: (topic, enabled) => setState(s => ({...s, notificationPrefs: {...s.notificationPrefs, [topic]: enabled}})),
+    addEmpty: entry => setState(s => ({...s, emptyBottles: [{...entry, id: uid(), date: new Date().toISOString()}, ...s.emptyBottles]})),
+    removeEmpty: id => setState(s => ({...s, emptyBottles: s.emptyBottles.filter(e => e.id !== id)})),
     setTone: (depth, undertone) => setState((s) => ({ ...s, profile: { ...s.profile, depth, undertone } })),
     setCanvas: (profile) => setState(s => ({...s, profile})),
     toggleSpecialist: (id) => toggleIn('savedSpecialists', id),

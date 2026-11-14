@@ -11,7 +11,7 @@ import type { ServicePost } from '@/lib/service-feed';
 
 /** A service post belongs to the artist; the studio opens a roster of everyone who works there. */
 export function ServiceFeedItem({ post }: { post: ServicePost }) {
-  const specialist = specialistById(post.specialistId), { state, toggleSpecialist, toggleLike } = useBare();
+  const specialist = specialistById(post.specialistId), { state, toggleSpecialist, toggleLike, toggleCreator } = useBare();
   const [roster, setRoster] = useState(false);
   if (!specialist) return null;
   const liked = state.likedPosts.includes(post.id);
@@ -31,6 +31,7 @@ export function ServiceFeedItem({ post }: { post: ServicePost }) {
     <div className="feed-shop absolute inset-x-3 bottom-3 space-y-2.5">
       <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-oat">
         <Link to="/specialist/$id" params={{ id: specialist.id }} className="font-semibold">{handleFor(specialist)}</Link>
+        <Button variant="ghost" size="sm" className="h-7 rounded-full px-2 text-xs text-oat hover:bg-oat/15 hover:text-oat" aria-pressed={state.followedCreators.includes(handleFor(specialist))} onClick={()=>toggleCreator(handleFor(specialist))}>{state.followedCreators.includes(handleFor(specialist))?'Following':'Follow'}</Button>
         <span className="text-sand">·</span>
         <button onClick={() => setRoster(true)} className="inline-flex items-center text-sand underline-offset-2 hover:underline">{specialist.studio}<ChevronRight className="h-3.5 w-3.5" /></button>
       </p>
