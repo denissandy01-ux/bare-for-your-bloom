@@ -1,8 +1,11 @@
 # Becoming Bare
+- [x] Rename My Beauty tools, preserve collection entries, and add product usage statuses and service visits.
+- [x] Build owner-private product/service reviews with optional publication and feed sharing.
+- [x] Consolidate Discover reviews and verify privacy, metrics, and signed-in flows.
 - [x] Revise Discover with progressive categories, image grids, and immediate saves.
 - [x] Refine product and specialist details, published review browsing, and Atlas service entry.
 - [x] Verify privacy rules, collection persistence, navigation, and phone/desktop flows; 101 tests passed.
-- Published service-review records and star ratings are not available; review sections remain empty instead of using sample ratings.
+- Product and service ratings now use published owner-submitted reviews; empty sections never show sample ratings.
 - [x] Make feed tabs subtle; add temporary browsing canvas and Atlas connection.
 - [x] Add multi-select skin behavior and concerns throughout canvas and formula matching.
 - [x] Refine product categories, store/price filters and visible formula summaries.

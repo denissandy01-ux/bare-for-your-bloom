@@ -48,4 +48,5 @@ use the editor.
 - Read skin needs through the shared legacy-compatible tag helper and derive discipline filters centrally; multiple selections and hidden filters must behave consistently.
 - Group product discovery without changing shade-specific catalog types, and filter stores only from recorded offers; do not infer unlisted stockists.
 - Keep Me as an owner-only profile surface: query published posts by owner with pagination, store editable identity in existing auth metadata, and link beauty tools to existing collection systems; unsupported public sharing, reposts, tags and consumer draft persistence stay unavailable rather than simulated.
-- Derive Discover reviews only from published community records, never local Empty Bottle logs; share review presentation across product and specialist detail entry points and leave unavailable service reviews empty.
+- Store unified product/service reviews in beauty_reviews with owner read paths and public published-only reads; deduplicate legacy post links, never expose local logs, and share records across Discover and Atlas.
+- Keep collection usage statuses and received-service visits owner-keyed locally, separate from bookmarks; private review media is readable only by its owner until publication.

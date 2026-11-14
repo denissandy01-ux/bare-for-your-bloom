@@ -1,5 +1,6 @@
 /** Only the public beauty_posts publication stream is accepted here, never local logs. */
 export interface PublishedPost {
+  review_id?: string | null;
   id: string; author: string; kind: string; product_id: string | null;
   caption: string; duration_weeks: number | null; repurchase: boolean | null;
   media_type: string; url: string; created_at: string;
@@ -8,6 +9,7 @@ export interface DiscoveryReview {
   id: string; author: string; text: string; productId?: string; specialistId?: string;
   kind: 'product' | 'empty' | 'service'; weeks?: number; repurchase?: boolean;
   rating?: number; service?: string; bookAgain?: 'Yes' | 'Maybe' | 'No';
+  decision?: 'Yes' | 'Maybe' | 'No';
   mediaType?: string; url?: string; date: string;
 }
 export function productReviews(posts: PublishedPost[], productId?: string): DiscoveryReview[] {

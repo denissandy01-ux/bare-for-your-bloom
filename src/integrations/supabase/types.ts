@@ -30,6 +30,7 @@ export type Database = {
           owner_id: string
           product_id: string | null
           repurchase: boolean | null
+          review_id: string | null
         }
         Insert: {
           author: string
@@ -46,6 +47,7 @@ export type Database = {
           owner_id: string
           product_id?: string | null
           repurchase?: boolean | null
+          review_id?: string | null
         }
         Update: {
           author?: string
@@ -62,8 +64,82 @@ export type Database = {
           owner_id?: string
           product_id?: string | null
           repurchase?: boolean | null
+          review_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "beauty_posts_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "beauty_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beauty_reviews: {
+        Row: {
+          author: string
+          created_at: string
+          decision: string | null
+          experience: string
+          finished: boolean
+          id: string
+          kind: string
+          legacy_post_id: string | null
+          media_path: string | null
+          media_type: string | null
+          owner_id: string
+          product_id: string | null
+          rating: number | null
+          service: string
+          specialist_id: string | null
+          status: string
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          decision?: string | null
+          experience?: string
+          finished?: boolean
+          id?: string
+          kind: string
+          legacy_post_id?: string | null
+          media_path?: string | null
+          media_type?: string | null
+          owner_id: string
+          product_id?: string | null
+          rating?: number | null
+          service?: string
+          specialist_id?: string | null
+          status?: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          decision?: string | null
+          experience?: string
+          finished?: boolean
+          id?: string
+          kind?: string
+          legacy_post_id?: string | null
+          media_path?: string | null
+          media_type?: string | null
+          owner_id?: string
+          product_id?: string | null
+          rating?: number | null
+          service?: string
+          specialist_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beauty_reviews_legacy_post_id_fkey"
+            columns: ["legacy_post_id"]
+            isOneToOne: true
+            referencedRelation: "beauty_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       business_products: {
         Row: {

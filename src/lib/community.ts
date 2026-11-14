@@ -2,6 +2,7 @@ import { z } from 'zod';
 export const POST_KINDS = ['Experience', 'Tutorial', 'Empty Bottle'] as const;
 export const MAX_MEDIA_BYTES = 50 * 1024 * 1024;
 export const postSchema = z.object({
+  review_id: z.string().uuid().nullable().optional(),
   caption: z.string().trim().min(1).max(2000), author: z.string().trim().min(1).max(80),
   kind: z.enum(POST_KINDS), product_id: z.string().nullable(), brand_id: z.string().nullable(),
   media_path: z.string().min(1), media_type: z.enum(['image', 'video']), country_id: z.string().min(1),

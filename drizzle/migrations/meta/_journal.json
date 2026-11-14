@@ -22,6 +22,27 @@
       "when": 1794629079650,
       "tag": "0002_beauty_publishing",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794690873571,
+      "tag": "0003_unified_beauty_reviews",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794691024642,
+      "tag": "0004_review_feed_links",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794691586625,
+      "tag": "0005_review_privacy_links",
+      "breakpoints": true
     }
   ]
 }

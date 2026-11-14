@@ -1,0 +1,16 @@
+CREATE TABLE public.beauty_reviews (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), owner_id uuid NOT NULL, author text NOT NULL, kind text NOT NULL CHECK(kind IN ('product','service')), product_id text, specialist_id text, service text NOT NULL DEFAULT '', rating integer CHECK(rating BETWEEN 1 AND 5), decision text CHECK(decision IN ('Yes','Maybe','No')), finished boolean NOT NULL DEFAULT false, experience text NOT NULL DEFAULT '', media_path text, media_type text CHECK(media_type IN ('image','video')), status text NOT NULL DEFAULT 'private' CHECK(status IN ('private','draft','published')), legacy_post_id uuid UNIQUE REFERENCES public.beauty_posts(id) ON DELETE CASCADE, created_at timestamptz NOT NULL DEFAULT now(), CHECK((kind='product' AND product_id IS NOT NULL AND specialist_id IS NULL) OR (kind='service' AND specialist_id IS NOT NULL AND product_id IS NULL AND finished=false)), CHECK(media_path IS NULL OR media_path LIKE owner_id::text || '/%'), CHECK((media_path IS NULL)=(media_type IS NULL)), CHECK(status='draft' OR legacy_post_id IS NOT NULL OR (rating IS NOT NULL AND decision IS NOT NULL)));
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.beauty_reviews TO authenticated;
+GRANT SELECT ON public.beauty_reviews TO anon;
+GRANT ALL ON public.beauty_reviews TO service_role;
+ALTER TABLE public.beauty_reviews ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public published reviews" ON public.beauty_reviews FOR SELECT TO anon, authenticated USING(status='published');
+CREATE POLICY "Read own reviews" ON public.beauty_reviews FOR SELECT TO authenticated USING(owner_id=auth.uid());
+CREATE POLICY "Create own reviews" ON public.beauty_reviews FOR INSERT TO authenticated WITH CHECK(owner_id=auth.uid() AND legacy_post_id IS NULL);
+CREATE POLICY "Edit own reviews" ON public.beauty_reviews FOR UPDATE TO authenticated USING(owner_id=auth.uid()) WITH CHECK(owner_id=auth.uid());
+CREATE POLICY "Remove own reviews" ON public.beauty_reviews FOR DELETE TO authenticated USING(owner_id=auth.uid());
+CREATE INDEX beauty_reviews_product ON public.beauty_reviews(product_id,status);
+CREATE INDEX beauty_reviews_specialist ON public.beauty_reviews(specialist_id,status);
+CREATE INDEX beauty_reviews_owner ON public.beauty_reviews(owner_id,created_at DESC);
+INSERT INTO public.beauty_reviews(owner_id,author,kind,product_id,decision,finished,experience,media_path,media_type,status,legacy_post_id,created_at) SELECT owner_id,author,'product',product_id,CASE WHEN repurchase=true THEN 'Yes' WHEN repurchase=false THEN 'No' ELSE NULL END,kind='Empty Bottle',caption,media_path,media_type,'published',id,created_at FROM public.beauty_posts WHERE product_id IS NOT NULL AND kind IN ('Experience','Empty Bottle');
+CREATE POLICY "Read published review media" ON storage.objects FOR SELECT TO anon,authenticated USING(bucket_id='beauty-posts' AND EXISTS(SELECT 1 FROM public.beauty_reviews r WHERE r.media_path=name AND r.status='published'));
+CREATE POLICY "Read own review media" ON storage.objects FOR SELECT TO authenticated USING(bucket_id='beauty-posts' AND (storage.foldername(name))[1]=auth.uid()::text);
