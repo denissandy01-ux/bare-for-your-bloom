@@ -3,7 +3,7 @@
 - [x] Add photo/video publishing with product tags and creator content management.
 - [x] Add Saved hub, owned shelf, product comparison and Empty Bottle Club logging.
 - [x] Refine formula presentation, notification preferences and optional Beauty Journey.
-- [ ] Verify publishing and collection flows across devices.
+- [x] Verify photo/video publishing, tutorial readback, collection persistence and layouts at 320, 393, 620, 764 and 1280px widths.
 - [x] Add Inside the Formula to products, feed sheets and saved shelf using existing canvas answers.
 - [x] Add the Global Beauty Atlas, region/country navigation and centralized brand profiles.
 - [x] Add shopping destination, follow, try-interest and local notification requests without inventing availability.
