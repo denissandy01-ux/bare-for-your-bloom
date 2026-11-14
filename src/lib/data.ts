@@ -344,3 +344,48 @@ export function lovedBrands(savedProducts: string[], likedPosts: string[]) {
   const ids = [...savedProducts, ...likedPosts.map((id) => FEED.find((f) => f.id === id)?.productId ?? "")];
   return [...new Set(ids.map((id) => productById(id)?.brand).filter((b): b is string => !!b))];
 }
+
+/** Which kind of match a product post shows: shade (colored complexion), skin, or hair. */
+export type MatchKind = "shade" | "skin" | "hair";
+const SHADE_SUBS = ["Foundation", "Skin Tint", "Concealer"];
+export function matchKind(p: Product): MatchKind {
+  if (p.category === "Hair") return "hair";
+  if (p.sub && SHADE_SUBS.includes(p.sub)) return "shade";
+  return "skin";
+}
+export const isShadeProduct = (p: Product) => matchKind(p) === "shade";
+export const MATCH_LABEL: Record<MatchKind, string> = { shade: "Skin Twin", skin: "Skin Fit", hair: "Texture Twin" };
+
+/** Fit score for a post, using the factors that matter for that product type. */
+export function fitScore(p: Product, creator: Creator, me: Profile) {
+  const kind = matchKind(p);
+  if (kind === "shade") return skinTwinScore(creator, me);
+  let s = 92;
+  if (kind === "hair") {
+    if (me.hair && creator.hair !== me.hair) s -= 18;
+    if (p.fits?.hair && me.hair && !p.fits.hair.includes(me.hair)) s -= 10;
+  } else {
+    if (me.skinType && creator.skinType !== me.skinType) s -= 14;
+    if (p.fits?.skinTypes && me.skinType && !p.fits.skinTypes.includes(me.skinType)) s -= 12;
+    if (p.fits?.depths && !p.fits.depths.includes(me.depth)) s -= 6;
+  }
+  return Math.max(40, Math.min(98, s));
+}
+
+/** Plain-language reasons behind a fit score. */
+export function fitReasons(p: Product, creator: Creator, me: Profile): { ok: boolean; text: string }[] {
+  const kind = matchKind(p), r: { ok: boolean; text: string }[] = [];
+  if (kind === "shade") {
+    r.push({ ok: creator.depth === me.depth, text: creator.depth === me.depth ? `Tested by someone with your ${me.depth} depth` : `Tester is ${creator.depth}; you're ${me.depth}` });
+    r.push({ ok: creator.undertone === me.undertone, text: creator.undertone === me.undertone ? `Same ${me.undertone} undertone` : `Tester has a ${creator.undertone} undertone` });
+  } else if (kind === "hair") {
+    r.push({ ok: !me.hair || creator.hair === me.hair, text: me.hair ? (creator.hair === me.hair ? `Tested on ${me.hair} hair like yours` : `Tested on ${creator.hair}; yours is ${me.hair}`) : `Tested on ${creator.hair} — add your texture for a closer match` });
+    if (p.fits?.hair) r.push({ ok: !me.hair || p.fits.hair.includes(me.hair), text: `Rated well by ${p.fits.hair.join(", ")} textures` });
+  } else {
+    r.push({ ok: !me.skinType || creator.skinType === me.skinType, text: me.skinType ? (creator.skinType === me.skinType ? `Tester also has ${me.skinType} skin` : `Tester has ${creator.skinType} skin; yours is ${me.skinType}`) : `Tester has ${creator.skinType} skin — add your skin type for a closer match` });
+    if (p.fits?.skinTypes) r.push({ ok: !me.skinType || p.fits.skinTypes.includes(me.skinType), text: `Rated well by ${p.fits.skinTypes.join(", ").toLowerCase()} skin` });
+    if (p.fits?.depths) r.push({ ok: p.fits.depths.includes(me.depth), text: `Most tested on ${p.fits.depths.join(" & ")} skin` });
+  }
+  p.claims.slice(0, 2).forEach((c) => r.push({ ok: true, text: c }));
+  return r;
+}
