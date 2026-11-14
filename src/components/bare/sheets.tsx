@@ -44,8 +44,9 @@ export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
       <div className="mt-2 grid grid-cols-5 gap-2">
         {DEPTHS.map((x, i) => (
           <button key={x} onClick={() => setD(x)} aria-pressed={d === x} className={cn("flex flex-col items-center gap-1.5 rounded-[20px] border p-2 text-[12px]", d === x ? "border-clay bg-sand/60 font-semibold" : "border-sand")}>
-            <span className={cn("h-9 w-9 rounded-full ring-2", d === x ? "ring-clay" : "ring-oat")} style={{ background: DEPTH_SWATCH[x] }} />
+            <span className={cn("h-9 w-9 rounded-full ring-2", d === x ? "ring-clay" : "ring-oat")} style={{ background: UNDERTONE_SWATCH[x][u] }} />
             {x}<span className="text-[10px] text-umber">Tone {i + 1}</span>
+            <span className="flex gap-0.5" aria-hidden>{UNDERTONES.map((un) => <span key={un} className={cn("h-2 w-2 rounded-full", un === u && "ring-1 ring-clay")} style={{ background: UNDERTONE_SWATCH[x][un] }} />)}</span>
           </button>
         ))}
       </div>
