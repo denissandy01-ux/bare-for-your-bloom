@@ -6,5 +6,5 @@ describe("shade match", () => {
     expect(s?.depth).toBe("Deep"); expect(s?.undertone).toBe("Neutral");
   });
   it("no suggestion for non-complexion products", () => { expect(suggestShade("squalane", { depth: "Deep", undertone: "Warm" })).toBeNull(); });
-  it("flags the least represented depth as the gap", () => { expect(shadeGap(swatchSplit(500, ["Fair", "Fair"])).depth).toBe("Deep"); });
+  it("flags the least represented depth as the gap", () => { expect(shadeGap(swatchSplit(500, ["Fair", "Light"])).depth).toBe("Deep"); });
 });
