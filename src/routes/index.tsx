@@ -1,5 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bookmark, Heart, Play, Share2, MapPin, ArrowUpRight } from "lucide-react";
+import { Bookmark, Heart, Play, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
@@ -7,7 +7,6 @@ import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/compone
 import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { FEED_SPECIALISTS, specialistById } from '@/lib/specialists';
 import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
 import { ServiceFeedItem } from '@/components/bare/service-feed-item';
 import { FormulaSheet } from '@/components/bare/formula';
