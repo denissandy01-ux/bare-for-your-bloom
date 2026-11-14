@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Bookmark, Heart, Share2, MapPin, ChevronRight } from 'lucide-react';
+import { Bookmark, Heart, Share2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { BareSheet } from '@/components/bare/sheets';
@@ -32,9 +32,9 @@ export function ServiceFeedItem({ post }: { post: ServicePost }) {
     <div className="feed-shop absolute inset-x-3 bottom-3 space-y-2.5">
       <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-oat">
         <Link to="/specialist/$id" params={{ id: specialist.id }} className="font-semibold">{handleFor(specialist)}</Link>
-        <FollowPill following={state.followedCreators.includes(handleFor(specialist))} name={handleFor(specialist)} onToggle={()=>toggleCreator(handleFor(specialist))}/>
         <span className="text-sand">·</span>
-        <button onClick={() => setRoster(true)} className="inline-flex items-center text-sand underline-offset-2 hover:underline">{specialist.studio}<ChevronRight className="h-3.5 w-3.5" /></button>
+        <button onClick={() => setRoster(true)} className="text-sand underline-offset-2 hover:underline">{specialist.studio}</button>
+        <FollowPill following={state.followedCreators.includes(handleFor(specialist))} name={handleFor(specialist)} onToggle={()=>toggleCreator(handleFor(specialist))}/>
       </p>
       <p className="max-w-[80%] text-[15px] text-oat">{post.caption}</p>
       <div className="flex flex-wrap gap-2 text-xs"><span className="rounded-full bg-oat/15 px-3 py-1 text-oat backdrop-blur">{post.category}</span><span className="inline-flex items-center gap-1 rounded-full bg-oat/15 px-3 py-1 text-oat backdrop-blur"><MapPin className="h-3 w-3" />{specialist.city}</span></div>

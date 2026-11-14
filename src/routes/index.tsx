@@ -7,6 +7,7 @@ import { CreatorSheet } from '@/components/bare/creator-sheet';
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
 import { UNDERTONE_SWATCH, DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
+import { suggestShade } from "@/lib/shades";
 import { cn } from "@/lib/utils";
 import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
 import { ServiceFeedItem } from '@/components/bare/service-feed-item';
@@ -122,6 +123,8 @@ function FeedItem({ post }: { post: FeedPost }) {
   const [creator,setCreator]=useState(false);
   const kind = product ? matchKind(product) : "skin";
   const score = product ? fitScore(product, post.creator, browseProfile) : skinTwinScore(post.creator, browseProfile);
+  const tryShade = product && kind === "shade" ? suggestShade(product.id, browseProfile) : null;
+  const shadeColor = UNDERTONE_SWATCH[tryShade?.depth ?? browseProfile.depth][tryShade?.undertone ?? browseProfile.undertone];
   const saved = product ? state.savedProducts.includes(product.id) : false;
 
   // Play only while on screen, like a reel.
@@ -157,20 +160,19 @@ function FeedItem({ post }: { post: FeedPost }) {
 
 
       <div className="feed-actions absolute bottom-[118px] right-3 z-10 flex flex-col items-center gap-4">
-        <div className="relative flex flex-col items-center">
-        <button onClick={() => setFit(true)} className="flex flex-col items-center gap-[18px]" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
-          <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
-            <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
-          </div>
-          <span className="text-[11px] text-oat/90">{MATCH_LABEL[kind]}</span>
-        </button>
-        </div>
-        {kind === "shade" && <button onClick={() => setSwatch(true)} className="flex flex-col items-center gap-1" aria-label="Verified swatches">
-          <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 backdrop-blur">
-            <span className="flex -space-x-1.5">{(["Deep", "Tan", "Medium"] as const).map((d) => <span key={d} className="h-4 w-4 rounded-full ring-1 ring-oat" style={{ background: DEPTH_SWATCH[d] }} />)}</span>
-          </span>
-          <span className="text-[11px] text-oat/90">{post.swatches}</span>
-        </button>}
+        {kind === "shade"
+          ? <button onClick={() => setSwatch(true)} className="flex flex-col items-center gap-1.5" aria-label={`${score}% Shade Twin. Shade to try: ${tryShade?.code ?? `${browseProfile.depth} ${browseProfile.undertone}`}. Open swatches`}>
+              <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
+                <div className="grid h-[44px] w-[44px] place-items-center rounded-full font-display text-[13px] font-semibold text-oat ring-2 ring-cocoa/70" style={{ background: shadeColor, textShadow: "0 1px 3px rgb(0 0 0 / .55)" }}>{tryShade?.code ?? `${score}%`}</div>
+              </div>
+              <span className="text-[11px] text-oat/90">{tryShade ? "Shade to try" : MATCH_LABEL[kind]}</span>
+            </button>
+          : <button onClick={() => setFit(true)} className="flex flex-col items-center gap-1.5" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
+              <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
+                <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
+              </div>
+              <span className="text-[11px] text-oat/90">{MATCH_LABEL[kind]}</span>
+            </button>}
         <button onClick={() => toggleLike(post.id)} className="flex flex-col items-center gap-1" aria-pressed={liked} aria-label={liked ? "Unlike post" : "Like post"}>
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur"><Heart className={cn("h-5 w-5", liked && "fill-clay text-clay")} /></span>
           <span className="text-[11px] text-oat/90">{likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}</span>
@@ -187,9 +189,8 @@ function FeedItem({ post }: { post: FeedPost }) {
           {post.official && brand
             ? <Link to="/brand/$id" params={{id:brand.id}} className="inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline">{post.creator.handle}<BadgeCheck className="h-4 w-4 text-peach" aria-label="Official brand"/></Link>
             : <button onClick={()=>setCreator(true)} className="font-semibold underline-offset-2 hover:underline">{post.creator.handle}</button>}
+          {!post.official && <><span className="text-sand">·</span>{brand ? <Link to="/brand/$id" params={{id:brand.id}} className="text-sand underline-offset-2 hover:underline">{product.brand}</Link> : <span className="text-sand">{product.brand}</span>}</>}
           <FollowPill following={state.followedCreators.includes(post.creator.handle)} name={post.creator.handle} onToggle={()=>toggleCreator(post.creator.handle)}/>
-          <span className="text-sand">·</span>
-          {post.official ? <span className="text-sand">Official brand post</span> : <>with {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="text-sand underline-offset-2 hover:underline">{product.brand}</Link> : <span className="text-sand">{product.brand}</span>}</>}
         </p>
         <p className="max-w-[80%] text-[15px] text-oat">{post.caption}</p>
         <div className="flex items-center gap-2 rounded-[22px] bg-cocoa/45 p-2 text-oat backdrop-blur-md">
