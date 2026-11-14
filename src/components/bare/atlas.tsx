@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router';
-import { Search, ArrowUpRight, Heart, Bell, Check } from 'lucide-react';
+import { Link, useCanGoBack, useRouter } from '@tanstack/react-router';
+import { Search, ArrowLeft, ArrowUpRight, Heart, Bell, Check } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -16,3 +16,5 @@ export function AtlasHub(){const [query,setQuery]=useState('');const result=sear
  <section><h2 className="font-display text-2xl">New to Your Market</h2><p className="mt-1 text-xs text-sand">Emerging-brand previews · market availability not confirmed</p><div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">{BRANDS.filter(b=>b.emerging).map(b=><div key={b.id} className="space-y-3"><BrandCard brand={b}/><BrandActions brand={b}/></div>)}</div></section></>}
  <p className="border-t border-oat/15 pt-4 text-xs text-sand">Sample profiles and generated editorial imagery. Interest is not a purchase or confirmed market demand.</p>
  </div>;}
+
+export function AtlasBack({label}:{label:string}){const router=useRouter();const canGoBack=useCanGoBack();return <button type="button" aria-label={`Back to ${label}`} onClick={()=>canGoBack?router.history.back():router.navigate({to:'/discover'})} className="inline-flex h-11 items-center gap-2 rounded-full bg-cocoa-soft pl-3 pr-4 text-sm text-oat"><ArrowLeft className="h-5 w-5"/>{label}</button>;}
