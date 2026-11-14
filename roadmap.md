@@ -1,6 +1,6 @@
 # Becoming Bare
-- [ ] Build the reference-matched Video, Photo, Text Create flow with permission-based capture and preview.
-- [ ] Connect multiple tags, Feed/Learn publication, and owner-private resumable drafts.
+- [x] Build the reference-matched Video, Photo, Text Create flow with permission-based capture and preview.
+- [x] Connect multiple tags, Feed/Learn publication, and owner-private resumable drafts.
 - [ ] Verify signed-in draft/publish readback and phone/desktop layouts.
 - [x] Add recorded Canvas relevance toggle to product and specialist discovery.
 - [x] Polish empty galleries, native sharing with copy fallback, double-tap likes and save feedback.
