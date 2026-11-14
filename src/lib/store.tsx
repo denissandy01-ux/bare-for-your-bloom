@@ -16,6 +16,10 @@ export interface BareState {
   savedProducts: string[];
   savedSpecialists: string[];
   savedRoutines: string[];
+  shoppingCountry: string;
+  followedBrands: string[];
+  brandInterest: string[];
+  brandNotifications: string[];
   appliedCodes: string[];
   wallet: Txn[];
   canvasStart?: string;
@@ -30,6 +34,10 @@ const DEFAULT: BareState = {
   savedProducts: [],
   savedSpecialists: [],
   savedRoutines: [],
+  shoppingCountry: 'united-states',
+  followedBrands: [],
+  brandInterest: [],
+  brandNotifications: [],
   appliedCodes: [],
   wallet: [],
   trackedBottles: [],
@@ -49,6 +57,8 @@ interface Ctx {
   completeConsultation: (p: Profile) => void;
   toggleProduct: (id: string) => boolean;
   toggleRoutine: (id: string) => boolean;
+  setShoppingCountry: (id: string) => void;
+  toggleBrandSignal: (key: 'followedBrands' | 'brandInterest' | 'brandNotifications', id: string) => boolean;
   applyCode: (code: string) => void;
   recordPurchase: (label: string, amount: number) => void;
   requestPayout: () => void;
@@ -110,7 +120,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [state.profile, user?.id, cloudReady]);
 
-  const toggleIn = useCallback((key: "savedProducts" | "savedRoutines" | "savedSpecialists", id: string) => {
+  const toggleIn = useCallback((key: "savedProducts" | "savedRoutines" | "savedSpecialists" | 'followedBrands' | 'brandInterest' | 'brandNotifications', id: string) => {
     let added = false;
     setState((s) => {
       const has = s[key].includes(id);
@@ -128,6 +138,8 @@ export function BareProvider({ children }: { children: ReactNode }) {
     completeConsultation: (p) => setState((s) => ({ ...s, profile: p, consulted: true })),
     toggleProduct: (id) => toggleIn("savedProducts", id),
     toggleRoutine: (id) => toggleIn("savedRoutines", id),
+    setShoppingCountry: (shoppingCountry) => setState(s => ({...s, shoppingCountry})),
+    toggleBrandSignal: (key,id) => toggleIn(key,id),
     applyCode: (code) => setState((s) => (s.appliedCodes.includes(code) ? s : { ...s, appliedCodes: [...s.appliedCodes, code] })),
     recordPurchase: (label, amount) => setState((s) => ({ ...s, wallet: [{ id: uid(), kind: "purchase", label, amount, status: "pending", date: new Date().toISOString() }, ...s.wallet] })),
     requestPayout: () => setState((s) => {
