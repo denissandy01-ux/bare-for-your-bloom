@@ -211,5 +211,5 @@ function FeedItem({ post }: { post: FeedPost }) {
 }
 
 export function FollowPill({following,name,onToggle}:{following:boolean;name:string;onToggle:()=>void}) {
-  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('absolute left-1/2 top-[44px] grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full ring-2 ring-cocoa/80 shadow-sm transition-transform active:scale-90',following?'bg-oat text-clay':'bg-peach text-cocoa')}>{following?<Check className="h-3.5 w-3.5" strokeWidth={3}/>:<Plus className="h-3.5 w-3.5" strokeWidth={3}/>}</button>;
+  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('feed-follow absolute left-1/2 top-[44px] grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full ring-2 ring-cocoa/80 shadow-sm transition-transform active:scale-90',following?'bg-oat text-clay':'bg-peach text-cocoa')}>{following?<Check className="h-3.5 w-3.5" strokeWidth={3}/>:<Plus className="h-3.5 w-3.5" strokeWidth={3}/>}</button>;
 }

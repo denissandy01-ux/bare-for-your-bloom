@@ -189,9 +189,10 @@
 .google-auth { background:var(--google-bg); border:1px solid var(--google-border); color:var(--google-text); }
 .google-auth:hover { background:var(--google-bg); }
 
-.bare-feed .feed-actions { bottom: 225px; }
+.bare-feed .feed-actions { bottom: 196px; }
 @media (max-height: 620px) {
  .bare-feed .feed-actions { bottom: 190px; gap: 6px; }
+ .bare-feed .feed-follow { top:26px; width:20px; height:20px; }
  .bare-feed .feed-shop { right:12px; }
  .bare-feed .feed-wear-label { display:none; }
  .bare-feed .feed-actions button > div { width:44px; height:44px; }
