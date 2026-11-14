@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
-import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
+import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
@@ -150,7 +150,7 @@ function FeedItem({ post }: { post: FeedPost }) {
           <div className="flex shrink-0 flex-col gap-1"><Button variant="ghost" onClick={()=>setFormula(true)} className="h-9 rounded-full px-2 font-display text-xs italic text-clay">Formula</Button><Button variant="ghost" onClick={()=>setFounder(true)} className="h-8 rounded-full px-2 font-display text-[11px] italic text-clay">Founder Story</Button></div>
         </div>
         <button onClick={() => setBuy(true)} className="feed-buy flex min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-0 rounded-full bg-clay px-2 py-2 text-[15px] font-semibold text-oat">
-          Shop & Earn {Math.round(product.cashbackRate * 100)}% Cashback <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">{money(back)} back</span>
+          Shop & earn points <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">+{pointsFor(offer?.price ?? 0)} pts</span>
         </button>
       </div>
 

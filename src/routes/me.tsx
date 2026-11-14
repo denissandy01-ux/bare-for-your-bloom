@@ -1,6 +1,6 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BareHeader, ListRow, Page, SectionTitle } from "@/components/bare/kit";
-import { DEPTH_SWATCH, money, toneLabel } from "@/lib/data";
+import { DEPTH_SWATCH, toneLabel } from "@/lib/data";
 import { useBare, walletTotals, daysSince } from "@/lib/store";
 import { useAccount } from '@/lib/account';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute("/me")({
-  head: () => ({ meta: [{ title: "My Canvas · Becoming Bare" }, { name: "description", content: "Your canvas profile, cashback wallet and 30-day check-in." }, { property: "og:title", content: "My Canvas · Becoming Bare" }, { property: "og:description", content: "Your canvas profile, cashback wallet and 30-day check-in." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "My Canvas · Becoming Bare" }, { name: "description", content: "Your canvas profile, Bare Points and 30-day check-in." }, { property: "og:title", content: "My Canvas · Becoming Bare" }, { property: "og:description", content: "Your canvas profile, Bare Points and 30-day check-in." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: Me,
 });
 
@@ -33,7 +33,7 @@ function Me() {
           </div>
         </div>
         <Link to="/consultation" className="flex h-14 items-center justify-center rounded-full bg-clay text-[15px] font-semibold text-oat">{state.consulted ? "Retake Canvas Consultation" : "Start Canvas Consultation"}</Link>
-        <ListRow to="/wallet" title="Cashback Wallet" meta={`${money(w.available)} available · ${money(w.pending)} pending`} />
+        <ListRow to="/wallet" title="Bare Points" meta={`${Math.round(w.available)} pts available · ${Math.round(w.pending)} pending`} />
         <ListRow to="/canvas" title="30-Day Bare Canvas" meta={state.canvasStart ? `Day ${Math.min(30, daysSince(state.canvasStart))} of 30 · ${state.checkIns.length} check-ins` : "Track barrier, hair and bottle progress"} />
         <section className="space-y-3 border-t border-oat/15 pt-5"><SectionTitle meta="Behind the care">Creator & brand workspaces</SectionTitle><ListRow to="/studio" title="Explore the studio" meta="Creator tools · brand portal · licensing"/><ListRow to="/creator" title="Creator studio" meta="Content, partnerships & your own product line"/><ListRow to="/brand" title="Brand portal" meta="Your products & permission-based UGC licensing"/></section>
       </Page>

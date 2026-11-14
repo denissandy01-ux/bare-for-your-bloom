@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, Chip, Page, SectionTitle } from "@/components/bare/kit";
-import { CANVAS_DAYS, PRODUCTS, REVIEW_REWARD, money, productById } from "@/lib/data";
+import { CANVAS_DAYS, PRODUCTS, REVIEW_REWARD, productById } from "@/lib/data";
 import { daysSince, useBare } from "@/lib/store";
 
 export const Route = createFileRoute("/canvas")({
@@ -50,10 +50,10 @@ function Canvas() {
       <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything you noticed?" className="w-full rounded-[20px] border border-sand bg-transparent p-3 text-[14px]" />
       <button onClick={() => { addCheckIn({ ...(photo ? { photo } : {}), barrier, note, bottles: left }); setPhoto(undefined); setNote(""); toast("Check-in saved"); }} className="h-12 w-full rounded-full bg-clay font-semibold text-oat">Save check-in</button>
     </div>
-    <SectionTitle meta={`Review-to-earn · ${money(REVIEW_REWARD)} each`}>{unlocked ? "Your reviews are unlocked" : `Reviews unlock on day ${CANVAS_DAYS}`}</SectionTitle>
+    <SectionTitle meta={`Review-to-earn · ${REVIEW_REWARD} pts each`}>{unlocked ? "Your reviews are unlocked" : `Reviews unlock on day ${CANVAS_DAYS}`}</SectionTitle>
     {state.trackedBottles.map((id) => { const done = state.reviews.some((r) => r.productId === id); return (
       <div key={id} className="rounded-[28px] bg-cocoa-soft p-4"><p className="text-oat">{productById(id)?.name}</p>
-        {done ? <p className="text-[13px] text-sand">Reviewed · {money(REVIEW_REWARD)} earned</p> : unlocked ? <><textarea value={review[id] ?? ""} onChange={(e) => setReview({ ...review, [id]: e.target.value })} className="mt-2 w-full rounded-[20px] bg-oat p-3 text-[14px] text-cocoa" placeholder="30 days in, how did it do?" /><button disabled={(review[id] ?? "").trim().length < 20} onClick={() => addReview({ productId: id, rating: 5, text: review[id] ?? "" }, REVIEW_REWARD)} className="mt-2 h-11 rounded-full bg-clay px-5 text-[14px] font-semibold text-oat disabled:opacity-50">Submit & earn</button></> : <p className="text-[13px] text-sand/80">Keep checking in. {state.checkIns.length} so far.</p>}
+        {done ? <p className="text-[13px] text-sand">Reviewed · {REVIEW_REWARD} pts earned</p> : unlocked ? <><textarea value={review[id] ?? ""} onChange={(e) => setReview({ ...review, [id]: e.target.value })} className="mt-2 w-full rounded-[20px] bg-oat p-3 text-[14px] text-cocoa" placeholder="30 days in, how did it do?" /><button disabled={(review[id] ?? "").trim().length < 20} onClick={() => addReview({ productId: id, rating: 5, text: review[id] ?? "" }, REVIEW_REWARD)} className="mt-2 h-11 rounded-full bg-clay px-5 text-[14px] font-semibold text-oat disabled:opacity-50">Submit & earn</button></> : <p className="text-[13px] text-sand/80">Keep checking in. {state.checkIns.length} so far.</p>}
       </div>); })}
   </Page></>);
 }

@@ -309,8 +309,18 @@ export function feedForTone(posts: FeedPost[], me: Profile) {
     .sort((a, b) => skinTwinScore(b.creator, me) - skinTwinScore(a.creator, me));
 }
 
-export const PAYOUT_MIN = 10;
-export const REVIEW_REWARD = 2;
+// Bare Points: brand-funded rewards, not bank cashback.
+export const POINTS_PER_DOLLAR = 10;
+export const REVIEW_POINTS = 150;
+export const BOOKING_POINTS = 50;
+export const REDEEM_POINTS = 500;
+export const REDEEM_VALUE = 5;
+export const pointsFor = (price: number) => Math.floor(price * POINTS_PER_DOLLAR);
+export const pts = (n: number) => `${Math.round(n).toLocaleString()} pts`;
+/** Whole $5 rewards unlocked by an available balance. */
+export const rewardsUnlocked = (points: number) => Math.floor(points / REDEEM_POINTS);
+export const PAYOUT_MIN = REDEEM_POINTS;
+export const REVIEW_REWARD = REVIEW_POINTS;
 export const CANVAS_DAYS = 30;
 
 /** Where a product is sold, without implying one fixed price everywhere. */
