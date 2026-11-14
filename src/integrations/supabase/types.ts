@@ -21,6 +21,7 @@ export type Database = {
           caption: string
           country_id: string
           created_at: string
+          destination: string
           disclosure: string
           duration_weeks: number | null
           id: string
@@ -28,9 +29,14 @@ export type Database = {
           media_path: string
           media_type: string
           owner_id: string
+          people_tags: Json
           product_id: string | null
+          product_ids: string[]
           repurchase: boolean | null
           review_id: string | null
+          service_credit: string
+          specialist_ids: string[]
+          title: string
         }
         Insert: {
           author: string
@@ -38,6 +44,7 @@ export type Database = {
           caption: string
           country_id: string
           created_at?: string
+          destination?: string
           disclosure?: string
           duration_weeks?: number | null
           id?: string
@@ -45,9 +52,14 @@ export type Database = {
           media_path: string
           media_type: string
           owner_id: string
+          people_tags?: Json
           product_id?: string | null
+          product_ids?: string[]
           repurchase?: boolean | null
           review_id?: string | null
+          service_credit?: string
+          specialist_ids?: string[]
+          title?: string
         }
         Update: {
           author?: string
@@ -55,6 +67,7 @@ export type Database = {
           caption?: string
           country_id?: string
           created_at?: string
+          destination?: string
           disclosure?: string
           duration_weeks?: number | null
           id?: string
@@ -62,9 +75,14 @@ export type Database = {
           media_path?: string
           media_type?: string
           owner_id?: string
+          people_tags?: Json
           product_id?: string | null
+          product_ids?: string[]
           repurchase?: boolean | null
           review_id?: string | null
+          service_credit?: string
+          specialist_ids?: string[]
+          title?: string
         }
         Relationships: [
           {
