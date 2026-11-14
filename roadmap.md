@@ -1,8 +1,9 @@
 # Becoming Bare
-- [ ] Add Inside the Formula to products, feed sheets and saved shelf using existing canvas answers.
-- [ ] Add the Global Beauty Atlas, region/country navigation and centralized brand profiles.
-- [ ] Add shopping destination, follow, try-interest and local notification requests without inventing availability.
-- [ ] Verify feature flows and phone, tablet and desktop layouts.
+- [x] Add Inside the Formula to products, feed sheets and saved shelf using existing canvas answers.
+- [x] Add the Global Beauty Atlas, region/country navigation and centralized brand profiles.
+- [x] Add shopping destination, follow, try-interest and local notification requests without inventing availability.
+- [x] Verify feature flows and phone, tablet and desktop layouts.
+- Email launch alerts, confirmed shipping data and additional verified ingredient decks remain unconnected; Atlas interests are saved locally.
 - [x] Add sample specialist discovery with location, discipline, specialty, tone and texture filters.
 - [x] Add specialist profiles, service menus, portfolios, and products used or sold.
 - [x] Connect feed and Pros to specialist profiles without replacing product matching.
