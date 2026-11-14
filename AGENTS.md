@@ -43,3 +43,4 @@ use the editor.
 - Publish consumer media through owner-validated server functions and a private bucket with public read access only for published posts; keep licensing opt-in separate from publication.
 - Keep owned shelf, wishlist, empty-bottle logs and notification preferences distinct in local collection state; never treat enabling preferences or logging empties as delivered notifications or verified rewards.
 - Filter feed tabs using explicit tutorial types and followed author/brand IDs; do not relabel illustrative wear tests as educational tutorials.
+- Recover route-module download failures with an explicit full-page reload; router invalidation alone reuses a rejected lazy import, so never auto-reload in a loop.
