@@ -9,6 +9,6 @@ describe('beauty publishing and collections',()=>{
  it('requires product lifespan and repurchase decision for empty bottle reviews',()=>{expect(postSchema.safeParse(input).success).toBe(true);for(const field of ['product_id','duration_weeks','repurchase'])expect(postSchema.safeParse({...input,[field]:null}).success).toBe(false);});
  it('supports tutorial publishing without product tags',()=>{expect(postSchema.safeParse({...input,kind:'Tutorial',product_id:null,duration_weeks:null,repurchase:null}).success).toBe(true);});
  it('following shows only followed creators or brands',()=>{expect(tabPosts(FEED,'Following',[],['@nia.bare'],'united-states').map(p=>p.id)).toEqual(['p1']);expect(tabPosts(FEED,'Following',[],[],'united-states')).toHaveLength(0);});
- it('does not relabel wear tests as tutorials',()=>{expect(tabPosts(FEED,'Tips',[],[],'united-states')).toHaveLength(0);});
+ it('does not relabel wear tests as tutorials',()=>{expect(tabPosts(FEED,'Explore',[],[],'united-states',{topic:'Learn'})).toHaveLength(0);});
  it('distinguishes comparable categories',()=>{expect(compareCategory({category:'Hair'},{category:'Hair'})).toBe(true);expect(compareCategory({category:'Hair'},{category:'Makeup'})).toBe(false);});
 });
