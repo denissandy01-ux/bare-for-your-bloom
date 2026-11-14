@@ -1,18 +1,18 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bookmark, Heart, Play, Share2, MapPin, ArrowUpRight } from "lucide-react";
+import { Bookmark, Heart, Play, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
-import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, type FeedPost } from "@/lib/data";
+import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { FEED_SPECIALISTS, specialistById } from '@/lib/specialists';
 import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
 import { ServiceFeedItem } from '@/components/bare/service-feed-item';
 import { FormulaSheet } from '@/components/bare/formula';
 import { brandForProduct } from '@/lib/atlas';
 import { Button } from '@/components/ui/button';
+import { FitSheet } from '@/components/bare/fit-sheet';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -76,10 +76,10 @@ function FeedItem({ post }: { post: FeedPost }) {
   const ref = useRef<HTMLElement>(null);
   const offer = product ? bestOffer(product) : undefined;
   const back = product && offer ? cashbackFor(offer.price, product.cashbackRate) : 0;
-  const score = skinTwinScore(post.creator, state.profile);
+  const [fit,setFit]=useState(false);
+  const kind = product ? matchKind(product) : "skin";
+  const score = product ? fitScore(product, post.creator, state.profile) : skinTwinScore(post.creator, state.profile);
   const saved = product ? state.savedProducts.includes(product.id) : false;
-  const specialistId = FEED_SPECIALISTS[post.id];
-  const specialist = specialistId ? specialistById(specialistId) : undefined;
 
   // Play only while on screen, like a reel.
   useEffect(() => {
@@ -111,24 +111,21 @@ function FeedItem({ post }: { post: FeedPost }) {
       <p className="feed-wear-label pointer-events-none absolute left-4 top-[76px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
         <span className="h-1.5 w-1.5 rounded-full bg-peach" />{post.wearTest}
       </p>
-      {specialist && <Link to="/specialist/$id" params={{ id: specialist.id }} className="feed-specialist absolute left-4 top-[105px] z-10 max-w-[calc(100%-32px)] rounded-[20px] bg-cocoa/75 px-3 py-2 text-oat backdrop-blur">
-        <span className="flex items-center gap-2 text-[12px] font-semibold">{specialist.name}<ArrowUpRight className="h-3.5 w-3.5" /></span>
-        <span className="mt-0.5 flex items-center gap-1 text-[10px] text-sand"><MapPin className="h-3 w-3" />{specialist.discipline} · {specialist.city} · Sample pro</span>
-      </Link>}
+
 
       <div className="feed-actions absolute bottom-[176px] right-3 z-10 flex flex-col items-center gap-4">
-        <div className="flex flex-col items-center gap-1">
+        <button onClick={() => setFit(true)} className="flex flex-col items-center gap-1" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
           <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
             <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
           </div>
-          <span className="text-[11px] text-oat/90">Skin Twin</span>
-        </div>
-        <button onClick={() => setSwatch(true)} className="flex flex-col items-center gap-1" aria-label="Verified swatches">
+          <span className="text-[11px] text-oat/90">{MATCH_LABEL[kind]}</span>
+        </button>
+        {kind === "shade" && <button onClick={() => setSwatch(true)} className="flex flex-col items-center gap-1" aria-label="Verified swatches">
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 backdrop-blur">
             <span className="flex -space-x-1.5">{(["Deep", "Tan", "Medium"] as const).map((d) => <span key={d} className="h-4 w-4 rounded-full ring-1 ring-oat" style={{ background: DEPTH_SWATCH[d] }} />)}</span>
           </span>
           <span className="text-[11px] text-oat/90">{post.swatches}</span>
-        </button>
+        </button>}
         <button onClick={() => toggleLike(post.id)} className="flex flex-col items-center gap-1" aria-pressed={liked} aria-label={liked ? "Unlike post" : "Like post"}>
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur"><Heart className={cn("h-5 w-5", liked && "fill-clay text-clay")} /></span>
           <span className="text-[11px] text-oat/90">{likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}</span>
@@ -141,7 +138,6 @@ function FeedItem({ post }: { post: FeedPost }) {
       </div>
 
       <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-3">
-        {specialist && <Link to="/specialist/$id" params={{ id: specialist.id }} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-oat/95 px-4 text-[12px] font-semibold text-cocoa"><MapPin className="h-3.5 w-3.5" />View studio & services<ArrowUpRight className="h-3.5 w-3.5" /></Link>}
         <div className="flex items-center gap-3 rounded-[28px] bg-oat/95 p-3 pr-3">
           <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
             <img src={product.image} alt="" className="h-14 w-14 shrink-0 rounded-[16px] object-cover" />
@@ -161,7 +157,8 @@ function FeedItem({ post }: { post: FeedPost }) {
       <WhereToBuySheet product={product} open={buy} onOpenChange={setBuy} />
       <FormulaSheet product={product} open={formula} onOpenChange={setFormula}/>
       <FounderSheet product={product} open={founder} onOpenChange={setFounder} />
-      <SwatchSheet product={product} count={post.swatches} open={swatch} onOpenChange={setSwatch} />
+      <FitSheet product={product} creator={post.creator} score={score} open={fit} onOpenChange={setFit} />
+      {kind === "shade" && <SwatchSheet product={product} count={post.swatches} open={swatch} onOpenChange={setSwatch} />}
     </section>
   );
 }
