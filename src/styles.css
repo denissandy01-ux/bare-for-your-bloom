@@ -197,6 +197,10 @@
  .bare-feed .feed-actions button > div { width:44px; height:44px; }
  .bare-feed .feed-actions button > div > div { width:34px; height:34px; font-size:12px; }
  .bare-feed .feed-actions button > span:first-child { width:32px; height:32px; }
+ .bare-feed .feed-actions button > span + span { display:none; }
+ .bare-feed .feed-actions button > div + span { display:none; }
+ .bare-feed .feed-actions button > div { width:36px; height:36px; }
+ .bare-feed .feed-actions button > div > div { width:28px; height:28px; font-size:11px; }
 }
 @media (max-height: 450px) {
  .bare-feed .feed-shop { right:86px; }
