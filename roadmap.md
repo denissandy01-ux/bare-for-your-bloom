@@ -24,3 +24,5 @@
 - [x] Add content drafts, product performance and permission-based licensing interfaces; verify flows.
 - Measured engagement, confirmed commissions, live notifications and executed licensing payments remain unconnected; published consumer media is now available through Create.- [x] Feed tabs For You / Following / Explore (with Learn) / Global with region bubbles, feed search, Follow buttons and Following list.
 - [x] Private life stage, locs, silver/grey texture and hair length in the canvas.
+- [x] Me profile header, metric grid and slim canvas strip; Empty Bottle verdicts on products and Hall of Fame in Discover; multi-select studio services.
+- Studio map view and goal-based Beauty Journey not built yet.
