@@ -20,6 +20,7 @@ import { Route as MeRouteImport } from './routes/me'
 import { Route as ProsRouteImport } from './routes/pros'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as ShadeFinderRouteImport } from './routes/shade-finder'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as AuthenticatedBrandRouteImport } from './routes/_authenticated/brand'
@@ -84,6 +85,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShadeFinderRoute = ShadeFinderRouteImport.update({
+  id: '/shade-finder',
+  path: '/shade-finder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudioRoute = StudioRouteImport.update({
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/pros': typeof ProsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/shade-finder': typeof ShadeFinderRoute
   '/studio': typeof StudioRoute
   '/wallet': typeof WalletRoute
   '/brand': typeof AuthenticatedBrandRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/pros': typeof ProsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/shade-finder': typeof ShadeFinderRoute
   '/studio': typeof StudioRoute
   '/wallet': typeof WalletRoute
   '/brand': typeof AuthenticatedBrandRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/pros': typeof ProsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/shade-finder': typeof ShadeFinderRoute
   '/studio': typeof StudioRoute
   '/wallet': typeof WalletRoute
   '/_authenticated/brand': typeof AuthenticatedBrandRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/pros'
     | '/reset-password'
     | '/saved'
+    | '/shade-finder'
     | '/studio'
     | '/wallet'
     | '/brand'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/pros'
     | '/reset-password'
     | '/saved'
+    | '/shade-finder'
     | '/studio'
     | '/wallet'
     | '/brand'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/pros'
     | '/reset-password'
     | '/saved'
+    | '/shade-finder'
     | '/studio'
     | '/wallet'
     | '/_authenticated/brand'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   ProsRoute: typeof ProsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
+  ShadeFinderRoute: typeof ShadeFinderRoute
   StudioRoute: typeof StudioRoute
   WalletRoute: typeof WalletRoute
   BrandIdRoute: typeof BrandIdRoute
@@ -381,6 +394,13 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shade-finder': {
+      id: '/shade-finder'
+      path: '/shade-finder'
+      fullPath: '/shade-finder'
+      preLoaderRoute: typeof ShadeFinderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/studio': {
@@ -502,6 +522,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProsRoute: ProsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
+  ShadeFinderRoute: ShadeFinderRoute,
   StudioRoute: StudioRoute,
   WalletRoute: WalletRoute,
   BrandIdRoute: BrandIdRoute,
