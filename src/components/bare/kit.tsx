@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Check, ChevronDown, ChevronRight, Bell, Plus } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { DEPTH_SWATCH, toneLabel } from "@/lib/data";
+import { DEPTH_SWATCH, UNDERTONE_SWATCH, toneLabel } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { ToneSheet } from "./sheets";
 import { Button } from '@/components/ui/button';
@@ -13,21 +13,24 @@ export function Wordmark({ className }: { className?: string }) {
 
 /** Kit mobile header: wordmark, tone/title pill, Trending badge. */
 export function BareHeader({ title, overlay }: { title?: string; overlay?: boolean }) {
-  const { state } = useBare();
+  const { state, browseProfile, temporaryCanvas } = useBare();
+  const path = useRouterState({select:s=>s.location.pathname});
+  const browsing = path !== "/me" && path !== "/canvas";
+  const canvas = browsing ? browseProfile : state.profile;
   const [open, setOpen] = useState(false);
-  const label = title ?? toneLabel(state.profile.depth, state.profile.undertone);
+  const label = title ?? (browsing && temporaryCanvas ? `Browsing · ${canvas.depth} ${canvas.undertone}` : toneLabel(canvas.depth, canvas.undertone));
   return (
     <header className={cn("z-20 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 pt-3", overlay ? "absolute inset-x-0 top-0" : "relative")}>
       <Wordmark className="md:hidden" />
-      <Button variant="secondary" onClick={() => setOpen(true)} className="flex h-11 min-w-0 items-center gap-2 whitespace-normal rounded-full bg-oat/95 pl-2.5 pr-3.5 text-[13px] font-medium text-cocoa md:col-start-1 md:col-end-3 md:justify-self-start" aria-label="Choose your skin tone">
-        <span className="h-5 w-5 shrink-0 rounded-full ring-2 ring-oat" style={{ background: DEPTH_SWATCH[state.profile.depth] }} />
+      <Button variant="secondary" onClick={() => setOpen(true)} className="flex h-11 min-w-0 items-center gap-2 whitespace-normal rounded-full bg-oat/95 pl-2.5 pr-3.5 text-[13px] font-medium text-cocoa md:col-start-1 md:col-end-3 md:justify-self-start" aria-label="Choose your browsing canvas">
+        <span className="h-5 w-5 shrink-0 rounded-full ring-2 ring-oat" style={{ background: UNDERTONE_SWATCH[canvas.depth][canvas.undertone] }} />
         <span className="min-w-0 flex-1 text-center leading-tight line-clamp-2">{label}</span>
         <ChevronDown className="h-3 w-3 shrink-0" />
       </Button>
       <Link to="/notifications" aria-label="Notifications" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-cocoa-soft text-oat">
         <Bell className="h-5 w-5" />
       </Link>
-      <ToneSheet open={open} onOpenChange={setOpen} />
+      <ToneSheet open={open} onOpenChange={setOpen} browsing={browsing} />
     </header>
   );
 }
@@ -97,9 +100,9 @@ export function SectionTitle({ meta, children, dark = true }: { meta: ReactNode;
 
 export function Chip({ active, children, onClick, className }: { active?: boolean; children: ReactNode; onClick?: () => void; className?: string }) {
   return (
-    <button type="button" onClick={onClick} aria-pressed={active} className={cn("inline-flex h-11 shrink-0 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium transition-colors", active ? "bg-clay text-oat" : "bg-oat/95 text-cocoa", className)}>
+    <Button variant="ghost" type="button" onClick={onClick} aria-pressed={active} className={cn("inline-flex h-11 shrink-0 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium transition-colors", active ? "bg-clay text-oat" : "bg-oat/95 text-cocoa", className)}>
       <span className={cn("h-1.5 w-1.5 rounded-full", active ? "bg-oat" : "bg-peach")} />{children}
-    </button>
+    </Button>
   );
 }
 

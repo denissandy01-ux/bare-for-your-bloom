@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Depth, Profile, Undertone } from "./data";
 import { supabase } from '@/integrations/supabase/client';
 import { useAccount } from './account';
-import { DEPTHS, UNDERTONES } from './data';
+import { DEPTHS, UNDERTONES, browsingCanvas } from './data';
 import { toast } from 'sonner';
 import type { EmptyBottle, NotificationTopic } from './community';
 
@@ -67,6 +67,9 @@ interface Ctx {
   removeEmpty: (id: string) => void;
   state: BareState;
   ready: boolean;
+  browseProfile: Profile;
+  temporaryCanvas: Profile | null;
+  setTemporaryCanvas: (p: Profile | null) => void;
   setTone: (d: Depth, u: Undertone) => void;
   setCanvas: (p: Profile) => void;
   toggleSpecialist: (id: string) => boolean;
@@ -92,6 +95,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
   const [cloudReady, setCloudReady] = useState<string | null>(null);
   const synced = useRef('');
   const [state, setState] = useState<BareState>(DEFAULT);
+  const [temporaryCanvas, setTemporaryCanvas] = useState<Profile | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -148,7 +152,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<Ctx>(() => ({
-    state, ready,
+    state, ready, temporaryCanvas, setTemporaryCanvas, browseProfile: browsingCanvas(state.profile, temporaryCanvas),
     toggleOwned: id => toggleIn('ownedProducts', id),
     togglePost: id => toggleIn('savedPosts', id),
     toggleCreator: id => toggleIn('followedCreators', id),
@@ -179,8 +183,8 @@ export function BareProvider({ children }: { children: ReactNode }) {
       reviews: [...s.reviews, { ...r, date: new Date().toISOString() }],
       wallet: [{ id: uid(), kind: "review", label: "Verified 30-day review", amount: reward, status: "available", date: new Date().toISOString() }, ...s.wallet],
     })),
-    reset: () => setState(DEFAULT),
-  }), [state, ready, toggleIn]);
+    reset: () => { setTemporaryCanvas(null); setState(DEFAULT); },
+  }), [state, ready, toggleIn, temporaryCanvas]);
 
   return <BareCtx.Provider value={value}>{children}</BareCtx.Provider>;
 }

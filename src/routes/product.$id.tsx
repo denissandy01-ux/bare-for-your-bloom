@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, Page, SecondaryButton } from "@/components/bare/kit";
 import { FounderSheet, OfferRows, WhereToBuySheet } from "@/components/bare/sheets";
-import { FEED, ROUTINES, bestOffer, cashbackFor, pointsFor, money, productById, skinTwinScore } from "@/lib/data";
+import { FEED, ROUTINES, bestOffer, cashbackFor, pointsFor, money, productById, fitScore, matchKind, MATCH_LABEL } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { FormulaSection } from '@/components/bare/formula';
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const { id } = Route.useLoaderData();
   const product = productById(id);
-  const { state, toggleProduct } = useBare();
+  const { state, browseProfile, toggleProduct } = useBare();
   const [buy, setBuy] = useState(false);
   const [founder, setFounder] = useState(false);
   if (!product) throw notFound();
@@ -67,7 +67,7 @@ function ProductPage() {
                 <div key={t.id} className="relative overflow-hidden rounded-[28px]">
                   <img src={t.media} alt="" className="aspect-[3/4] w-full object-cover" loading="lazy" />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-cocoa/90 to-transparent p-3 pt-10">
-                    <p className="text-[12px] font-semibold text-oat">{t.creator.handle} · {skinTwinScore(t.creator, state.profile)}% Skin Twin</p>
+                    <p className="text-[12px] font-semibold text-oat">{t.creator.handle} · {fitScore(product, t.creator, browseProfile)}% {MATCH_LABEL[matchKind(product)]}</p>
                     <p className="text-[11px] text-sand">{t.wearTest}</p>
                   </div>
                 </div>

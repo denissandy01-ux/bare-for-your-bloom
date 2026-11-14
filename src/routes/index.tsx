@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
-import { DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
+import { UNDERTONE_SWATCH, DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
@@ -36,22 +36,27 @@ export const Route = createFileRoute("/")({
 });
 
 function Feed() {
-  const { state } = useBare();
+  const { state, browseProfile, temporaryCanvas } = useBare();
   const [showAll, setShowAll] = useState(false);
   const [toneOpen, setToneOpen] = useState(false);
   const [tab,setTab]=useState<(typeof FEED_TABS)[number]>('For You');
   const community=useQuery(communityOptions);
   const search=Route.useSearch();
-  const matched = feedForTone(FEED, state.profile);
-  const base = showAll ? [...FEED].sort((a, b) => skinTwinScore(b.creator, state.profile) - skinTwinScore(a.creator, state.profile)) : matched;
+  const matched = feedForTone(FEED, browseProfile);
+  const base = showAll ? [...FEED].sort((a, b) => skinTwinScore(b.creator, browseProfile) - skinTwinScore(a.creator, browseProfile)) : matched;
   const posts = search.post ? FEED.filter(p=>p.id===search.post) : tabPosts(tab==='For You'?base:FEED,tab,state.followedBrands,state.followedCreators,state.shoppingCountry);
   const shared=community.data?.filter(p=>search.post ? p.id===search.post : tab==='Following' ? state.followedCreators.includes(p.owner_id)||(!!p.brand_id&&state.followedBrands.includes(p.brand_id)) : tab==='Global' ? p.country_id!==state.shoppingCountry : tab==='Tips' ? p.kind==='Tutorial' : true)??[];
   const services=search.post?SERVICE_FEED.filter(p=>p.id===search.post):tab==='For You'?SERVICE_FEED:tab==='Following'?SERVICE_FEED.filter(p=>{const s=specialistById(p.specialistId);return s&&state.followedCreators.includes(handleFor(s));}):[];
-  useEffect(() => setShowAll(false), [state.profile.depth, state.profile.undertone]);
+  useEffect(() => setShowAll(false), [browseProfile.depth, browseProfile.undertone]);
 
   return (
     <div className="bare-feed relative mx-auto h-[calc(100dvh-var(--tabs-h))] w-full max-w-[480px] overflow-hidden md:my-0 md:h-dvh">
-      <header className="absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-cocoa/80 to-transparent px-4 pt-4 pb-3"><div className="flex items-center justify-between gap-3"><Link to="/" className="font-display text-[24px] leading-tight text-oat">Becoming Bare</Link><Link to="/notifications" aria-label="Notifications" className="grid h-10 w-10 place-items-center rounded-full bg-cocoa/45 text-oat"><Bell className="h-5 w-5"/></Link></div><div role="tablist" aria-label="Feed categories" className="mt-3 grid grid-cols-4 gap-1">{FEED_TABS.map(t=><Button role="tab" aria-selected={tab===t} key={t} size="sm" variant={tab===t?'secondary':'ghost'} className={cn('rounded-full px-1 text-xs',tab!==t&&'text-oat hover:bg-oat/15 hover:text-oat')} onClick={()=>setTab(t)}>{t}</Button>)}</div></header>
+      <header className="absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-cocoa/80 to-transparent px-4 pt-4 pb-3">
+        <div className="flex items-center justify-between gap-2"><Button variant="ghost" onClick={()=>setToneOpen(true)} aria-label="Choose your browsing canvas" className="h-auto min-w-0 gap-2 bg-transparent p-0 text-oat hover:bg-transparent hover:text-peach"><span className="h-6 w-6 shrink-0 rounded-full ring-1 ring-oat/60" style={{background:UNDERTONE_SWATCH[browseProfile.depth][browseProfile.undertone]}}/><span className="min-w-0 text-left"><span className="block font-display text-[22px] leading-tight">Becoming Bare</span>{temporaryCanvas && <span className="block text-[10px] text-sand">Browsing · {browseProfile.depth} {browseProfile.undertone}</span>}</span></Button><Link to="/notifications" aria-label="Notifications" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-cocoa/45 text-oat"><Bell className="h-5 w-5"/></Link></div>
+        <div role="tablist" aria-label="Feed categories" className="mt-3 grid grid-cols-4 gap-1 border-b border-oat/20">{FEED_TABS.map(t=><Button role="tab" aria-selected={tab===t} key={t} size="sm" variant="ghost" className={cn('h-9 rounded-none border-b-2 bg-transparent px-1 text-xs text-oat hover:bg-oat/10 hover:text-oat',tab===t?'border-peach font-semibold':'border-transparent text-oat/75')} onClick={()=>setTab(t)}>{t}</Button>)}</div>
+        {tab==='Global' && <Link to="/atlas" className="mt-2 inline-flex items-center gap-1 text-xs text-oat">Explore Global Beauty Atlas →</Link>}
+      </header>
+      <ToneSheet open={toneOpen} onOpenChange={setToneOpen} browsing />
       {posts.length === 0 && shared.length===0 && services.length===0 ? (
         <div className="flex h-full items-center px-6">
           <EmptyState
@@ -59,7 +64,7 @@ function Feed() {
             body={tab==='Following'?'Follow a creator or brand to keep their stories here.':tab==='Tips'?'Share a tutorial or explore ingredient education.':'Browse more discoveries or adjust your canvas.'}
             action={tab==='Tips'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
           />
-          <ToneSheet open={toneOpen} onOpenChange={setToneOpen} />
+
         </div>
       ) : (
         <div className="no-scrollbar h-full snap-y snap-mandatory overflow-y-scroll">
@@ -78,7 +83,7 @@ function Feed() {
 
 function FeedItem({ post }: { post: FeedPost }) {
   const product = productById(post.productId);
-  const { state, toggleProduct, toggleLike, toggleCreator, togglePost } = useBare();
+  const { state, browseProfile, toggleProduct, toggleLike, toggleCreator, togglePost } = useBare();
   const liked = state.likedPosts.includes(post.id);
   const likeCount = (post.likes ?? 0) + (liked ? 1 : 0);
   const nav = useNavigate();
@@ -92,7 +97,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   const back = product && offer ? cashbackFor(offer.price, product.cashbackRate) : 0;
   const [fit,setFit]=useState(false);
   const kind = product ? matchKind(product) : "skin";
-  const score = product ? fitScore(product, post.creator, state.profile) : skinTwinScore(post.creator, state.profile);
+  const score = product ? fitScore(product, post.creator, browseProfile) : skinTwinScore(post.creator, browseProfile);
   const saved = product ? state.savedProducts.includes(product.id) : false;
 
   // Play only while on screen, like a reel.

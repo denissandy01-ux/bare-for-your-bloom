@@ -44,3 +44,6 @@ use the editor.
 - Keep owned shelf, wishlist, empty-bottle logs and notification preferences distinct in local collection state; never treat enabling preferences or logging empties as delivered notifications or verified rewards.
 - Filter feed tabs using explicit tutorial types and followed author/brand IDs; do not relabel illustrative wear tests as educational tutorials.
 - Recover route-module download failures with an explicit full-page reload; router invalidation alone reuses a rejected lazy import, so never auto-reload in a loop.
+- Keep temporary discovery canvases in provider memory, separate from persisted profiles; browsing must never overwrite the account canvas.
+- Read skin needs through the shared legacy-compatible tag helper and derive discipline filters centrally; multiple selections and hidden filters must behave consistently.
+- Group product discovery without changing shade-specific catalog types, and filter stores only from recorded offers; do not infer unlisted stockists.

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  DEPTHS, DEPTH_SWATCH, UNDERTONE_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_TYPES, money, pointsFor, pts, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
+  DEPTHS, DEPTH_SWATCH, UNDERTONE_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_BEHAVIORS, SKIN_CONCERNS, skinTags, money, pointsFor, pts, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
   type Depth, type Offer, type Product, type Undertone,
 } from "@/lib/data";
 import { useBare } from "@/lib/store";
@@ -27,40 +27,46 @@ export function BareSheet({ open, onOpenChange, title, description, children }: 
   );
 }
 
-export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { state, setCanvas } = useBare();
-  const [d, setD] = useState<Depth>(state.profile.depth);
-  const [u, setU] = useState<Undertone>(state.profile.undertone);
-  const [hair,setHair] = useState(state.profile.hair ?? '');
-  const [skinType,setSkinType] = useState(state.profile.skinType ?? '');
-  const [fragrance,setFragrance] = useState(state.profile.fragrance ?? '');
-  const [refShade,setRefShade] = useState(state.profile.referenceShade ?? '');
-  const [silicone,setSilicone] = useState(state.profile.silicone ?? '');
-  const [exclusions,setExclusions] = useState(state.profile.exclusions ?? '');
-  useEffect(() => { if (open) { setD(state.profile.depth); setU(state.profile.undertone); setHair(state.profile.hair ?? ''); setSkinType(state.profile.skinType ?? ''); setFragrance(state.profile.fragrance ?? ''); setSilicone(state.profile.silicone ?? ''); setExclusions(state.profile.exclusions ?? ''); setRefShade(state.profile.referenceShade ?? ''); } }, [open, state.profile]);
+export function ToneSheet({ open, onOpenChange, browsing = false }: { open: boolean; onOpenChange: (o: boolean) => void; browsing?: boolean }) {
+  const { state, setCanvas, browseProfile, temporaryCanvas, setTemporaryCanvas } = useBare();
+  const source = browsing ? browseProfile : state.profile;
+  const [temporary, setTemporary] = useState(!!temporaryCanvas);
+  const [d, setD] = useState<Depth>(source.depth);
+  const [u, setU] = useState<Undertone>(source.undertone);
+  const [hair,setHair] = useState(source.hair ?? '');
+  const [skinTypes,setSkinTypes] = useState<string[]>(skinTags(source));
+  const [fragrance,setFragrance] = useState(source.fragrance ?? '');
+  const [refShade,setRefShade] = useState(source.referenceShade ?? '');
+  const [silicone,setSilicone] = useState(source.silicone ?? '');
+  const [exclusions,setExclusions] = useState(source.exclusions ?? '');
+  useEffect(() => { if (open) { setD(source.depth); setU(source.undertone); setHair(source.hair ?? ''); setSkinTypes(skinTags(source)); setTemporary(!!temporaryCanvas); setFragrance(source.fragrance ?? ''); setSilicone(source.silicone ?? ''); setExclusions(source.exclusions ?? ''); setRefShade(source.referenceShade ?? ''); } }, [open, source, temporaryCanvas]);
   return (
-    <BareSheet open={open} onOpenChange={onOpenChange} title="Your bare canvas" description="Wear tests are matched to creators within one tone of you.">
+    <BareSheet open={open} onOpenChange={onOpenChange} title={browsing ? "Browse a bare canvas" : "Your bare canvas"} description={browsing ? "Your canvas, or a different one for someone you care about." : "Your tone, texture and skin needs."}>
+      {browsing && <div className="mb-5 grid grid-cols-2 gap-2"><Button variant="secondary" aria-pressed={!temporary} onClick={() => { setTemporary(false); setD(state.profile.depth); setU(state.profile.undertone); setHair(state.profile.hair ?? ""); setSkinTypes(skinTags(state.profile)); setFragrance(state.profile.fragrance ?? ""); setSilicone(state.profile.silicone ?? ""); setExclusions(state.profile.exclusions ?? ""); setRefShade(state.profile.referenceShade ?? ""); }} className={cn("rounded-full", !temporary && "bg-clay text-oat")}>My canvas</Button><Button variant="secondary" aria-pressed={temporary} onClick={() => setTemporary(true)} className={cn("rounded-full", temporary && "bg-clay text-oat")}>Someone else</Button></div>}
       <p className="text-[11px] uppercase tracking-[0.14em] text-umber">Depth</p>
       <div className="mt-2 grid grid-cols-5 gap-2">
         {DEPTHS.map((x, i) => (
-          <button key={x} onClick={() => setD(x)} aria-pressed={d === x} className={cn("flex flex-col items-center gap-1.5 rounded-[20px] border p-2 text-[12px]", d === x ? "border-clay bg-sand/60 font-semibold" : "border-sand")}>
+          <Button variant="ghost" key={x} onClick={() => setD(x)} aria-pressed={d === x} className={cn("flex flex-col items-center h-auto min-w-0 gap-1.5 whitespace-normal rounded-[20px] border p-2 text-[12px]", d === x ? "border-clay bg-sand/60 font-semibold" : "border-sand")}>
             <span className={cn("h-9 w-9 rounded-full ring-2", d === x ? "ring-clay" : "ring-oat")} style={{ background: UNDERTONE_SWATCH[x][u] }} />
             {x}<span className="text-[10px] text-umber">Tone {i + 1}</span>
             <span className="flex gap-0.5" aria-hidden>{UNDERTONES.map((un) => <span key={un} className={cn("h-2 w-2 rounded-full", un === u && "ring-1 ring-clay")} style={{ background: UNDERTONE_SWATCH[x][un] }} />)}</span>
-          </button>
+          </Button>
         ))}
       </div>
       <p className="mt-5 text-[11px] uppercase tracking-[0.14em] text-umber">Undertone</p>
       <div className="mt-2 grid grid-cols-4 gap-2">
         {UNDERTONES.map((x) => (
-          <button key={x} onClick={() => setU(x)} aria-pressed={u === x} className={cn("h-11 rounded-full text-[13px] font-medium", "flex items-center justify-center gap-1.5", u === x ? "bg-clay text-oat" : "bg-sand/60 text-cocoa")}><span className="h-4 w-4 shrink-0 rounded-full ring-1 ring-oat" style={{ background: UNDERTONE_SWATCH[d][x] }} />{x}</button>
+          <Button variant="ghost" key={x} onClick={() => setU(x)} aria-pressed={u === x} className={cn("h-11 rounded-full text-[13px] font-medium", "flex items-center justify-center gap-1.5", u === x ? "bg-clay text-oat" : "bg-sand/60 text-cocoa")}><span className="h-4 w-4 shrink-0 rounded-full ring-1 ring-oat" style={{ background: UNDERTONE_SWATCH[d][x] }} />{x}</Button>
         ))}
       </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2"><label className="text-sm">Hair texture<select value={hair} onChange={e=>setHair(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{HAIR_TYPES.map(x=><option key={x}>{x}</option>)}</select></label><label className="text-sm">Skin type<select value={skinType} onChange={e=>setSkinType(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{SKIN_TYPES.map(x=><option key={x}>{x}</option>)}</select></label></div>
+      <label className="mt-5 block text-sm">Hair texture<select aria-label="Hair texture" value={hair} onChange={e=>setHair(e.target.value)} className="bare-input"><option value="">Not set</option>{HAIR_TYPES.map(x=><option key={x}>{x}</option>)}</select></label>
+      {[{ label: 'Skin behavior', options: SKIN_BEHAVIORS }, { label: 'Skin concerns', options: SKIN_CONCERNS }].map(group => <fieldset key={group.label} className="mt-5"><legend className="text-sm">{group.label} · select all that apply</legend><div className="mt-2 flex flex-wrap gap-2">{group.options.map(tag => <Button key={tag} variant="secondary" aria-pressed={skinTypes.includes(tag)} onClick={() => setSkinTypes(old => old.includes(tag) ? old.filter(t=>t!==tag) : [...old,tag])} className={cn('h-auto min-h-10 whitespace-normal rounded-full px-3 text-xs',skinTypes.includes(tag) ? 'bg-clay text-oat' : 'bg-sand/60 text-cocoa')}>{tag}</Button>)}</div></fieldset>)}
       <label className="mt-5 block text-sm">Your go-to shade today · optional<input value={refShade} maxLength={80} onChange={e=>setRefShade(e.target.value)} className="bare-input" placeholder="e.g. Fenty Pro Filt'r 420"/><span className="mt-1 block text-[12px] text-umber">Helps us find your shade twins. It never changes your tone.</span></label>
       <Link to="/shade-finder" onClick={()=>onOpenChange(false)} className="mt-3 inline-block text-sm text-clay underline">Not sure? Find your tone from a photo →</Link>
       <details className="mt-5 text-sm"><summary className="cursor-pointer font-display text-lg">Formula preferences · optional</summary><label className="mt-3 block">Fragrance<select className="bare-input" value={fragrance} onChange={e=>setFragrance(e.target.value)}><option value="">No preference set</option><option>No preference</option><option>Avoid fragrance</option></select></label><label className="mt-3 block">Silicones<select className="bare-input" value={silicone} onChange={e=>setSilicone(e.target.value)}><option value="">No preference set</option><option>No preference</option><option>Prefer silicone-free</option></select></label><label className="mt-3 block">Ingredient exclusions<input value={exclusions} maxLength={300} onChange={e=>setExclusions(e.target.value)} className="bare-input" placeholder="Optional ingredients you avoid"/></label></details>
-      <Button onClick={() => { setCanvas({...state.profile, depth:d, undertone:u, hair, skinType, fragrance, silicone, exclusions, referenceShade: refShade.trim()}); onOpenChange(false); toast('Your canvas updated'); }} className="mt-6 h-14 w-full rounded-full text-[15px] font-semibold">Save my canvas</Button>
+      {browsing && temporary && <p className="mt-5 text-xs text-umber">Temporary browsing only. Your saved canvas stays unchanged.</p>}
+      <Button onClick={() => { const next = {...source, depth:d, undertone:u, hair, skinTypes, fragrance, silicone, exclusions, referenceShade: refShade.trim()}; if (browsing && temporary) setTemporaryCanvas(next); else { setCanvas(next); if (browsing) setTemporaryCanvas(null); } onOpenChange(false); toast(browsing && temporary ? 'Browsing for someone else' : 'Your canvas updated'); }} className="mt-6 h-14 w-full rounded-full text-[15px] font-semibold">{browsing && temporary ? 'Explore this canvas' : 'Save my canvas'}</Button>
+      {browsing && temporaryCanvas && <Button variant="ghost" className="mt-2 w-full text-clay" onClick={() => {setTemporaryCanvas(null); onOpenChange(false);}}>Return to my canvas</Button>}
       <Link to="/consultation" onClick={() => onOpenChange(false)} className="mt-3 block text-center font-display text-[15px] italic text-clay">Not sure? Take the Canvas Consultation</Link>
     </BareSheet>
   );
@@ -123,13 +129,13 @@ export function FounderSheet({ product, open, onOpenChange }: { product: Product
 }
 
 export function SwatchSheet({ product, count, open, onOpenChange }: { product: Product; count: number; open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { state } = useBare();
-  const me = state.profile;
+  const { browseProfile: me } = useBare();
   const posts = FEED.filter((f) => f.productId === product.id);
   const split = swatchSplit(count, posts.map((p) => p.creator.depth));
-  const mine = split.find((x) => x.depth === me.depth)!;
+  const mine = split.find((x) => x.depth === me.depth);
+  if (!mine) return null;
   const twins = Math.round(mine.n * (me.undertone === "Neutral" ? 0.4 : 0.3));
-  const concern = me.skinType ? Math.round(twins * 0.45) : null;
+  const concern = skinTags(me).length ? Math.round(twins * 0.45) : null;
   const gap = shadeGap(split);
   const suggestion = suggestShade(product.id, me);
   const shadeCreators = posts.filter((p) => p.creator.shade);
@@ -138,7 +144,7 @@ export function SwatchSheet({ product, count, open, onOpenChange }: { product: P
       <div className="rounded-[22px] bg-cocoa p-4 text-oat">
         <p className="text-[12px] uppercase tracking-[0.14em] text-sand">Your shade twins</p>
         <p className="mt-1 font-display text-[30px] leading-tight">{twins} <span className="text-[16px]">verified on {me.depth} {me.undertone}</span></p>
-        {concern !== null && <p className="mt-1 text-[13px] text-sand">{concern} of them also have {me.skinType?.toLowerCase()} skin</p>}
+        {concern !== null && <p className="mt-1 text-[13px] text-sand">{concern} of them also have {skinTags(me).join(", ").toLowerCase()} skin</p>}
       </div>
       {suggestion && (
         <div className="mt-4 rounded-[22px] border border-sand p-4">

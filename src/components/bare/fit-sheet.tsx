@@ -4,9 +4,9 @@ import { MATCH_LABEL, fitReasons, matchKind, type Creator, type Product } from "
 import { useBare } from "@/lib/store";
 
 export function FitSheet({ product, creator, score, open, onOpenChange }: { product: Product; creator: Creator; score: number; open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { state } = useBare();
+  const { browseProfile } = useBare();
   const kind = matchKind(product);
-  const reasons = fitReasons(product, creator, state.profile);
+  const reasons = fitReasons(product, creator, browseProfile);
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-[28px] bg-oat">
