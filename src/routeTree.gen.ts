@@ -32,6 +32,7 @@ import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticate
 import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
 import { Route as AtlasRegionRouteImport } from './routes/atlas.$region'
 import { Route as BrandIdRouteImport } from './routes/brand.$id'
+import { Route as CreatorIdRouteImport } from './routes/creator.$id'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as RoutineIdRouteImport } from './routes/routine.$id'
 import { Route as SpecialistIdRouteImport } from './routes/specialist.$id'
@@ -151,6 +152,11 @@ const BrandIdRoute = BrandIdRouteImport.update({
   path: '/brand/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorIdRoute = CreatorIdRouteImport.update({
+  id: '/creator/$id',
+  path: '/creator/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/creator': typeof AuthenticatedCreatorRoute
   '/atlas/$region': typeof AtlasRegionRoute
   '/brand/$id': typeof BrandIdRoute
+  '/creator/$id': typeof CreatorIdRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/creator': typeof AuthenticatedCreatorRoute
   '/atlas/$region': typeof AtlasRegionRoute
   '/brand/$id': typeof BrandIdRoute
+  '/creator/$id': typeof CreatorIdRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/_authenticated/creator': typeof AuthenticatedCreatorRoute
   '/atlas/$region': typeof AtlasRegionRoute
   '/brand/$id': typeof BrandIdRoute
+  '/creator/$id': typeof CreatorIdRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/creator'
     | '/atlas/$region'
     | '/brand/$id'
+    | '/creator/$id'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/creator'
     | '/atlas/$region'
     | '/brand/$id'
+    | '/creator/$id'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/_authenticated/creator'
     | '/atlas/$region'
     | '/brand/$id'
+    | '/creator/$id'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
@@ -364,6 +376,7 @@ export interface RootRouteChildren {
   StudioRoute: typeof StudioRoute
   WalletRoute: typeof WalletRoute
   BrandIdRoute: typeof BrandIdRoute
+  CreatorIdRoute: typeof CreatorIdRoute
   ProductIdRoute: typeof ProductIdRoute
   RoutineIdRoute: typeof RoutineIdRoute
   SpecialistIdRoute: typeof SpecialistIdRoute
@@ -532,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creator/$id': {
+      id: '/creator/$id'
+      path: '/creator/$id'
+      fullPath: '/creator/$id'
+      preLoaderRoute: typeof CreatorIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -610,6 +630,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudioRoute: StudioRoute,
   WalletRoute: WalletRoute,
   BrandIdRoute: BrandIdRoute,
+  CreatorIdRoute: CreatorIdRoute,
   ProductIdRoute: ProductIdRoute,
   RoutineIdRoute: RoutineIdRoute,
   SpecialistIdRoute: SpecialistIdRoute,
