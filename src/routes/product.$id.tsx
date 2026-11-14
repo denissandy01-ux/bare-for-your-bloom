@@ -7,6 +7,8 @@ import { FounderSheet, OfferRows, WhereToBuySheet } from "@/components/bare/shee
 import { FEED, ROUTINES, bestOffer, cashbackFor, money, productById, skinTwinScore } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { FormulaSection } from '@/components/bare/formula';
+import { brandForProduct } from '@/lib/atlas';
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => { if (!productById(params.id)) throw notFound(); return { id: params.id }; },
@@ -21,10 +23,12 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductPage() {
   const { id } = Route.useLoaderData();
-  const product = productById(id)!;
+  const product = productById(id);
   const { state, toggleProduct } = useBare();
   const [buy, setBuy] = useState(false);
   const [founder, setFounder] = useState(false);
+  if (!product) throw notFound();
+  const brand=brandForProduct(product.id);
   const offer = bestOffer(product);
   const saved = state.savedProducts.includes(product.id);
   const tests = FEED.filter((f) => f.productId === product.id);
@@ -38,7 +42,7 @@ function ProductPage() {
           <img src={product.image} alt={product.name} className="aspect-[4/5] w-full rounded-[28px] object-cover" />
           <div className="space-y-4">
             <div className="rounded-[28px] bg-oat p-5 text-cocoa">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-umber">{product.brand} · {product.category}</p>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-umber">{brand ? <Link to="/brand/$id" params={{id:brand.id}} className="underline">{product.brand}</Link> : product.brand} · {product.category}</p>
               <h1 className="mt-1 font-display text-[28px] leading-tight">{product.name}</h1>
               <p className="mt-1 text-[14px] text-umber">{offer.retailer} · {money(offer.price)}</p>
               <div className="mt-3 flex flex-wrap gap-2">{product.claims.map((c) => <span key={c} className="rounded-full bg-sand/60 px-3 py-1.5 text-[12px]">{c}</span>)}</div>
@@ -54,6 +58,7 @@ function ProductPage() {
           </div>
         </div>
 
+        <FormulaSection product={product}/>
         {tests.length > 0 && (
           <div>
             <h2 className="mb-2 px-1 font-display text-[20px]">Wear tests</h2>

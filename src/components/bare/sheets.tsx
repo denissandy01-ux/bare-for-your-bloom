@@ -10,8 +10,9 @@ import {
 } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { Button } from '@/components/ui/button';
+import { brandForProduct } from '@/lib/atlas';
 
-function BareSheet({ open, onOpenChange, title, description, children }: { open: boolean; onOpenChange: (o: boolean) => void; title: string; description?: string; children: ReactNode }) {
+export function BareSheet({ open, onOpenChange, title, description, children }: { open: boolean; onOpenChange: (o: boolean) => void; title: string; description?: string; children: ReactNode }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="mx-auto max-h-[88dvh] max-w-lg overflow-y-auto rounded-t-[28px] border-sand bg-oat px-5 pb-8 pt-6 text-cocoa">
@@ -31,7 +32,10 @@ export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
   const [u, setU] = useState<Undertone>(state.profile.undertone);
   const [hair,setHair] = useState(state.profile.hair ?? '');
   const [skinType,setSkinType] = useState(state.profile.skinType ?? '');
-  useEffect(() => { if (open) { setD(state.profile.depth); setU(state.profile.undertone); setHair(state.profile.hair ?? ''); setSkinType(state.profile.skinType ?? ''); } }, [open, state.profile]);
+  const [fragrance,setFragrance] = useState(state.profile.fragrance ?? '');
+  const [silicone,setSilicone] = useState(state.profile.silicone ?? '');
+  const [exclusions,setExclusions] = useState(state.profile.exclusions ?? '');
+  useEffect(() => { if (open) { setD(state.profile.depth); setU(state.profile.undertone); setHair(state.profile.hair ?? ''); setSkinType(state.profile.skinType ?? ''); setFragrance(state.profile.fragrance ?? ''); setSilicone(state.profile.silicone ?? ''); setExclusions(state.profile.exclusions ?? ''); } }, [open, state.profile]);
   return (
     <BareSheet open={open} onOpenChange={onOpenChange} title="Your bare canvas" description="Wear tests are matched to creators within one tone of you.">
       <p className="text-[11px] uppercase tracking-[0.14em] text-umber">Depth</p>
@@ -50,7 +54,8 @@ export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
         ))}
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2"><label className="text-sm">Hair texture<select value={hair} onChange={e=>setHair(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{HAIR_TYPES.map(x=><option key={x}>{x}</option>)}</select></label><label className="text-sm">Skin type<select value={skinType} onChange={e=>setSkinType(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{SKIN_TYPES.map(x=><option key={x}>{x}</option>)}</select></label></div>
-      <Button onClick={() => { setCanvas({...state.profile, depth:d, undertone:u, hair, skinType}); onOpenChange(false); toast('Your canvas updated'); }} className="mt-6 h-14 w-full rounded-full text-[15px] font-semibold">Save my canvas</Button>
+      <details className="mt-5 text-sm"><summary className="cursor-pointer font-display text-lg">Formula preferences · optional</summary><label className="mt-3 block">Fragrance<select className="bare-input" value={fragrance} onChange={e=>setFragrance(e.target.value)}><option value="">No preference set</option><option>No preference</option><option>Avoid fragrance</option></select></label><label className="mt-3 block">Silicones<select className="bare-input" value={silicone} onChange={e=>setSilicone(e.target.value)}><option value="">No preference set</option><option>No preference</option><option>Prefer silicone-free</option></select></label><label className="mt-3 block">Ingredient exclusions<input value={exclusions} maxLength={300} onChange={e=>setExclusions(e.target.value)} className="bare-input" placeholder="Optional ingredients you avoid"/></label></details>
+      <Button onClick={() => { setCanvas({...state.profile, depth:d, undertone:u, hair, skinType, fragrance, silicone, exclusions}); onOpenChange(false); toast('Your canvas updated'); }} className="mt-6 h-14 w-full rounded-full text-[15px] font-semibold">Save my canvas</Button>
       <Link to="/consultation" onClick={() => onOpenChange(false)} className="mt-3 block text-center font-display text-[15px] italic text-clay">Not sure? Take the Canvas Consultation</Link>
     </BareSheet>
   );
@@ -101,10 +106,11 @@ export function WhereToBuySheet({ product, open, onOpenChange }: { product: Prod
 }
 
 export function FounderSheet({ product, open, onOpenChange }: { product: Product; open: boolean; onOpenChange: (o: boolean) => void }) {
+  const brand = brandForProduct(product.id);
   return (
     <BareSheet open={open} onOpenChange={onOpenChange} title="Founder Story" description={`${product.founder.name} · ${product.founder.title}`}>
       <img src={product.image} alt={product.name} className="aspect-[4/3] w-full rounded-[28px] object-cover" />
-      <p className="mt-4 text-[15px] leading-relaxed">{product.founder.story}</p>
+      {brand && <Link to="/brand/$id" params={{id:brand.id}} onClick={()=>onOpenChange(false)} className="mt-4 block font-display text-lg text-clay">Meet {brand.name} · Founder Story →</Link>}
       <div className="mt-4 flex flex-wrap gap-2">{product.claims.map((c) => <span key={c} className="rounded-full bg-sand/60 px-3 py-1.5 text-[12px]">{c}</span>)}</div>
       <Link to="/product/$id" params={{ id: product.id }} onClick={() => onOpenChange(false)} className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-clay text-[15px] font-semibold text-oat">See product & wear tests</Link>
     </BareSheet>

@@ -36,3 +36,7 @@ use the editor.
 - Treat content licensing as explicit creator opt-in and request/response interest, not a rights transfer or payment; expose only opt-in catalog fields to brands.
 - Keep illustrative service posts separate from product wear tests and interleave them without assigning Skin Twin scores to salon services.
 - Store signed-in canvas profiles in Cloud while retaining guest exploration locally; never expose canvas profiles to business workspaces or invent performance statistics.
+- Keep Atlas brands and countries in a shared browser-safe catalog with canonical IDs; multiple discovery regions must not duplicate records.
+- Keep ingredient education source-backed and separate from illustrative product claims; absent verification must produce an unknown state, never a compatibility score.
+- Render founder biographies only on the shared brand detail page; product and feed entry points link there rather than duplicating the story.
+- Persist Atlas follows and destination-specific interest locally until notification delivery is connected; never describe saved interest as delivered alerts or purchases.
