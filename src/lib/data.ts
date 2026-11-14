@@ -26,6 +26,15 @@ export const DEPTH_SWATCH: Record<Depth, string> = {
   Deep: "#6B4430",
 };
 
+/** Undertone swatches per depth (data, not theme): cool = pink, neutral = beige, warm = golden, olive = green-grey. */
+export const UNDERTONE_SWATCH: Record<Depth, Record<Undertone, string>> = {
+  Fair: { Cool: "#F3D2CB", Neutral: "#F1D3BF", Warm: "#F2D1AE", Olive: "#E6D2B2" },
+  Light: { Cool: "#E0B2A2", Neutral: "#DDB394", Warm: "#DFB07F", Olive: "#CDB088" },
+  Medium: { Cool: "#BF8775", Neutral: "#BE8A66", Warm: "#C38A55", Olive: "#A98A5E" },
+  Tan: { Cool: "#97604F", Neutral: "#98643F", Warm: "#A06733", Olive: "#85683E" },
+  Deep: { Cool: "#6A4038", Neutral: "#6B4430", Warm: "#734826", Olive: "#5E4A2E" },
+};
+
 export function toneLabel(depth: Depth, undertone: Undertone) {
   return `${depth} ${undertone} (Tone ${DEPTHS.indexOf(depth) + 1})`;
 }

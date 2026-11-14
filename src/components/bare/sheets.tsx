@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  DEPTHS, DEPTH_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_TYPES, money, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
+  DEPTHS, DEPTH_SWATCH, UNDERTONE_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_TYPES, money, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
   type Depth, type Offer, type Product, type Undertone,
 } from "@/lib/data";
 import { useBare } from "@/lib/store";
@@ -52,7 +52,7 @@ export function ToneSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
       <p className="mt-5 text-[11px] uppercase tracking-[0.14em] text-umber">Undertone</p>
       <div className="mt-2 grid grid-cols-4 gap-2">
         {UNDERTONES.map((x) => (
-          <button key={x} onClick={() => setU(x)} aria-pressed={u === x} className={cn("h-11 rounded-full text-[13px] font-medium", u === x ? "bg-clay text-oat" : "bg-sand/60 text-cocoa")}>{x}</button>
+          <button key={x} onClick={() => setU(x)} aria-pressed={u === x} className={cn("h-11 rounded-full text-[13px] font-medium", "flex items-center justify-center gap-1.5", u === x ? "bg-clay text-oat" : "bg-sand/60 text-cocoa")}><span className="h-4 w-4 shrink-0 rounded-full ring-1 ring-oat" style={{ background: UNDERTONE_SWATCH[d][x] }} />{x}</button>
         ))}
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2"><label className="text-sm">Hair texture<select value={hair} onChange={e=>setHair(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{HAIR_TYPES.map(x=><option key={x}>{x}</option>)}</select></label><label className="text-sm">Skin type<select value={skinType} onChange={e=>setSkinType(e.target.value)} className="mt-2 w-full rounded-xl border border-sand bg-oat p-3 text-cocoa"><option value="">Not set</option>{SKIN_TYPES.map(x=><option key={x}>{x}</option>)}</select></label></div>
@@ -141,7 +141,7 @@ export function SwatchSheet({ product, count, open, onOpenChange }: { product: P
       {suggestion && (
         <div className="mt-4 rounded-[22px] border border-sand p-4">
           <p className="text-[12px] uppercase tracking-[0.14em] text-umber">Shade to try</p>
-          <p className="mt-1 font-display text-[24px]">{suggestion.code} <span className="text-[14px] text-umber">· {suggestion.depth} {suggestion.undertone}</span></p>
+          <p className="mt-1 font-display text-[24px]">{suggestion.code} <span className="mx-1 inline-block h-5 w-5 rounded-full align-middle ring-2 ring-oat" style={{ background: UNDERTONE_SWATCH[suggestion.depth][suggestion.undertone] }} /><span className="text-[14px] text-umber">· {suggestion.depth} {suggestion.undertone}</span></p>
           {shadeCreators.map((p) => <p key={p.id} className="mt-1 text-[13px]">{p.creator.handle} wears {p.creator.shade}{p.creator.shade === suggestion.code ? " · same as your shade" : ""} · {skinTwinScore(p.creator, me)}% Skin Twin</p>)}
           {me.referenceShade && <p className="mt-1 text-[13px] text-umber">Your go-to: {me.referenceShade}</p>}
           <p className="mt-2 text-[12px] text-umber">A starting point, not a guarantee. Swatch on your jaw in daylight.</p>
@@ -154,7 +154,7 @@ export function SwatchSheet({ product, count, open, onOpenChange }: { product: P
           {split.map(({ depth: d, share, n }) => (
             <li key={d} className="flex items-center gap-3">
               <span className={cn("h-8 w-8 shrink-0 rounded-full ring-2", me.depth === d ? "ring-clay" : "ring-oat")} style={{ background: DEPTH_SWATCH[d] }} />
-              <span className="w-16 text-[14px]">{d}</span>
+              <span className="w-16 text-[14px]">{d}<span className="mt-1 flex gap-0.5">{UNDERTONES.map((un) => <span key={un} title={`${d} ${un}`} className={cn("h-2.5 w-2.5 rounded-full", me.depth === d && me.undertone === un && "ring-1 ring-clay")} style={{ background: UNDERTONE_SWATCH[d][un] }} />)}</span></span>
               <span className="h-2 flex-1 overflow-hidden rounded-full bg-sand"><span className="block h-full rounded-full bg-clay" style={{ width: `${(share / Math.max(...split.map((x) => x.share))) * 100}%` }} /></span>
               <span className="w-10 text-right text-[13px] tabular-nums text-umber">{n}</span>
             </li>
