@@ -154,7 +154,8 @@ function FeedItem({ post }: { post: FeedPost }) {
       </p>
 
 
-      <div className="feed-actions absolute bottom-[150px] right-3 z-10 flex flex-col items-center gap-4">
+      <div className="feed-actions absolute bottom-[132px] right-3 z-10 flex flex-col items-center gap-4">
+        <div className="relative flex flex-col items-center">
         <button onClick={() => setFit(true)} className="flex flex-col items-center gap-1" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
           <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
             <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
@@ -162,6 +163,7 @@ function FeedItem({ post }: { post: FeedPost }) {
           <span className="text-[11px] text-oat/90">{MATCH_LABEL[kind]}</span>
         </button>
         <FollowPill following={state.followedCreators.includes(post.creator.handle)} name={post.creator.handle} onToggle={()=>toggleCreator(post.creator.handle)}/>
+        </div>
         {kind === "shade" && <button onClick={() => setSwatch(true)} className="flex flex-col items-center gap-1" aria-label="Verified swatches">
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 backdrop-blur">
             <span className="flex -space-x-1.5">{(["Deep", "Tan", "Medium"] as const).map((d) => <span key={d} className="h-4 w-4 rounded-full ring-1 ring-oat" style={{ background: DEPTH_SWATCH[d] }} />)}</span>
@@ -209,5 +211,5 @@ function FeedItem({ post }: { post: FeedPost }) {
 }
 
 export function FollowPill({following,name,onToggle}:{following:boolean;name:string;onToggle:()=>void}) {
-  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('inline-flex h-6 items-center gap-0.5 rounded-full px-2 text-[11px] font-semibold',following?'bg-oat/20 text-oat':'bg-oat text-cocoa')}>{following?'Following':<><Plus className="h-3 w-3"/>Follow</>}</button>;
+  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('absolute left-1/2 top-[46px] grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full ring-2 ring-cocoa/80 shadow-sm transition-transform active:scale-90',following?'bg-oat text-clay':'bg-peach text-cocoa')}>{following?<Check className="h-3.5 w-3.5" strokeWidth={3}/>:<Plus className="h-3.5 w-3.5" strokeWidth={3}/>}</button>;
 }
