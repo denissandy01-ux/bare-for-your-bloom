@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
 import { CreatorSheet } from '@/components/bare/creator-sheet';
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
-import { UNDERTONE_SWATCH, DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
+import { UNDERTONE_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { suggestShade } from "@/lib/shades";
 import { cn } from "@/lib/utils";
