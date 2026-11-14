@@ -10,6 +10,8 @@ import barber from "@/assets/feed-barber.jpg";
 export const DEPTHS = ["Fair", "Light", "Medium", "Tan", "Deep"] as const;
 export const UNDERTONES = ["Cool", "Neutral", "Warm", "Olive"] as const;
 export const SKIN_TYPES = ["Sensitive", "Acne-prone", "Dry", "Oily", "Combination", "Rosacea-prone", "Balanced"] as const;
+export const SKIN_BEHAVIORS = ["Balanced", "Dry", "Oily", "Combination"] as const;
+export const SKIN_CONCERNS = ["Sensitive", "Acne-prone", "Rosacea-prone", "Dehydrated", "Reactive / easily irritated"] as const;
 export const BARRIER = ["Calm", "Sometimes reactive", "Very reactive"] as const;
 export const HAIR_TYPES = ["1 Straight", "2 Wavy", "3 Curly", "4A Coily", "4B Coily", "4C Coily", "Shaved / beard focus"] as const;
 export const POROSITY = ["Low", "Normal", "High", "Not sure"] as const;
@@ -56,7 +58,7 @@ export function retailerUrl(r: RetailerName, p: Product) {
   return SEARCH[r] + encodeURIComponent(`${p.brand} ${p.name}`);
 }
 
-export type Category = "Skincare" | "Makeup" | "Hair" | "Body" | "Beard";
+export type Category = "Skincare" | "Makeup" | "Hair" | "Body" | "Beard" | "Nails" | "Tools & Accessories";
 
 export interface Product {
   id: string;
@@ -77,16 +79,18 @@ export interface Product {
 }
 
 export const SUBCATEGORIES: Record<Category, string[]> = {
-  Skincare: ["Cleansers", "Toners & Essences", "Serums", "Moisturizers", "SPF"],
-  Makeup: ["Skin Tint", "Foundation", "Concealer", "Brows", "Eyes"],
+  Skincare: ["Cleansers", "Toners & Essences", "Serums", "Moisturizers", "Sun Care"],
+  Makeup: ["Face", "Eyes", "Lips", "Cheeks"],
   Hair: ["Shampoo", "Conditioner", "Leave-in", "Styling", "Hair Tools"],
   Body: ["Oils", "Body Wash"],
   Beard: ["Aftershave", "Beard Oil"],
+  Nails: ["Nail Color", "Nail Care", "Press-ons"],
+  "Tools & Accessories": ["Hair Tools", "Face Tools", "Brushes"],
 };
 
 export const PRODUCTS: Product[] = [
   {
-    id: "cosrx-aloe-spf50", sub: "SPF", brand: "COSRX", name: "Daily Aloe SPF50", category: "Skincare", image: dropper, cashbackRate: 0.08,
+    id: "cosrx-aloe-spf50", sub: "Sun Care", brand: "COSRX", name: "Daily Aloe SPF50", category: "Skincare", image: dropper, cashbackRate: 0.08,
     offers: [{ retailer: "Target", price: 14.99, stock: "In Stock" }, { retailer: "Ulta", price: 16.0, stock: "In Stock" }, { retailer: "YesStyle", price: 13.4, stock: "Low Stock" }],
     founder: { name: "COSRX lab team", title: "Seoul, 2013", story: "COSRX began as a small lab answering one question: what does irritated skin actually need? Fewer ingredients, honest percentages. The aloe sunscreen came from customers with deep and olive tones writing in about chalky filters. The team rebuilt the base around aloe and a lightweight chemical filter so it melts clear on every canvas." },
     claims: ["Zero white cast", "Reef-friendly filters", "Fragrance-free"], trendRank: 1,
@@ -98,7 +102,7 @@ export const PRODUCTS: Product[] = [
     claims: ["pH 5.5", "Sulfate-free", "Reactive-skin tested"], trendRank: 3, launchpad: true,
   },
   {
-    id: "melanin-shield-spf", sub: "SPF", brand: "Rooted Sun", name: "Melanin Shield SPF 50", category: "Skincare", image: deepSpf, cashbackRate: 0.08,
+    id: "melanin-shield-spf", sub: "Sun Care", brand: "Rooted Sun", name: "Melanin Shield SPF 50", category: "Skincare", image: deepSpf, cashbackRate: 0.08,
     offers: [{ retailer: "Target", price: 13.99, stock: "In Stock" }, { retailer: "Walmart", price: 13.49, stock: "In Stock" }, { retailer: "Sephora", price: 18.0, stock: "Out of Stock" }],
     founder: { name: "Kemi Adebayo", title: "Founder, chemist", story: "Kemi spent years watching sunscreen turn her skin grey. Rooted Sun is a sheer, tinted-to-clear SPF built on deep skin first, then tested lighter, not the other way round." },
     claims: ["Clear on deep skin", "No grey cast", "Hydrating"], trendRank: 2, launchpad: true, fits: { depths: ["Tan", "Deep"] },
@@ -225,14 +229,14 @@ export const FEED: FeedPost[] = [
   { id: "p17", productId: "beard-oil", media: barber, likes: 1170, wearTest: "Wear test · 10 days, no itch", swatches: 97, caption: "Coarse beard, soft by day three, no flakes.", creator: { handle: "@kwame.groom", depth: "Deep", undertone: "Olive", skinType: "Oily", hair: "Shaved / beard focus" } },
 ];
 
-export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; barrier?: string; hair?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string; referenceShade?: string }
+export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; skinTypes?: string[]; barrier?: string; hair?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string; referenceShade?: string }
 
 /** Skin Twin score: how closely a wear-test creator's canvas matches yours. */
 export function skinTwinScore(creator: Creator, me: Profile) {
   let s = 98;
   s -= Math.abs(DEPTHS.indexOf(creator.depth) - DEPTHS.indexOf(me.depth)) * 12;
   if (creator.undertone !== me.undertone) s -= 8;
-  if (me.skinType && creator.skinType !== me.skinType) s -= 5;
+  if (skinTags(me).length && !skinTags(me).includes(creator.skinType)) s -= 5;
   return Math.max(40, s);
 }
 
@@ -305,8 +309,8 @@ export function purchaseQuote(price: number, cashbackRate: number, discount = 0)
 /** Wear tests within one depth step of the chosen tone, best Skin Twin first. */
 export function feedForTone(posts: FeedPost[], me: Profile) {
   return posts
-    .filter((p) => Math.abs(DEPTHS.indexOf(p.creator.depth) - DEPTHS.indexOf(me.depth)) <= 1)
-    .sort((a, b) => skinTwinScore(b.creator, me) - skinTwinScore(a.creator, me));
+    .filter((p) => { const product = productById(p.productId); return product && (matchKind(product) === "hair" ? !me.hair || p.creator.hair === me.hair : Math.abs(DEPTHS.indexOf(p.creator.depth) - DEPTHS.indexOf(me.depth)) <= 1); })
+    .sort((a, b) => { const ap = productById(a.productId), bp = productById(b.productId); return (bp ? fitScore(bp, b.creator, me) : 0) - (ap ? fitScore(ap, a.creator, me) : 0); });
 }
 
 // Bare Points: brand-funded rewards, not bank cashback.
@@ -341,7 +345,7 @@ export function suggestFor(me: Profile, lovedBrands: string[] = []) {
   return PRODUCTS.map((p) => {
     let s = 0;
     if (p.fits?.depths?.includes(me.depth)) s += 3;
-    if (me.skinType && p.fits?.skinTypes?.includes(me.skinType)) s += 3;
+    if (skinTags(me).some(tag => p.fits?.skinTypes?.includes(tag))) s += 3;
     if (me.hair && p.fits?.hair?.includes(me.hair)) s += 3;
     if (lovedBrands.includes(p.brand)) s += 2;
     s += FEED.filter((f) => f.productId === p.id && Math.abs(DEPTHS.indexOf(f.creator.depth) - DEPTHS.indexOf(me.depth)) <= 1).length * 2;
@@ -375,8 +379,8 @@ export function fitScore(p: Product, creator: Creator, me: Profile) {
     if (me.hair && creator.hair !== me.hair) s -= 18;
     if (p.fits?.hair && me.hair && !p.fits.hair.includes(me.hair)) s -= 10;
   } else {
-    if (me.skinType && creator.skinType !== me.skinType) s -= 14;
-    if (p.fits?.skinTypes && me.skinType && !p.fits.skinTypes.includes(me.skinType)) s -= 12;
+    if (skinTags(me).length && !skinTags(me).includes(creator.skinType)) s -= 14;
+    if (p.fits?.skinTypes && skinTags(me).length && !skinTags(me).some(tag => p.fits?.skinTypes?.includes(tag))) s -= 12;
     if (p.fits?.depths && !p.fits.depths.includes(me.depth)) s -= 6;
   }
   return Math.max(40, Math.min(98, s));
@@ -384,6 +388,7 @@ export function fitScore(p: Product, creator: Creator, me: Profile) {
 
 /** Plain-language reasons behind a fit score. */
 export function fitReasons(p: Product, creator: Creator, me: Profile): { ok: boolean; text: string }[] {
+  const tags = skinTags(me);
   const kind = matchKind(p), r: { ok: boolean; text: string }[] = [];
   if (kind === "shade") {
     r.push({ ok: creator.depth === me.depth, text: creator.depth === me.depth ? `Tested by someone with your ${me.depth} depth` : `Tester is ${creator.depth}; you're ${me.depth}` });
@@ -392,10 +397,29 @@ export function fitReasons(p: Product, creator: Creator, me: Profile): { ok: boo
     r.push({ ok: !me.hair || creator.hair === me.hair, text: me.hair ? (creator.hair === me.hair ? `Tested on ${me.hair} hair like yours` : `Tested on ${creator.hair}; yours is ${me.hair}`) : `Tested on ${creator.hair} — add your texture for a closer match` });
     if (p.fits?.hair) r.push({ ok: !me.hair || p.fits.hair.includes(me.hair), text: `Rated well by ${p.fits.hair.join(", ")} textures` });
   } else {
-    r.push({ ok: !me.skinType || creator.skinType === me.skinType, text: me.skinType ? (creator.skinType === me.skinType ? `Tester also has ${me.skinType} skin` : `Tester has ${creator.skinType} skin; yours is ${me.skinType}`) : `Tester has ${creator.skinType} skin — add your skin type for a closer match` });
-    if (p.fits?.skinTypes) r.push({ ok: !me.skinType || p.fits.skinTypes.includes(me.skinType), text: `Rated well by ${p.fits.skinTypes.join(", ").toLowerCase()} skin` });
+    r.push({ ok: !tags.length || tags.includes(creator.skinType), text: tags.length ? (tags.includes(creator.skinType) ? `Tester shares your ${creator.skinType} skin tag` : `Tester has ${creator.skinType} skin; your tags are ${tags.join(", ")}`) : `Tester has ${creator.skinType} skin — add your skin type for a closer match` });
+    if (p.fits?.skinTypes) r.push({ ok: !tags.length || tags.some(tag => p.fits?.skinTypes?.includes(tag)), text: `Rated well by ${p.fits.skinTypes.join(", ").toLowerCase()} skin` });
     if (p.fits?.depths) r.push({ ok: p.fits.depths.includes(me.depth), text: `Most tested on ${p.fits.depths.join(" & ")} skin` });
   }
   p.claims.slice(0, 2).forEach((c) => r.push({ ok: true, text: c }));
   return r;
+}
+
+/** Legacy single-choice canvases remain readable; an explicit empty array clears tags. */
+export const skinTags = (p: Profile): string[] => p.skinTypes ?? (p.skinType ? [p.skinType] : []);
+export const browsingCanvas = (saved: Profile, temporary: Profile | null): Profile => temporary ?? saved;
+export function productGroup(p: Product) {
+  if (p.category === "Makeup") return ["Skin Tint", "Foundation", "Concealer"].includes(p.sub ?? "") ? "Face" : p.sub === "Brows" ? "Eyes" : p.sub;
+  return p.sub;
+}
+export const STORE_TYPES = ["All stores", "Drugstore", "Beauty Supply", "Prestige", "Direct & Indie"] as const;
+export type StoreType = (typeof STORE_TYPES)[number];
+export function matchesStore(p: Product, store: StoreType) {
+  if (store === "All stores") return true;
+  const retailers: Record<Exclude<StoreType, "All stores">, RetailerName[]> = { Drugstore: ["Target", "Walmart", "Boots"], "Beauty Supply": [], Prestige: ["Sephora", "Ulta"], "Direct & Indie": ["Brand site", "YesStyle"] };
+  return p.offers.some(o => retailers[store].includes(o.retailer));
+}
+export function matchesPrice(p: Product, band: string) {
+  const price = whereSold(p).from;
+  return band === "All prices" || (band === "Under $15" ? price < 15 : band === "$15–$35" ? price >= 15 && price < 35 : band === "$35–$70" ? price >= 35 && price < 70 : price >= 70);
 }

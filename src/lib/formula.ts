@@ -1,4 +1,4 @@
-import type { Product, Profile } from './data';
+import { skinTags, type Product, type Profile } from './data';
 export interface Ingredient { name: string; benefit: string; explanation: string }
 export interface Formula { source: string; checked: string; benefits: string[]; ingredients: Ingredient[]; inci: string; recognition: string[] }
 const squalane: Ingredient = { name:'Squalane', benefit:'Softness & moisture retention', explanation:'An emollient that softens skin and helps reduce moisture loss. It can also lubricate hair for a smoother feel. An ingredient function is not a guarantee of individual results.' };
@@ -10,8 +10,8 @@ export function canvasInsights(product: Product, profile: Profile): string[] {
  const f=FORMULAS[product.id];
  if (!f) return ['A confirmed ingredient list is needed before comparing this formula with your canvas.'];
  const notes:string[]=[];
- if(profile.skinType==='Dry' && f.ingredients.some(i=>i.name==='Squalane')) notes.push('For your dry skin: squalane helps soften skin and retain moisture.');
- if(profile.skinType==='Sensitive' || profile.barrier==='Very reactive' || profile.skinType==='Rosacea-prone') notes.push('For your reactive canvas: try a small patch first. Ingredient information cannot predict a reaction.');
+ if(skinTags(profile).includes('Dry') && f.ingredients.some(i=>i.name==='Squalane')) notes.push('For your dry skin: squalane helps soften skin and retain moisture.');
+ if(skinTags(profile).some(t => ['Sensitive','Rosacea-prone','Reactive / easily irritated'].includes(t)) || profile.barrier==='Very reactive') notes.push('For your reactive canvas: try a small patch first. Ingredient information cannot predict a reaction.');
  if(product.id==='squalane' && profile.hair && profile.hair!=='Shaved / beard focus') notes.push(`For your ${profile.hair} hair: the manufacturer also describes hair-softening use; begin with a small amount on the ends.`);
  if(product.category==='Makeup') notes.push(`For your ${profile.depth} ${profile.undertone} canvas: compare a shade swatch in daylight. Formula ingredients do not determine your shade match.`);
  if(profile.fragrance==='Avoid fragrance') notes.push(f.recognition.some(x=>x.startsWith('Fragrance-free'))?'Your fragrance preference: the manufacturer describes this product as fragrance-free.':'Your fragrance preference: check the current package ingredient list; no fragrance certification is recorded here.');
