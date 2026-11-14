@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { LocateFixed, MapPin, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, LocateFixed, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CITIES, DISCIPLINES, SPECIALISTS, disciplineFilters, findSpecialists, type Discipline, type Point } from '@/lib/specialists';
+import { CITIES, DISCIPLINES, SPECIALISTS, canvasCoverage, disciplineFilters, findSpecialists, type Discipline, type Point } from '@/lib/specialists';
 import { DEPTHS, HAIR_TYPES, type Depth } from '@/lib/data';
+import { useBare } from '@/lib/store';
 import { cn } from '@/lib/utils';
+import { publishedServiceReviews, serviceReviews } from '@/lib/discover-reviews';
+import { ReviewSection } from './discovery-reviews';
 import { SpecialistCard } from './specialist-card';
-
 export function ServiceDiscovery({ query }: { query: string }) {
+  const { browseProfile } = useBare();
   const [discipline, setDiscipline] = useState<Discipline>('All');
   const [location, setLocation] = useState('Anywhere');
   const [gps, setGps] = useState<Point>();
@@ -16,34 +19,25 @@ export function ServiceDiscovery({ query }: { query: string }) {
   const [depth, setDepth] = useState<Depth>();
   const [hair, setHair] = useState('');
   const [picked, setPicked] = useState<string[]>([]);
+  const [reviewsView, setReviewsView] = useState(false);
   const origin = location === 'Current location' ? gps : CITIES.find(c => c.name === location);
   const relevant = disciplineFilters(discipline);
   const list = findSpecialists({ query, discipline, origin, radius, depth, hair, specialties: picked });
   const specialties = [...new Set(SPECIALISTS.filter(s => discipline === 'All' || s.discipline === discipline).flatMap(s => s.specialties))].sort();
-  const locate = () => {
-    if (!navigator.geolocation) { setError('Location is unavailable on this device. Choose a city instead.'); return; }
-    setLocating(true); setError('');
-    navigator.geolocation.getCurrentPosition(p => { setGps({ lat: p.coords.latitude, lng: p.coords.longitude }); setLocation('Current location'); setLocating(false); }, () => { setError('Your location could not be accessed. Choose a city instead.'); setLocating(false); }, { timeout: 10000, maximumAge: 300000 });
-  };
-  const control = 'h-11 w-full min-w-0 rounded-full border border-sand bg-oat px-3 text-[13px] text-cocoa';
+  const home = discipline === 'All' && !query && !picked.length && location === 'Anywhere' && !reviewsView;
+  const choose = (d: Discipline, tags: string[] = []) => { setDiscipline(d); setPicked(tags); setDepth(undefined); setHair(''); };
+  const locate = () => { if (!navigator.geolocation) { setError('Choose a city instead; location is unavailable.'); return; } setLocating(true); setError(''); navigator.geolocation.getCurrentPosition(p => { setGps({ lat: p.coords.latitude, lng: p.coords.longitude }); setLocation('Current location'); setLocating(false); }, () => { setError('Your location could not be accessed. Choose a city instead.'); setLocating(false); }, { timeout: 10000, maximumAge: 300000 }); };
   return <div className="space-y-5">
-    <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4" aria-label="Service categories">{DISCIPLINES.map(d => <Button key={d} variant="secondary" aria-pressed={discipline === d} onClick={() => { setDiscipline(d); setPicked([]); setDepth(undefined); setHair(''); }} className={cn('h-11 shrink-0 rounded-full px-4', discipline === d ? 'bg-clay text-oat' : 'bg-oat text-cocoa')}>{d === 'Barbering' ? 'Barbering & Grooming' : d}</Button>)}</div>
-    <div className="space-y-3 border-y border-oat/15 py-4">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-        <label className="flex min-w-0 items-center gap-2"><MapPin className="h-4 w-4 shrink-0 text-peach" /><select aria-label="Location" value={location} onChange={e => { setLocation(e.target.value); setError(''); }} className={control}><option>Anywhere</option>{CITIES.map(c => <option key={c.name}>{c.name}</option>)}{gps && <option>Current location</option>}</select></label>
-        <Button variant="secondary" onClick={locate} disabled={locating} className="h-11 shrink-0 rounded-full px-3" title="Use current location" aria-label="Use current location"><LocateFixed /><span className="hidden sm:inline">{locating ? 'Locating…' : 'Near me'}</span></Button>
-      </div>
-      {error && <p role="alert" className="text-[13px] text-peach">{error}</p>}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <label className="space-y-1 text-[11px] text-sand"><span className="flex items-center gap-1"><SlidersHorizontal className="h-3 w-3" />Distance</span><select aria-label="Search radius" value={radius} disabled={!origin} onChange={e => setRadius(Number(e.target.value))} className={cn(control, 'disabled:opacity-50')}>{[10, 25, 50, 100].map(n => <option key={n} value={n}>Within {n} miles</option>)}</select></label>
-        {relevant.depth && <label className="space-y-1 text-[11px] text-sand">Skin tone<select aria-label="Skin tone filter" value={depth ?? ''} onChange={e => setDepth(DEPTHS.find(d => d === e.target.value))} className={control}><option value="">All tones</option>{DEPTHS.map(d => <option key={d}>{d}</option>)}</select></label>}
-        {relevant.hair && <label className="space-y-1 text-[11px] text-sand">Hair texture<select aria-label="Hair texture filter" value={hair} onChange={e => setHair(e.target.value)} className={control}><option value="">All textures</option>{HAIR_TYPES.map(h => <option key={h}>{h}</option>)}</select></label>}
-        
-      </div>
-      <div className="space-y-2"><p className="text-[11px] text-sand">What are you booking? <span className="text-sand/70">· pick any</span></p><div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4" aria-label="Services">{specialties.map(s => { const on = picked.includes(s); return <button key={s} aria-pressed={on} onClick={() => setPicked(p => on ? p.filter(x => x !== s) : [...p, s])} className={cn('h-9 shrink-0 rounded-full border px-3 text-[12px]', on ? 'border-clay bg-clay text-oat' : 'border-oat/25 text-sand')}>{s}</button>; })}</div></div>
-    </div>
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3"><div className="min-w-0"><p className="text-[11px] text-peach">STUDIOS & SPECIALISTS</p><h2 className="mt-1 font-display text-[25px]">{origin ? 'Care close to you' : 'Find your kind of care'}</h2></div><span className="pb-1 text-[12px] text-sand">{list.length} results</span></div>
-    <p className="text-[12px] leading-relaxed text-sand/80">Illustrative studios, portfolios and prices. Credentials are not verified; bookings are not available yet.</p>
-    {list.length ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{list.map(({ specialist, distance }) => <SpecialistCard key={specialist.id} specialist={specialist} distance={distance} />)}</div> : <div className="py-8 text-center"><h3 className="font-display text-[22px]">No specialists match yet</h3><p className="mt-2 text-[14px] text-sand">Try a wider distance, another city, or fewer filters.</p><Button className="mt-4 rounded-full" onClick={() => { setLocation('Anywhere'); setDiscipline('All'); setDepth(undefined); setHair(''); setPicked([]); }}>Reset filters</Button></div>}
+    <div className="flex gap-2" aria-label="Service browsing views">{['Browse', 'Reviews'].map(v => <Button key={v} variant={reviewsView === (v === 'Reviews') ? 'secondary' : 'ghost'} aria-pressed={reviewsView === (v === 'Reviews')} className="rounded-full" onClick={() => setReviewsView(v === 'Reviews')}>{v}</Button>)}</div>
+    <div className="flex items-center gap-2"><MapPin className="h-4 w-4 shrink-0 text-primary"/><select aria-label="Location" value={location} onChange={e => { setLocation(e.target.value); setError(''); }} className="h-11 min-w-0 flex-1 rounded-full border border-border bg-card px-3 text-sm"><option>Anywhere</option>{CITIES.map(c => <option key={c.name}>{c.name}</option>)}{gps && <option>Current location</option>}</select><Button variant="outline" size="icon" aria-label="Use current location" title="Near me" className="rounded-full" disabled={locating} onClick={locate}><LocateFixed/></Button></div>
+    {error && <p role="alert" className="text-sm text-primary">{error}</p>}
+    <p className="text-xs text-muted-foreground">Sample specialists, portfolios and rates. Credentials and booking links are not verified.</p>
+    {home ? <><section className="space-y-3"><h2 className="font-display text-2xl">Find a beauty specialist</h2><div className="grid grid-cols-3 gap-3">{DISCIPLINES.filter(d => d !== 'All').map(d => <Button key={d} variant="ghost" className="h-auto flex-col gap-2 p-0 text-xs" onClick={() => choose(d)}><img src={SPECIALISTS.find(s => s.discipline === d)?.image} alt="" className="aspect-square w-full rounded-lg object-cover"/>{d === 'Skin' ? 'Skincare' : d === 'Barbering' ? 'Grooming' : d}</Button>)}<Button variant="ghost" className="h-auto flex-col gap-2 p-0 text-xs" onClick={() => choose('Hair', ['Knotless braids', 'Protective styling'])}><img src={SPECIALISTS.find(s => s.id === 'amara-reed')?.image} alt="" className="aspect-square w-full rounded-lg object-cover"/>Braiding</Button></div></section><section className="space-y-3"><h2 className="font-display text-2xl">Recommended for you</h2><div className="grid gap-3 sm:grid-cols-2">{list.filter(r => canvasCoverage(r.specialist, browseProfile)).slice(0, 4).map(r => <SpecialistCard key={r.specialist.id} specialist={r.specialist} distance={r.distance}/>)}</div></section></> : <>
+    <div className="flex items-center gap-2"><Button variant="ghost" size="icon" aria-label="Back to service categories" onClick={() => { choose('All'); setLocation('Anywhere'); setReviewsView(false); }}><ArrowLeft/></Button><h2 className="font-display text-2xl">{discipline === 'All' ? 'Studios & specialists' : discipline}</h2></div>
+    <div className="no-scrollbar flex gap-2 overflow-x-auto">{DISCIPLINES.map(d => <Button key={d} variant={discipline === d ? 'default' : 'outline'} className="shrink-0 rounded-full text-xs" onClick={() => choose(d)}>{d}</Button>)}</div>
+    <div className="grid grid-cols-2 gap-3"><label className="text-xs">Distance<select aria-label="Search radius" value={radius} disabled={!origin} onChange={e => setRadius(Number(e.target.value))} className="bare-input disabled:opacity-50">{[10,25,50,100].map(n => <option key={n} value={n}>Within {n} miles</option>)}</select></label>{relevant.depth && <label className="text-xs">Skin tone<select aria-label="Skin tone filter" value={depth ?? ''} onChange={e => setDepth(DEPTHS.find(d => d === e.target.value))} className="bare-input"><option value="">All tones</option>{DEPTHS.map(d => <option key={d}>{d}</option>)}</select></label>}{relevant.hair && <label className="text-xs">Hair texture<select aria-label="Hair texture filter" value={hair} onChange={e => setHair(e.target.value)} className="bare-input"><option value="">All textures</option>{HAIR_TYPES.map(h => <option key={h}>{h}</option>)}</select></label>}</div>
+    <div className="space-y-2"><p className="text-xs text-muted-foreground">What are you booking?</p><div className="no-scrollbar flex gap-2 overflow-x-auto">{specialties.map(s => <Button key={s} variant={picked.includes(s) ? 'default' : 'outline'} aria-pressed={picked.includes(s)} className={cn('h-9 shrink-0 rounded-full text-xs')} onClick={() => setPicked(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])}>{s}</Button>)}</div></div>
+    {reviewsView ? <ReviewSection title="Service Reviews" reviews={serviceReviews(publishedServiceReviews, list.map(r => r.specialist.id))}/> : <><p className="text-xs text-muted-foreground">{list.length} results</p>{list.length ? <div className="grid gap-3 sm:grid-cols-2">{list.map(r => <SpecialistCard key={r.specialist.id} specialist={r.specialist} distance={r.distance}/>)}</div> : <p className="py-8 text-center text-sm text-muted-foreground">No specialists match. Try another city or fewer filters.</p>}</>}
+    </>}
   </div>;
 }
