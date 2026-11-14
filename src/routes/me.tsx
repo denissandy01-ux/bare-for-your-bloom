@@ -1,6 +1,6 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BareHeader, ListRow, Page, SectionTitle } from "@/components/bare/kit";
-import { DEPTH_SWATCH, money, toneLabel } from "@/lib/data";
+import { DEPTH_SWATCH, toneLabel } from "@/lib/data";
 import { useBare, walletTotals, daysSince } from "@/lib/store";
 import { useAccount } from '@/lib/account';
 import { supabase } from '@/integrations/supabase/client';

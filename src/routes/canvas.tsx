@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, Chip, Page, SectionTitle } from "@/components/bare/kit";
-import { CANVAS_DAYS, PRODUCTS, REVIEW_REWARD, money, productById } from "@/lib/data";
+import { CANVAS_DAYS, PRODUCTS, REVIEW_REWARD, productById } from "@/lib/data";
 import { daysSince, useBare } from "@/lib/store";
 
 export const Route = createFileRoute("/canvas")({
