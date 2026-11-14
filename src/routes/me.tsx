@@ -26,7 +26,7 @@ function Me() {
       <BareHeader />
       <Page className="mt-6 space-y-5">
         <header className="flex items-center gap-4">
-          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-full p-1 ring-2 ring-peach/70" style={{ background: UNDERTONE_SWATCH[p.depth][p.undertone] }}><span className="font-display text-2xl text-oat drop-shadow">{(user?.email ?? 'G')[0].toUpperCase()}</span></span>
+          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-full p-1 ring-2 ring-peach/70" style={{ background: UNDERTONE_SWATCH[p.depth][p.undertone] }}><span className="font-display text-2xl text-oat drop-shadow">{(user?.email ?? 'G').charAt(0).toUpperCase()}</span></span>
           <div className="min-w-0 flex-1">
             <p className="truncate font-display text-2xl">{user ? `@${user.email?.split('@')[0]}` : ready ? 'Guest' : 'Opening…'}</p>
             <p className="mt-1 text-sm"><b>—</b> <span className="text-sand">Followers</span> · <b>{following}</b> <span className="text-sand">Following</span></p>
