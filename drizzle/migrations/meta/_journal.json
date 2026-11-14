@@ -50,6 +50,13 @@
       "when": 1794699367238,
       "tag": "0006_focused_create_text_and_tags",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794699525790,
+      "tag": "0007_allow_owner_text_posts_without_media",
+      "breakpoints": true
     }
   ]
 }

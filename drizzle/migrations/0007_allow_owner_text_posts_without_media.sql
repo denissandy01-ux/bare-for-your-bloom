@@ -1,0 +1,1 @@
+ALTER POLICY "Publish own beauty posts" ON public.beauty_posts WITH CHECK (owner_id = auth.uid() AND ((media_type='text' AND media_path='') OR media_path LIKE auth.uid()::text || '/%'));
