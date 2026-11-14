@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, Page, SecondaryButton } from "@/components/bare/kit";
 import { FounderSheet, OfferRows, WhereToBuySheet } from "@/components/bare/sheets";
-import { FEED, ROUTINES, bestOffer, cashbackFor, money, productById, skinTwinScore } from "@/lib/data";
+import { FEED, ROUTINES, bestOffer, cashbackFor, pointsFor, money, productById, skinTwinScore } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { FormulaSection } from '@/components/bare/formula';
@@ -84,7 +84,7 @@ function ProductPage() {
       </Page>
       <div className="fixed inset-x-3 bottom-[calc(var(--tabs-h)+10px)] z-20 md:bottom-4 md:left-[calc(14rem+12px)]">
         <button onClick={() => setBuy(true)} className="mx-auto flex h-14 w-full max-w-[480px] items-center justify-center gap-2 rounded-full bg-clay text-[15px] font-semibold text-oat shadow-lg">
-          Shop & Earn {Math.round(product.cashbackRate * 100)}% Cashback <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">{money(cashbackFor(offer.price, product.cashbackRate))} back</span>
+          Shop & earn points <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">+{pointsFor(offer?.price ?? 0)} pts</span>
         </button>
       </div>
       <WhereToBuySheet product={product} open={buy} onOpenChange={setBuy} />

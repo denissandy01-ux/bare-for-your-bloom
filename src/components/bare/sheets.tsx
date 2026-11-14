@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  DEPTHS, DEPTH_SWATCH, UNDERTONE_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_TYPES, money, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
+  DEPTHS, DEPTH_SWATCH, UNDERTONE_SWATCH, FEED, UNDERTONES, HAIR_TYPES, SKIN_TYPES, money, pointsFor, pts, purchaseQuote, retailerUrl, skinTwinScore, toneLabel,
   type Depth, type Offer, type Product, type Undertone,
 } from "@/lib/data";
 import { useBare } from "@/lib/store";
@@ -71,8 +71,8 @@ export function useShop() {
   return (product: Product, offer: Offer, discount = 0, rate = product.cashbackRate, code?: string) => {
     const q = purchaseQuote(offer.price, rate, discount);
     window.open(retailerUrl(offer.retailer, product), "_blank", "noopener");
-    recordPurchase(`${product.name} · ${offer.retailer}${code ? ` · ${code}` : ""}`, q.cashback);
-    toast(`${money(q.cashback)} cashback is tracking`, { description: `Pending until ${offer.retailer} confirms your order.`, action: { label: "Wallet", onClick: () => { window.location.href = "/wallet"; } } });
+    recordPurchase(`${product.name} · ${offer.retailer}${code ? ` · ${code}` : ""}`, pointsFor(q.pay));
+    toast(`${pts(pointsFor(q.pay))} tracking`, { description: `Pending until ${offer.retailer} confirms your order.`, action: { label: "Wallet", onClick: () => { window.location.href = "/wallet"; } } });
   };
 }
 
@@ -102,9 +102,9 @@ export function OfferRows({ product, discount = 0, rate, code, tone = "dark" }: 
 
 export function WhereToBuySheet({ product, open, onOpenChange }: { product: Product; open: boolean; onOpenChange: (o: boolean) => void }) {
   return (
-    <BareSheet open={open} onOpenChange={onOpenChange} title="Where to buy" description={`${product.brand} ${product.name} · earn ${Math.round(product.cashbackRate * 100)}% back wherever you check out.`}>
+    <BareSheet open={open} onOpenChange={onOpenChange} title="Where to buy" description={`${product.brand} ${product.name} · earn 10 Bare Points per $1 wherever you check out.`}>
       <OfferRows product={product} tone="light" />
-      <p className="mt-2 flex items-center gap-1.5 text-[12px] text-umber"><ExternalLink className="h-3 w-3" />Opens the store in a new tab. Cashback shows as pending in your wallet.</p>
+      <p className="mt-2 flex items-center gap-1.5 text-[12px] text-umber"><ExternalLink className="h-3 w-3" />Opens the store in a new tab. Bare Points show as pending until the store confirms.</p>
     </BareSheet>
   );
 }

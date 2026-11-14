@@ -148,8 +148,9 @@ export function BareProvider({ children }: { children: ReactNode }) {
     recordPurchase: (label, amount) => setState((s) => ({ ...s, wallet: [{ id: uid(), kind: "purchase", label, amount, status: "pending", date: new Date().toISOString() }, ...s.wallet] })),
     requestPayout: () => setState((s) => {
       const avail = s.wallet.filter((t) => t.status === "available").reduce((a, t) => a + t.amount, 0);
-      if (avail <= 0) return s;
-      return { ...s, wallet: [{ id: uid(), kind: "payout", label: "Payout requested", amount: -avail, status: "requested", date: new Date().toISOString() }, ...s.wallet.map((t) => (t.status === "available" ? { ...t, status: "requested" as const } : t))] };
+      const spend = Math.floor(avail / 500) * 500;
+      if (spend <= 0) return s;
+      return { ...s, wallet: [{ id: uid(), kind: "payout", label: `$${spend / 100} reward redeemed`, amount: -spend, status: "requested", date: new Date().toISOString() }, ...s.wallet] };
     }),
     startCanvas: (bottles) => setState((s) => ({ ...s, canvasStart: new Date().toISOString(), trackedBottles: bottles, checkIns: [] })),
     addCheckIn: (c) => setState((s) => ({ ...s, checkIns: [...s.checkIns, { ...c, id: uid(), date: new Date().toISOString() }] })),
