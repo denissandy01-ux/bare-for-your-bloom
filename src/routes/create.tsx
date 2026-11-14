@@ -15,22 +15,25 @@ import { publishPost, removePost } from '@/lib/community.functions';
 import { communityOptions } from '@/lib/community-query';
 import { supabase } from '@/integrations/supabase/client';
 import { workspaceHead } from '@/lib/workspace';
-export const Route = createFileRoute('/create')({ head: () => workspaceHead('Create', 'Upload beauty photos, videos, tutorials and Empty Bottle Club reviews.'), component: Create });
+export const Route = createFileRoute('/create')({ validateSearch: (search: Record<string, unknown>) => ({review: typeof search['review'] === 'string' ? search['review'] : undefined}), head: () => workspaceHead('Create', 'Upload beauty photos, videos, tutorials and Empty Bottle Club reviews.'), component: Create });
 function Create() {
   const { user, ready } = useAccount(), { state } = useBare();
   const publish = useServerFn(publishPost), remove = useServerFn(removePost), qc = useQueryClient();
   const [file,setFile] = useState<File|null>(null), [preview,setPreview] = useState(''), [caption,setCaption] = useState(''), [kind,setKind] = useState<(typeof POST_KINDS)[number]>('Experience'), [product,setProduct] = useState(''), [brand,setBrand] = useState(''), [country,setCountry] = useState(state.shoppingCountry), [weeks,setWeeks] = useState(4), [repurchase,setRepurchase] = useState(true), [disclosure,setDisclosure] = useState<'Not sponsored'|'Paid partnership'|'Own product'>('Not sponsored'), [busy,setBusy] = useState(false);
   const posts = useQuery({...communityOptions, enabled: !!user});
+  const {review:reviewId} = Route.useSearch();
+  const [attachment,setAttachment] = useState<{path:string;type:'image'|'video'}|null>(null);
+  useEffect(()=>{if(!reviewId||!user)return;let active=true;void (async()=>{const {data,error}=await supabase.from('beauty_reviews').select('*').eq('id',reviewId).eq('owner_id',user.id).eq('status','published').single();if(error||!data||!active)return;setCaption(data.experience||`${data.rating??''} stars · ${data.kind==='product'?'Would repurchase':'Would book again'}: ${data.decision??''}${data.finished?' · Finished Product':''}${data.service?` · ${data.service}`:''}`);setProduct(data.product_id??'');setKind('Experience');if(data.media_path&&data.media_type){setAttachment({path:data.media_path,type:data.media_type as 'image'|'video'});const {data:media}=await supabase.storage.from('beauty-posts').createSignedUrl(data.media_path,3600);if(active)setPreview(media?.signedUrl??'');}})();return()=>{active=false;};},[reviewId,user?.id]);
   useEffect(() => { if (!file) {setPreview('');return;} const url=URL.createObjectURL(file);setPreview(url);return () => URL.revokeObjectURL(url); }, [file]);
   async function submit() {
-    if (!user || !file) return;
-    const invalid=mediaError(file);if(invalid){toast.error(invalid);return;}
-    const ext = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g,'') || 'bin';
-    const path=`${user.id}/${crypto.randomUUID()}.${ext}`;
-    const parsed=postSchema.safeParse({caption,kind,author: String(user.user_metadata?.['display_name'] || user.user_metadata?.['name'] || 'Bare creator'),product_id:product || null,brand_id:brand || null,media_path:path,media_type:file.type.startsWith('video/')?'video':'image',country_id:country,duration_weeks:kind==='Empty Bottle'?weeks:null,repurchase:kind==='Empty Bottle'?repurchase:null,disclosure});
+    if (!user || (!file&&!attachment)) return;
+    if(file){const invalid=mediaError(file);if(invalid){toast.error(invalid);return;}}
+    const ext = file?.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g,'') || 'bin';
+    const path=file?`${user.id}/${crypto.randomUUID()}.${ext}`:attachment?.path??'';
+    const parsed=postSchema.safeParse({caption,kind,author: String(user.user_metadata?.['display_name'] || user.user_metadata?.['name'] || 'Bare creator'),product_id:product || null,brand_id:brand || null,media_path:path,media_type:file?(file.type.startsWith('video/')?'video':'image'):attachment?.type,country_id:country,duration_weeks:kind==='Empty Bottle'?weeks:null,repurchase:kind==='Empty Bottle'?repurchase:null,disclosure});
     if(!parsed.success){toast.error(parsed.error.issues[0]?.message ?? 'Check your post');return;}
     setBusy(true);let uploaded=false;
-    try {const {error}=await supabase.storage.from('beauty-posts').upload(path,file,{contentType:file.type});if(error)throw error;uploaded=true;await publish({data:parsed.data});setFile(null);setCaption('');await qc.invalidateQueries({queryKey:communityOptions.queryKey});toast.success('Published to the feed');}
+    try {if(file){const {error}=await supabase.storage.from('beauty-posts').upload(path,file,{contentType:file.type});if(error)throw error;uploaded=true;}await publish({data:parsed.data});setFile(null);setAttachment(null);setPreview('');setCaption('');await qc.invalidateQueries({queryKey:communityOptions.queryKey});toast.success('Published to the feed');}
     catch(e){if(uploaded)await supabase.storage.from('beauty-posts').remove([path]);toast.error(e instanceof Error?e.message:'Publishing failed. Your post was not published.');}
     finally{setBusy(false);}
   }
