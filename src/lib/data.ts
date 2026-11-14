@@ -39,7 +39,7 @@ export function toneLabel(depth: Depth, undertone: Undertone) {
   return `${depth} ${undertone} (Tone ${DEPTHS.indexOf(depth) + 1})`;
 }
 
-export type RetailerName = "Target" | "Walmart" | "Ulta" | "Sephora" | "Boots" | "YesStyle";
+export type RetailerName = "Target" | "Walmart" | "Ulta" | "Sephora" | "Boots" | "YesStyle" | "Brand site";
 export type Stock = "In Stock" | "Low Stock" | "Out of Stock";
 export interface Offer { retailer: RetailerName; price: number; stock: Stock }
 
@@ -50,6 +50,7 @@ const SEARCH: Record<RetailerName, string> = {
   Sephora: "https://www.sephora.com/search?keyword=",
   Boots: "https://www.boots.com/sitesearch?searchTerm=",
   YesStyle: "https://www.yesstyle.com/en/list.html?q=",
+  "Brand site": "https://www.google.com/search?q=",
 };
 export function retailerUrl(r: RetailerName, p: Product) {
   return SEARCH[r] + encodeURIComponent(`${p.brand} ${p.name}`);
@@ -69,56 +70,122 @@ export interface Product {
   claims: string[];
   launchpad?: boolean;
   trendRank?: number;
+  /** Subcategory within category. */
+  sub?: string;
+  /** Canvas the product is aimed at, used for suggestions. */
+  fits?: { depths?: Depth[]; skinTypes?: string[]; hair?: string[] };
 }
+
+export const SUBCATEGORIES: Record<Category, string[]> = {
+  Skincare: ["Cleansers", "Toners & Essences", "Serums", "Moisturizers", "SPF"],
+  Makeup: ["Skin Tint", "Foundation", "Concealer", "Brows", "Eyes"],
+  Hair: ["Shampoo", "Conditioner", "Leave-in", "Styling", "Hair Tools"],
+  Body: ["Oils", "Body Wash"],
+  Beard: ["Aftershave", "Beard Oil"],
+};
 
 export const PRODUCTS: Product[] = [
   {
-    id: "cosrx-aloe-spf50", brand: "COSRX", name: "Daily Aloe SPF50", category: "Skincare", image: dropper, cashbackRate: 0.08,
+    id: "cosrx-aloe-spf50", sub: "SPF", brand: "COSRX", name: "Daily Aloe SPF50", category: "Skincare", image: dropper, cashbackRate: 0.08,
     offers: [{ retailer: "Target", price: 14.99, stock: "In Stock" }, { retailer: "Ulta", price: 16.0, stock: "In Stock" }, { retailer: "YesStyle", price: 13.4, stock: "Low Stock" }],
     founder: { name: "COSRX lab team", title: "Seoul, 2013", story: "COSRX began as a small lab answering one question: what does irritated skin actually need? Fewer ingredients, honest percentages. The aloe sunscreen came from customers with deep and olive tones writing in about chalky filters. The team rebuilt the base around aloe and a lightweight chemical filter so it melts clear on every canvas." },
     claims: ["Zero white cast", "Reef-friendly filters", "Fragrance-free"], trendRank: 1,
   },
   {
-    id: "lumiere-gel-cleanser", brand: "Lumière", name: "Lumière Gel Cleanser", category: "Skincare", image: pump, cashbackRate: 0.06,
+    id: "lumiere-gel-cleanser", sub: "Cleansers", brand: "Lumière", name: "Lumière Gel Cleanser", category: "Skincare", image: pump, cashbackRate: 0.06,
     offers: [{ retailer: "Target", price: 14.99, stock: "In Stock" }, { retailer: "Ulta", price: 16.0, stock: "In Stock" }, { retailer: "Walmart", price: 14.98, stock: "Low Stock" }],
     founder: { name: "Adaeze Okafor", title: "Founder, former esthetician", story: "After ten years treating post-inflammatory hyperpigmentation in her Houston studio, Adaeze wanted a cleanser her clients could not over-use. Lumière is pH 5.5, sulfate-free and tested on reactive skin from Tone 1 to Tone 5 before launch." },
     claims: ["pH 5.5", "Sulfate-free", "Reactive-skin tested"], trendRank: 3, launchpad: true,
   },
   {
-    id: "melanin-shield-spf", brand: "Rooted Sun", name: "Melanin Shield SPF 50", category: "Skincare", image: deepSpf, cashbackRate: 0.08,
+    id: "melanin-shield-spf", sub: "SPF", brand: "Rooted Sun", name: "Melanin Shield SPF 50", category: "Skincare", image: deepSpf, cashbackRate: 0.08,
     offers: [{ retailer: "Target", price: 13.99, stock: "In Stock" }, { retailer: "Walmart", price: 13.49, stock: "In Stock" }, { retailer: "Sephora", price: 18.0, stock: "Out of Stock" }],
     founder: { name: "Kemi Adebayo", title: "Founder, chemist", story: "Kemi spent years watching sunscreen turn her skin grey. Rooted Sun is a sheer, tinted-to-clear SPF built on deep skin first, then tested lighter, not the other way round." },
-    claims: ["Clear on deep skin", "No grey cast", "Hydrating"], trendRank: 2, launchpad: true,
+    claims: ["Clear on deep skin", "No grey cast", "Hydrating"], trendRank: 2, launchpad: true, fits: { depths: ["Tan", "Deep"] },
   },
   {
-    id: "calm-barrier-cream", brand: "La Roche-Posay", name: "Cicaplast Baume B5+", category: "Skincare", image: fairBeard, cashbackRate: 0.05,
+    id: "calm-barrier-cream", sub: "Moisturizers", brand: "La Roche-Posay", name: "Cicaplast Baume B5+", category: "Skincare", image: fairBeard, cashbackRate: 0.05,
     offers: [{ retailer: "Target", price: 17.99, stock: "In Stock" }, { retailer: "Ulta", price: 18.99, stock: "In Stock" }, { retailer: "Walmart", price: 16.97, stock: "In Stock" }, { retailer: "Boots", price: 15.5, stock: "In Stock" }],
     founder: { name: "La Roche-Posay", title: "Thermal spring, France", story: "Built around the selenium-rich water of La Roche-Posay's spring, the B5+ balm is a dermatologist staple for flushed, razor-irritated and rosacea-prone skin." },
-    claims: ["Soothes flushing", "Post-shave safe", "Fragrance-free"], trendRank: 4,
+    claims: ["Soothes flushing", "Post-shave safe", "Fragrance-free"], trendRank: 4, fits: { skinTypes: ["Sensitive", "Rosacea-prone", "Dry"] },
   },
   {
-    id: "curl-defining-cream", brand: "Pattern", name: "Curl Gel", category: "Hair", image: oliveWaves, cashbackRate: 0.07,
+    id: "curl-defining-cream", sub: "Styling", brand: "Pattern", name: "Curl Gel", category: "Hair", image: oliveWaves, cashbackRate: 0.07,
     offers: [{ retailer: "Ulta", price: 25.0, stock: "In Stock" }, { retailer: "Target", price: 25.0, stock: "Low Stock" }, { retailer: "Sephora", price: 25.0, stock: "In Stock" }],
     founder: { name: "Pattern Beauty", title: "Curly, coily & tight-textured hair", story: "Pattern was founded to celebrate the full range of curl patterns. The curl gel gives hold without the crunch, tested from loose 2B waves through 4C coils." },
-    claims: ["Defines 2B–4C", "No crunch", "Humidity hold"], trendRank: 5,
+    claims: ["Defines 2B–4C", "No crunch", "Humidity hold"], trendRank: 5, fits: { hair: ["2 Wavy", "3 Curly", "4A Coily", "4B Coily", "4C Coily"] },
   },
   {
-    id: "skin-tint", brand: "ILIA", name: "Super Serum Skin Tint SPF 40", category: "Makeup", image: tanTint, cashbackRate: 0.06,
+    id: "skin-tint", sub: "Skin Tint", brand: "ILIA", name: "Super Serum Skin Tint SPF 40", category: "Makeup", image: tanTint, cashbackRate: 0.06,
     offers: [{ retailer: "Sephora", price: 48.0, stock: "In Stock" }, { retailer: "Ulta", price: 48.0, stock: "In Stock" }],
     founder: { name: "Sasha Plavsic", title: "Founder", story: "ILIA started in Sasha's garage as a clean lip tint. The skin tint was built to let real skin show through: freckles, texture and all, across 30 shades." },
-    claims: ["Sheer, skin-through", "30 shades", "SPF 40"], trendRank: 6,
+    claims: ["Sheer, skin-through", "30 shades", "SPF 40"], trendRank: 6, fits: { depths: ["Light", "Medium", "Tan"] },
   },
   {
-    id: "bump-patrol", brand: "Bump Patrol", name: "Aftershave Bump Treatment", category: "Beard", image: barber, cashbackRate: 0.08,
+    id: "bump-patrol", sub: "Aftershave", brand: "Bump Patrol", name: "Aftershave Bump Treatment", category: "Beard", image: barber, cashbackRate: 0.08,
     offers: [{ retailer: "Walmart", price: 7.97, stock: "In Stock" }, { retailer: "Target", price: 8.49, stock: "In Stock" }],
     founder: { name: "Bump Patrol", title: "Barbershop staple since 1996", story: "Created with barbers for coarse, curly beard hair that grows back into the skin. A light exfoliating aftershave that keeps razor bumps from forming." },
     claims: ["Prevents razor bumps", "Barber approved", "Coarse beard tested"], trendRank: 7,
   },
   {
-    id: "squalane", brand: "The Ordinary", name: "100% Plant-Derived Squalane", category: "Body", image: tube, cashbackRate: 0.05,
+    id: "squalane", sub: "Oils", brand: "The Ordinary", name: "100% Plant-Derived Squalane", category: "Body", image: tube, cashbackRate: 0.05,
     offers: [{ retailer: "Ulta", price: 9.9, stock: "In Stock" }, { retailer: "Sephora", price: 9.9, stock: "In Stock" }, { retailer: "Target", price: 9.9, stock: "In Stock" }, { retailer: "Boots", price: 8.5, stock: "Low Stock" }],
     founder: { name: "Brandon Truaxe", title: "DECIEM founder", story: "The Ordinary was built on clinical honesty: single, labelled ingredients at fair prices. Squalane is the quiet workhorse: an oil that sinks in on face, body, ends of hair and beard." },
     claims: ["Face, body, hair", "Non-comedogenic", "Single ingredient"], trendRank: 8,
+  },
+  {
+    id: "cerave-hydrating-cleanser", sub: "Cleansers", brand: "CeraVe", name: "Hydrating Facial Cleanser", category: "Skincare", image: pump, cashbackRate: 0.05,
+    offers: [{ retailer: "Walmart", price: 14.97, stock: "In Stock" }, { retailer: "Target", price: 15.99, stock: "In Stock" }, { retailer: "Ulta", price: 16.99, stock: "In Stock" }],
+    founder: { name: "CeraVe", title: "Developed with dermatologists", story: "A non-foaming cream cleanser built around three essential ceramides, made to wash without stripping dry or reactive skin." },
+    claims: ["Non-stripping", "Ceramides", "Dry & sensitive skin"], trendRank: 9, fits: { skinTypes: ["Dry", "Sensitive", "Rosacea-prone"] },
+  },
+  {
+    id: "glow-toner-essence", sub: "Toners & Essences", brand: "Lakou Botanics", name: "Moringa Calm Essence", category: "Skincare", image: dropper, cashbackRate: 0.1,
+    offers: [{ retailer: "Brand site", price: 28.0, stock: "In Stock" }],
+    founder: { name: "Sample founder", title: "Small-batch brand (sample)", story: "An illustrative small-business essence that shows how indie brands selling only on their own website appear on Becoming Bare." },
+    claims: ["Small batch", "Moringa", "Fragrance-free"], launchpad: true, fits: { depths: ["Tan", "Deep"], skinTypes: ["Sensitive", "Combination"] },
+  },
+  {
+    id: "niacinamide-serum", sub: "Serums", brand: "The Inkey List", name: "Niacinamide Serum", category: "Skincare", image: dropper, cashbackRate: 0.06,
+    offers: [{ retailer: "Sephora", price: 9.99, stock: "In Stock" }],
+    founder: { name: "The Inkey List", title: "London, 2018", story: "Built on plain ingredient names and fair prices, so you know exactly what you are putting on your skin." },
+    claims: ["Fades dark spots", "Oil balance", "Under $10"], trendRank: 10, fits: { skinTypes: ["Oily", "Acne-prone", "Combination"], depths: ["Medium", "Tan", "Deep"] },
+  },
+  {
+    id: "brow-gel", sub: "Brows", brand: "Benefit", name: "24-HR Brow Setter", category: "Makeup", image: tube, cashbackRate: 0.05,
+    offers: [{ retailer: "Ulta", price: 26.0, stock: "In Stock" }, { retailer: "Sephora", price: 26.0, stock: "In Stock" }],
+    founder: { name: "Benefit Cosmetics", title: "San Francisco, 1976", story: "Clear brow gel that holds every brow type, from fine and light to coarse and dark, without flaking." },
+    claims: ["Clear hold", "All brow types", "No flakes"], trendRank: 12,
+  },
+  {
+    id: "curl-shampoo", sub: "Shampoo", brand: "SheaMoisture", name: "Curl & Shine Shampoo", category: "Hair", image: pump, cashbackRate: 0.07,
+    offers: [{ retailer: "Walmart", price: 10.97, stock: "In Stock" }, { retailer: "Target", price: 11.99, stock: "In Stock" }],
+    founder: { name: "Richelieu Dennis", title: "Co-founder", story: "Started from his grandmother's shea butter recipes, sold on the streets of Harlem, made for coily and curly hair first." },
+    claims: ["Sulfate-free", "Coconut & shea", "3A–4C"], trendRank: 11, fits: { hair: ["3 Curly", "4A Coily", "4B Coily", "4C Coily"] },
+  },
+  {
+    id: "moisture-conditioner", sub: "Conditioner", brand: "Briogeo", name: "Don't Despair, Repair! Conditioner", category: "Hair", image: oliveWaves, cashbackRate: 0.06,
+    offers: [{ retailer: "Sephora", price: 32.0, stock: "In Stock" }],
+    founder: { name: "Nancy Twine", title: "Founder", story: "Nancy left Wall Street to build hair care inspired by her grandmother's kitchen formulas, for every texture." },
+    claims: ["Repairs breakage", "All textures", "Silicone-free"], fits: { hair: ["1 Straight", "2 Wavy", "3 Curly"] },
+  },
+  {
+    id: "leave-in-conditioner", sub: "Leave-in", brand: "Mielle", name: "Pomegranate & Honey Leave-In", category: "Hair", image: pump, cashbackRate: 0.07,
+    offers: [{ retailer: "Target", price: 9.99, stock: "In Stock" }, { retailer: "Walmart", price: 9.47, stock: "In Stock" }, { retailer: "Ulta", price: 11.0, stock: "Low Stock" }],
+    founder: { name: "Monique Rodriguez", title: "Founder, registered nurse", story: "Monique started Mielle from her kitchen to restore her own hair, then grew it into a staple for coily and curly textures." },
+    claims: ["Slip for detangling", "Moisture retention", "4A–4C"], trendRank: 13, fits: { hair: ["4A Coily", "4B Coily", "4C Coily", "3 Curly"] },
+  },
+  {
+    id: "blowout-brush", sub: "Hair Tools", brand: "Revlon", name: "One-Step Volumizer", category: "Hair", image: oliveWaves, cashbackRate: 0.04,
+    offers: [{ retailer: "Walmart", price: 39.88, stock: "In Stock" }, { retailer: "Target", price: 44.99, stock: "In Stock" }, { retailer: "Ulta", price: 49.99, stock: "In Stock" }],
+    founder: { name: "Revlon", title: "New York, 1932", story: "The hot-air brush that brought salon blowouts home, used on straight, wavy and coily hair." },
+    claims: ["At-home blowout", "Less frizz", "All lengths"],
+  },
+  {
+    id: "beard-oil", sub: "Beard Oil", brand: "Scotch Porter", name: "Smoothing Beard Serum", category: "Beard", image: barber, cashbackRate: 0.07,
+    offers: [{ retailer: "Target", price: 16.99, stock: "In Stock" }, { retailer: "Walmart", price: 15.98, stock: "In Stock" }],
+    founder: { name: "Calvin Quallis", title: "Founder", story: "Built a grooming line for coarse and curly beards, sold first in his Newark shop." },
+    claims: ["Softens coarse beards", "No greasy feel", "Skin under beard"], fits: { hair: ["Shaved / beard focus"] },
   },
 ];
 
@@ -134,6 +201,8 @@ export interface FeedPost {
   creator: Creator;
   swatches: number;
   caption: string;
+  /** Sample like count before this user likes it. */
+  likes?: number;
 }
 
 export const FEED: FeedPost[] = [
@@ -144,6 +213,16 @@ export const FEED: FeedPost[] = [
   { id: "p5", productId: "skin-tint", media: tanTint, wearTest: "Wear test · 9 hrs, freckles through", swatches: 527, caption: "Shade 7. Skin still looks like skin.", creator: { handle: "@river.tan", depth: "Tan", undertone: "Warm", skinType: "Balanced", hair: "3 Curly", shade: "ST15" } },
   { id: "p6", productId: "bump-patrol", media: barber, wearTest: "Wear test · 21 days, zero bumps", swatches: 166, caption: "Three weeks, clean lineup, no bumps.", creator: { handle: "@dre.cuts", depth: "Deep", undertone: "Warm", skinType: "Sensitive", hair: "Shaved / beard focus" } },
   { id: "p7", productId: "squalane", media: dropper, wearTest: "Wear test · 30 days, barrier back", swatches: 98, caption: "One oil for face, ends and beard.", creator: { handle: "@mei.light", depth: "Light", undertone: "Neutral", skinType: "Dry", hair: "1 Straight" } },
+  { id: "p8", productId: "cerave-hydrating-cleanser", media: pump, likes: 1840, wearTest: "Wear test · 14 days, no tightness", swatches: 132, caption: "Morning and night, skin never felt squeaky.", creator: { handle: "@ava.fair", depth: "Fair", undertone: "Neutral", skinType: "Dry", hair: "2 Wavy" } },
+  { id: "p9", productId: "brow-gel", media: tube, likes: 960, wearTest: "Wear test · 12 hrs, brows held", swatches: 88, caption: "Fine blonde brows, still brushed up at dinner.", creator: { handle: "@saoirse.f", depth: "Fair", undertone: "Cool", skinType: "Balanced", hair: "1 Straight" } },
+  { id: "p10", productId: "moisture-conditioner", media: oliveWaves, likes: 1220, wearTest: "Wear test · 4 washes, less breakage", swatches: 74, caption: "Bleached ends finally feel soft again.", creator: { handle: "@jun.light", depth: "Light", undertone: "Warm", skinType: "Combination", hair: "2 Wavy" } },
+  { id: "p11", productId: "blowout-brush", media: oliveWaves, likes: 2410, wearTest: "Wear test · 3 days, blowout lasted", swatches: 61, caption: "Salon bounce, my bathroom, 25 minutes.", creator: { handle: "@layla.olive", depth: "Light", undertone: "Olive", skinType: "Oily", hair: "3 Curly" } },
+  { id: "p12", productId: "niacinamide-serum", media: dropper, likes: 3105, wearTest: "Wear test · 30 days, spots lighter", swatches: 214, caption: "Week four, the dark marks from breakouts are fading.", creator: { handle: "@priya.glow", depth: "Medium", undertone: "Warm", skinType: "Acne-prone", hair: "1 Straight" } },
+  { id: "p13", productId: "cosrx-aloe-spf50", media: tube, likes: 1490, wearTest: "Wear test · 7 hrs, no pilling", swatches: 240, caption: "Layers under makeup without balling up.", creator: { handle: "@marco.med", depth: "Medium", undertone: "Olive", skinType: "Oily", hair: "Shaved / beard focus" } },
+  { id: "p14", productId: "curl-shampoo", media: pump, likes: 2780, wearTest: "Wear test · 6 washes, curls defined", swatches: 190, caption: "Clean scalp, no squeak, curls clump right away.", creator: { handle: "@isa.tan", depth: "Tan", undertone: "Neutral", skinType: "Combination", hair: "3 Curly" } },
+  { id: "p15", productId: "glow-toner-essence", media: dropper, likes: 640, wearTest: "Wear test · 14 days, calmer skin", swatches: 42, caption: "Small-batch find. Redness down after two weeks.", creator: { handle: "@nadia.tan", depth: "Tan", undertone: "Olive", skinType: "Sensitive", hair: "4A Coily" } },
+  { id: "p16", productId: "leave-in-conditioner", media: deepSpf, likes: 4320, wearTest: "Wear test · 5 days, moisture held", swatches: 356, caption: "Wash day to day five, 4C still soft.", creator: { handle: "@amara.coils", depth: "Deep", undertone: "Cool", skinType: "Dry", hair: "4C Coily" } },
+  { id: "p17", productId: "beard-oil", media: barber, likes: 1170, wearTest: "Wear test · 10 days, no itch", swatches: 97, caption: "Coarse beard, soft by day three, no flakes.", creator: { handle: "@kwame.groom", depth: "Deep", undertone: "Olive", skinType: "Oily", hair: "Shaved / beard focus" } },
 ];
 
 export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; barrier?: string; hair?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string; referenceShade?: string }
@@ -233,3 +312,35 @@ export function feedForTone(posts: FeedPost[], me: Profile) {
 export const PAYOUT_MIN = 10;
 export const REVIEW_REWARD = 2;
 export const CANVAS_DAYS = 30;
+
+/** Where a product is sold, without implying one fixed price everywhere. */
+export function whereSold(p: Product) {
+  const shops = [...new Set(p.offers.map((o) => o.retailer))];
+  const from = Math.min(...p.offers.map((o) => o.price));
+  if (shops.length === 1 && shops[0] === "Brand site") return { label: "Shop on the web", web: true, from, shops };
+  if (shops.length === 1) return { label: `Only at ${shops[0]}`, web: false, from, shops };
+  const label = shops.length > 2 ? `${shops.slice(0, 2).join(" & ")} +${shops.length - 2}` : shops.join(" & ");
+  return { label, web: false, from, shops };
+}
+
+export const TRENDING_RANK = 6;
+export const isTrending = (p: Product) => (p.trendRank ?? 99) <= TRENDING_RANK;
+
+/** Products suggested for a canvas: depth, skin type, hair fit, loved brands and Skin Twin wear tests. */
+export function suggestFor(me: Profile, lovedBrands: string[] = []) {
+  return PRODUCTS.map((p) => {
+    let s = 0;
+    if (p.fits?.depths?.includes(me.depth)) s += 3;
+    if (me.skinType && p.fits?.skinTypes?.includes(me.skinType)) s += 3;
+    if (me.hair && p.fits?.hair?.includes(me.hair)) s += 3;
+    if (lovedBrands.includes(p.brand)) s += 2;
+    s += FEED.filter((f) => f.productId === p.id && Math.abs(DEPTHS.indexOf(f.creator.depth) - DEPTHS.indexOf(me.depth)) <= 1).length * 2;
+    return { p, s };
+  }).filter((x) => x.s > 0).sort((a, b) => b.s - a.s).map((x) => x.p);
+}
+
+/** Brands the user loves: from saved products and liked posts. */
+export function lovedBrands(savedProducts: string[], likedPosts: string[]) {
+  const ids = [...savedProducts, ...likedPosts.map((id) => FEED.find((f) => f.id === id)?.productId ?? "")];
+  return [...new Set(ids.map((id) => productById(id)?.brand).filter((b): b is string => !!b))];
+}

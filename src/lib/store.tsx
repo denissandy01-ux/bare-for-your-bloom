@@ -15,6 +15,7 @@ export interface BareState {
   consulted: boolean;
   savedProducts: string[];
   savedSpecialists: string[];
+  likedPosts: string[];
   savedRoutines: string[];
   shoppingCountry: string;
   followedBrands: string[];
@@ -33,6 +34,7 @@ const DEFAULT: BareState = {
   consulted: false,
   savedProducts: [],
   savedSpecialists: [],
+  likedPosts: [],
   savedRoutines: [],
   shoppingCountry: 'united-states',
   followedBrands: [],
@@ -56,6 +58,7 @@ interface Ctx {
   toggleSpecialist: (id: string) => boolean;
   completeConsultation: (p: Profile) => void;
   toggleProduct: (id: string) => boolean;
+  toggleLike: (id: string) => boolean;
   toggleRoutine: (id: string) => boolean;
   setShoppingCountry: (id: string) => void;
   toggleBrandSignal: (key: 'followedBrands' | 'brandInterest' | 'brandNotifications', id: string) => boolean;
@@ -120,7 +123,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [state.profile, user?.id, cloudReady]);
 
-  const toggleIn = useCallback((key: "savedProducts" | "savedRoutines" | "savedSpecialists" | 'followedBrands' | 'brandInterest' | 'brandNotifications', id: string) => {
+  const toggleIn = useCallback((key: "savedProducts" | "savedRoutines" | "savedSpecialists" | 'likedPosts' | 'followedBrands' | 'brandInterest' | 'brandNotifications', id: string) => {
     let added = false;
     setState((s) => {
       const has = s[key].includes(id);
@@ -137,6 +140,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
     toggleSpecialist: (id) => toggleIn('savedSpecialists', id),
     completeConsultation: (p) => setState((s) => ({ ...s, profile: p, consulted: true })),
     toggleProduct: (id) => toggleIn("savedProducts", id),
+    toggleLike: (id) => toggleIn("likedPosts", id),
     toggleRoutine: (id) => toggleIn("savedRoutines", id),
     setShoppingCountry: (shoppingCountry) => setState(s => ({...s, shoppingCountry})),
     toggleBrandSignal: (key,id) => toggleIn(key,id),
