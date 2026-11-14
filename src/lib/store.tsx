@@ -122,7 +122,7 @@ export function BareProvider({ children }: { children: ReactNode }) {
       if (p && typeof p === 'object' && !Array.isArray(p) && DEPTHS.some(d => d === p['depth']) && UNDERTONES.some(u => u === p['undertone'])) {
         const profile = p as unknown as Profile;
         synced.current = JSON.stringify(profile);
-        setState(s => ({...s, profile}));
+        setState(s => ({...s, profile, consulted: true}));
       }
       setCloudReady(user.id);
     });
