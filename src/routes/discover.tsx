@@ -21,7 +21,7 @@ function ProductTile({ p, reason }: { p: Product; reason?: string }) {
   const w = whereSold(p);
   const formula = formulaById(p.id);
   return (
-    <Link to="/product/$id" params={{ id: p.id }} className="flex min-h-[64px] w-full items-center gap-3 rounded-[28px] bg-oat/95 p-3">
+    <Link to="/product/$id" params={{ id: p.id }} className="flex min-h-[64px] min-w-0 w-full items-center gap-3 rounded-[28px] bg-oat/95 p-3">
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-[16px] bg-sand">
         <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
         {isTrending(p) && <span aria-label="Trending" title="Getting lots of traction" className="absolute left-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-clay text-oat"><Flame className="h-3 w-3" /></span>}
@@ -75,7 +75,7 @@ function Discover() {
           </div>}
         </div>
 
-        <div className="grid grid-cols-2 gap-3"><label className="text-xs text-sand">Where to shop<select aria-label="Store type" value={store} onChange={e=>setStore(e.target.value as StoreType)} className="bare-input">{STORE_TYPES.map(t=><option key={t}>{t}</option>)}</select></label><label className="text-xs text-sand">Price<select aria-label="Price range" value={price} onChange={e=>setPrice(e.target.value)} className="bare-input">{["All prices","Under $15","$15–$35","$35–$70","Luxury ($70+)"].map(t=><option key={t}>{t}</option>)}</select></label></div>
+        <div className="grid grid-cols-2 gap-3"><label className="min-w-0 text-xs text-sand">Where to shop<select aria-label="Store type" value={store} onChange={e=>setStore(e.target.value as StoreType)} className="bare-input">{STORE_TYPES.map(t=><option key={t}>{t}</option>)}</select></label><label className="min-w-0 text-xs text-sand">Price<select aria-label="Price range" value={price} onChange={e=>setPrice(e.target.value)} className="bare-input">{["All prices","Under $15","$15–$35","$35–$70","Luxury ($70+)"].map(t=><option key={t}>{t}</option>)}</select></label></div>
         <p className="text-xs text-sand/80">Sample catalog and prices · care for every skin, texture and routine.</p>
         {browsing && suggested.length > 0 && <section className="space-y-3">
           <SectionTitle meta={<span className="inline-flex items-center gap-1"><Sparkles className="h-3 w-3" />{toneLabel(browseProfile.depth, browseProfile.undertone)}</span>}>Suggested for your canvas</SectionTitle>
