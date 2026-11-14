@@ -210,9 +210,12 @@ export interface FeedPost {
   caption: string;
   /** Sample like count before this user likes it. */
   likes?: number;
+  /** Posted by the brand itself rather than a creator co-post. */
+  official?: boolean;
 }
 
 export const FEED: FeedPost[] = [
+  { id: "b-ilia", official: true, productId: "skin-tint", media: tanTint, wearTest: "Official · shade campaign", swatches: 30, caption: "Thirty shades, one rule: your skin still shows through.", likes: 3120, creator: { handle: "@iliabeauty", depth: "Tan", undertone: "Warm", skinType: "Combination", hair: "2B Wavy" } },
   { id: "p1", productId: "cosrx-aloe-spf50", media: tube, wearTest: "Wear test · 6 hrs, zero cast", swatches: 240, caption: "Rubbed in, six hours in Houston heat, no grey.", creator: { handle: "@nia.bare", depth: "Deep", undertone: "Neutral", skinType: "Sensitive", hair: "4C Coily" } },
   { id: "p2", productId: "melanin-shield-spf", media: deepSpf, wearTest: "Wear test · 8 hrs, no grey film", swatches: 412, caption: "Sheer enough to wear under nothing at all.", creator: { handle: "@tobi.skin", depth: "Deep", undertone: "Warm", skinType: "Oily", hair: "4C Coily" } },
   { id: "p3", productId: "calm-barrier-cream", media: fairBeard, wearTest: "Wear test · 14 days, redness down", swatches: 188, caption: "Post-shave flush gone by week two.", creator: { handle: "@callum.calm", depth: "Fair", undertone: "Cool", skinType: "Rosacea-prone", hair: "Shaved / beard focus" } },

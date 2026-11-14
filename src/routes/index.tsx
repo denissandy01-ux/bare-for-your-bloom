@@ -1,8 +1,9 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bell, Check, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
+import { BadgeCheck, Bell, Check, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
+import { CreatorSheet } from '@/components/bare/creator-sheet';
 import { FounderSheet, SwatchSheet, ToneSheet, WhereToBuySheet } from "@/components/bare/sheets";
 import { UNDERTONE_SWATCH, DEPTH_SWATCH, FEED, whereSold, bestOffer, cashbackFor, pointsFor, feedForTone, money, productById, skinTwinScore, fitScore, matchKind, MATCH_LABEL, type FeedPost } from "@/lib/data";
 import { useBare } from "@/lib/store";
@@ -118,6 +119,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   const offer = product ? bestOffer(product) : undefined;
   const back = product && offer ? cashbackFor(offer.price, product.cashbackRate) : 0;
   const [fit,setFit]=useState(false);
+  const [creator,setCreator]=useState(false);
   const kind = product ? matchKind(product) : "skin";
   const score = product ? fitScore(product, post.creator, browseProfile) : skinTwinScore(post.creator, browseProfile);
   const saved = product ? state.savedProducts.includes(product.id) : false;
@@ -162,7 +164,6 @@ function FeedItem({ post }: { post: FeedPost }) {
           </div>
           <span className="text-[11px] text-oat/90">{MATCH_LABEL[kind]}</span>
         </button>
-        <FollowPill following={state.followedCreators.includes(post.creator.handle)} name={post.creator.handle} onToggle={()=>toggleCreator(post.creator.handle)}/>
         </div>
         {kind === "shade" && <button onClick={() => setSwatch(true)} className="flex flex-col items-center gap-1" aria-label="Verified swatches">
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 backdrop-blur">
@@ -183,8 +184,12 @@ function FeedItem({ post }: { post: FeedPost }) {
 
       <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-2.5">
         <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-oat">
-          <span className="font-semibold">{post.creator.handle}</span><span className="text-sand">·</span>
-          {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="text-sand underline-offset-2 hover:underline">{product.brand}</Link> : <span className="text-sand">{product.brand}</span>}
+          {post.official && brand
+            ? <Link to="/brand/$id" params={{id:brand.id}} className="inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline">{post.creator.handle}<BadgeCheck className="h-4 w-4 text-peach" aria-label="Official brand"/></Link>
+            : <button onClick={()=>setCreator(true)} className="font-semibold underline-offset-2 hover:underline">{post.creator.handle}</button>}
+          <FollowPill following={state.followedCreators.includes(post.creator.handle)} name={post.creator.handle} onToggle={()=>toggleCreator(post.creator.handle)}/>
+          <span className="text-sand">·</span>
+          {post.official ? <span className="text-sand">Official brand post</span> : <>with {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="text-sand underline-offset-2 hover:underline">{product.brand}</Link> : <span className="text-sand">{product.brand}</span>}</>}
         </p>
         <p className="max-w-[80%] text-[15px] text-oat">{post.caption}</p>
         <div className="flex items-center gap-2 rounded-[22px] bg-cocoa/45 p-2 text-oat backdrop-blur-md">
@@ -202,6 +207,7 @@ function FeedItem({ post }: { post: FeedPost }) {
       </div>
 
       <WhereToBuySheet product={product} open={buy} onOpenChange={setBuy} />
+      {!post.official && <CreatorSheet creator={post.creator} open={creator} onOpenChange={setCreator}/>}
       <FormulaSheet product={product} open={formula} onOpenChange={setFormula}/>
       <FounderSheet product={product} open={founder} onOpenChange={setFounder} />
       <FitSheet product={product} creator={post.creator} score={score} open={fit} onOpenChange={setFit} />
@@ -210,6 +216,4 @@ function FeedItem({ post }: { post: FeedPost }) {
   );
 }
 
-export function FollowPill({following,name,onToggle}:{following:boolean;name:string;onToggle:()=>void}) {
-  return <button onClick={onToggle} aria-pressed={following} aria-label={following?`Unfollow ${name}`:`Follow ${name}`} className={cn('feed-follow absolute left-1/2 top-[44px] grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full ring-2 ring-cocoa/80 shadow-sm transition-transform active:scale-90',following?'bg-oat text-clay':'bg-peach text-cocoa')}>{following?<Check className="h-3.5 w-3.5" strokeWidth={3}/>:<Plus className="h-3.5 w-3.5" strokeWidth={3}/>}</button>;
-}
+export { FollowPill } from '@/components/bare/follow-pill';
