@@ -5,7 +5,7 @@ export interface ShadeRange { productId: string; shades: { code: string; depth: 
 
 const tones = (prefix: string): ShadeRange["shades"] => {
   const u: Undertone[] = ["Cool", "Neutral", "Warm", "Olive"];
-  return DEPTHS.flatMap((d, i) => u.slice(0, i === 0 || i === 4 ? 3 : 4).map((un) => ({ depth: d, undertone: un, code: "" }))).map((s, i) => ({ ...s, code: `${prefix}${i + 1}` }));
+  return DEPTHS.flatMap((d) => u.map((un) => ({ depth: d, undertone: un, code: "" }))).map((s, i) => ({ ...s, code: `${prefix}${i + 1}` }));
 };
 
 export const SHADE_RANGES: ShadeRange[] = [{ productId: "skin-tint", shades: tones("ST") }];

@@ -26,6 +26,15 @@ export const DEPTH_SWATCH: Record<Depth, string> = {
   Deep: "#6B4430",
 };
 
+/** Undertone swatches per depth (data, not theme): cool = pink, neutral = beige, warm = golden, olive = green-grey. */
+export const UNDERTONE_SWATCH: Record<Depth, Record<Undertone, string>> = {
+  Fair: { Cool: "#F3D2CB", Neutral: "#F1D3BF", Warm: "#F2D1AE", Olive: "#E6D2B2" },
+  Light: { Cool: "#E0B2A2", Neutral: "#DDB394", Warm: "#DFB07F", Olive: "#CDB088" },
+  Medium: { Cool: "#BF8775", Neutral: "#BE8A66", Warm: "#C38A55", Olive: "#A98A5E" },
+  Tan: { Cool: "#97604F", Neutral: "#98643F", Warm: "#A06733", Olive: "#85683E" },
+  Deep: { Cool: "#6A4038", Neutral: "#6B4430", Warm: "#734826", Olive: "#5E4A2E" },
+};
+
 export function toneLabel(depth: Depth, undertone: Undertone) {
   return `${depth} ${undertone} (Tone ${DEPTHS.indexOf(depth) + 1})`;
 }
@@ -132,7 +141,7 @@ export const FEED: FeedPost[] = [
   { id: "p2", productId: "melanin-shield-spf", media: deepSpf, wearTest: "Wear test · 8 hrs, no grey film", swatches: 412, caption: "Sheer enough to wear under nothing at all.", creator: { handle: "@tobi.skin", depth: "Deep", undertone: "Warm", skinType: "Oily", hair: "4C Coily" } },
   { id: "p3", productId: "calm-barrier-cream", media: fairBeard, wearTest: "Wear test · 14 days, redness down", swatches: 188, caption: "Post-shave flush gone by week two.", creator: { handle: "@callum.calm", depth: "Fair", undertone: "Cool", skinType: "Rosacea-prone", hair: "Shaved / beard focus" } },
   { id: "p4", productId: "curl-defining-cream", media: oliveWaves, wearTest: "Wear test · 3 days, curls held", swatches: 305, caption: "Day three hair, still bouncing.", creator: { handle: "@lucia.waves", depth: "Medium", undertone: "Olive", skinType: "Combination", hair: "2 Wavy" } },
-  { id: "p5", productId: "skin-tint", media: tanTint, wearTest: "Wear test · 9 hrs, freckles through", swatches: 527, caption: "Shade 7. Skin still looks like skin.", creator: { handle: "@river.tan", depth: "Tan", undertone: "Warm", skinType: "Balanced", hair: "3 Curly", shade: "ST14" } },
+  { id: "p5", productId: "skin-tint", media: tanTint, wearTest: "Wear test · 9 hrs, freckles through", swatches: 527, caption: "Shade 7. Skin still looks like skin.", creator: { handle: "@river.tan", depth: "Tan", undertone: "Warm", skinType: "Balanced", hair: "3 Curly", shade: "ST15" } },
   { id: "p6", productId: "bump-patrol", media: barber, wearTest: "Wear test · 21 days, zero bumps", swatches: 166, caption: "Three weeks, clean lineup, no bumps.", creator: { handle: "@dre.cuts", depth: "Deep", undertone: "Warm", skinType: "Sensitive", hair: "Shaved / beard focus" } },
   { id: "p7", productId: "squalane", media: dropper, wearTest: "Wear test · 30 days, barrier back", swatches: 98, caption: "One oil for face, ends and beard.", creator: { handle: "@mei.light", depth: "Light", undertone: "Neutral", skinType: "Dry", hair: "1 Straight" } },
 ];
