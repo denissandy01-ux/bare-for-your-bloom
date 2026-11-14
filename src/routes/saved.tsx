@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { BareHeader, EmptyState, ListRow, Page, SectionTitle } from "@/components/bare/kit";
-import { bestOffer, money, productById, proById, routineById } from "@/lib/data";
+import { FEED, bestOffer, money, productById, proById, routineById } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { specialistById } from '@/lib/specialists';
 import { canvasInsights } from '@/lib/formula';
@@ -31,6 +31,7 @@ function Saved() {
         <h1 className="font-display text-3xl">Your beauty collection</h1>
         <div className="no-scrollbar flex gap-2 overflow-x-auto pb-2">{['Saved items','My Bare Shelf','Bare or Buy?','Empty Bottle Club'].map(t=><Button key={t} variant={tab===t?'default':'secondary'} onClick={()=>setTab(t)}>{t}</Button>)}</div>
         {tab==='My Bare Shelf'?<BareShelf/>:tab==='Bare or Buy?'?<Comparison/>:tab==='Empty Bottle Club'?<EmptyBottleClub/>:<>
+        {FEED.some(p=>state.savedPosts.includes(p.id))&&<section className="space-y-3"><SectionTitle meta="Wear tests">Saved feed posts</SectionTitle>{FEED.filter(p=>state.savedPosts.includes(p.id)).map(p=><Link key={p.id} to="/" search={{post:p.id}} className="flex gap-3 border-b border-oat/15 py-3"><img src={p.media} alt="" className="h-16 w-16 rounded-xl object-cover"/><span className="min-w-0"><span className="block text-xs text-peach">{p.creator.handle}</span><span className="block line-clamp-2 text-sm">{p.caption}</span></span></Link>)}</section>}
         {state.savedPosts.length>0&&<section className="space-y-3"><SectionTitle meta="Your collection">Saved videos & photos</SectionTitle>{posts.data?.filter(p=>state.savedPosts.includes(p.id)).map(p=><Link key={p.id} to="/" search={{post:p.id}} className="flex gap-3 border-b border-oat/15 py-3">{p.media_type==='image'&&<img src={p.url} alt="" className="h-16 w-16 rounded-xl object-cover"/>}<span className="min-w-0"><span className="block text-xs text-peach">{p.kind} · {p.author}</span><span className="block line-clamp-2 text-sm">{p.caption}</span></span></Link>)}</section>}
         <section className="space-y-3"><SectionTitle meta="Your studios">Saved specialists</SectionTitle>{specialists.length ? <div className="grid gap-2 md:grid-cols-2">{specialists.map(s=><ListRow key={s.id} to="/specialist/$id" params={{id:s.id}} image={s.image} title={s.studio} meta={`${s.name} · ${s.city} · Sample listing`}/>)}</div> : <p className="text-sm text-sand">No specialists saved yet.</p>}</section>
         <section className="space-y-3">

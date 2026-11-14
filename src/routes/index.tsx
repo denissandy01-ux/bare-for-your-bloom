@@ -43,9 +43,9 @@ function Feed() {
   const search=Route.useSearch();
   const matched = feedForTone(FEED, state.profile);
   const base = showAll ? [...FEED].sort((a, b) => skinTwinScore(b.creator, state.profile) - skinTwinScore(a.creator, state.profile)) : matched;
-  const posts = tabPosts(tab==='For You'?base:FEED,tab,state.followedBrands,state.followedCreators,state.shoppingCountry);
+  const posts = search.post ? FEED.filter(p=>p.id===search.post) : tabPosts(tab==='For You'?base:FEED,tab,state.followedBrands,state.followedCreators,state.shoppingCountry);
   const shared=community.data?.filter(p=>search.post ? p.id===search.post : tab==='Following' ? state.followedCreators.includes(p.owner_id)||(!!p.brand_id&&state.followedBrands.includes(p.brand_id)) : tab==='Global' ? p.country_id!==state.shoppingCountry : tab==='Tips' ? p.kind==='Tutorial' : true)??[];
-  const services=tab==='For You'?SERVICE_FEED:[];
+  const services=search.post?SERVICE_FEED.filter(p=>p.id===search.post):tab==='For You'?SERVICE_FEED:[];
   useEffect(() => setShowAll(false), [state.profile.depth, state.profile.undertone]);
 
   return (
@@ -56,14 +56,14 @@ function Feed() {
           <EmptyState
             title={tab==='Following'?'Your people, your feed':tab==='Tips'?'Fresh tips are on the way':tab==='Global'?'More global stories to come':'No wear tests for your tone yet'}
             body={tab==='Following'?'Follow a creator or brand to keep their stories here.':tab==='Tips'?'Share a tutorial or explore ingredient education.':'Browse more discoveries or adjust your canvas.'}
-            action={<div className="flex flex-wrap justify-center gap-2"><button onClick={() => setShowAll(true)} className="h-11 rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Show all tones</button><button onClick={() => setToneOpen(true)} className="h-11 rounded-full bg-oat px-5 text-[14px] font-medium text-cocoa">Change tone</button></div>}
+            action={tab==='Tips'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
           />
           <ToneSheet open={toneOpen} onOpenChange={setToneOpen} />
         </div>
       ) : (
         <div className="no-scrollbar h-full snap-y snap-mandatory overflow-y-scroll">
           {shared.map(p=><CommunityFeedItem key={p.id} post={p}/>)}
-          {!search.post&&mixFeed(posts, services).map(item => item.kind === 'product' ? <FeedItem key={item.post.id} post={item.post} /> : <ServiceFeedItem key={item.post.id} post={item.post} />)}
+          {mixFeed(posts, services).map(item => item.kind === 'product' ? <FeedItem key={item.post.id} post={item.post} /> : <ServiceFeedItem key={item.post.id} post={item.post} />)}
           {tab==='For You'&&!search.post&&!showAll && matched.length < FEED.length && (
             <div className="flex h-full snap-start items-center px-6">
               <EmptyState title="You're all caught up" body="That's every wear test from your Skin Twins today. Want to see other tones too?" action={<button onClick={() => setShowAll(true)} className="h-11 rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Show all tones</button>} />
@@ -163,13 +163,12 @@ function FeedItem({ post }: { post: FeedPost }) {
             <Link to="/product/$id" params={{id:product.id}} className="block truncate font-display text-[16px] leading-tight">{product.name}</Link>
             <span className="block truncate text-[12px] text-sand">{whereSold(product).label} · from {money(whereSold(product).from)}</span>
           </span>
-          <button onClick={()=>setFormula(true)} aria-label="Inside the formula" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-oat/15"><FlaskConical className="h-4 w-4"/></button>
-          <button onClick={()=>setFounder(true)} aria-label="Founder story" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-oat/15"><BookOpen className="h-4 w-4"/></button>
-          <button onClick={() => setBuy(true)} aria-label={`Shop, earns about ${pointsFor(offer.price)} Bare Points`} className="feed-buy relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-clay text-oat">
+          <Button variant="ghost" size="icon" onClick={()=>setFounder(true)} aria-label="Founder story" className="h-9 w-9 shrink-0 rounded-full bg-oat/15 text-oat"><BookOpen className="h-4 w-4"/></Button>
+          <Button size="icon" onClick={() => setBuy(true)} aria-label={`Shop, earns about ${pointsFor(offer.price)} Bare Points`} className="feed-buy relative h-10 w-10 shrink-0 rounded-full bg-clay text-oat">
             <ShoppingBag className="h-4 w-4"/><Sparkles className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 fill-peach text-peach"/>
-          </button>
+          </Button>
         </div>
-        <div className="flex gap-2"><Button variant="secondary" size="sm" className="h-8 rounded-full bg-cocoa/60 text-xs text-oat hover:bg-cocoa-soft" onClick={()=>setFormula(true)}><FlaskConical className="h-3.5 w-3.5"/>Inside the Formula</Button><Button asChild variant="secondary" size="sm" className="h-8 rounded-full bg-cocoa/60 text-xs text-oat hover:bg-cocoa-soft"><Link to="/bare-or-buy" search={{product:product.id}}>Bare or Buy?</Link></Button></div>
+        <div className="flex flex-wrap gap-2"><Button variant="secondary" size="sm" className="h-8 rounded-full bg-cocoa/60 text-xs text-oat hover:bg-cocoa-soft" onClick={()=>setFormula(true)}><FlaskConical className="h-3.5 w-3.5"/>Inside the Formula</Button><Button asChild variant="secondary" size="sm" className="h-8 rounded-full bg-cocoa/60 text-xs text-oat hover:bg-cocoa-soft"><Link to="/bare-or-buy" search={{product:product.id}}>Bare or Buy?</Link></Button></div>
       </div>
 
       <WhereToBuySheet product={product} open={buy} onOpenChange={setBuy} />
