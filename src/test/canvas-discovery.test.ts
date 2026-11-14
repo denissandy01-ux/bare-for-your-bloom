@@ -11,9 +11,9 @@ describe('Canvas discovery', () => {
     expect(matchesCanvasProduct(p, {...canvas, skinTypes: ['Oily']})).toBe(false);
   });
   it('does not turn an unknown nail product into a compatibility match', () => {
-    const p = PRODUCTS.find(p => p.category === 'Nails');
+    const p = PRODUCTS[0];
     if (!p) throw new Error('Missing fixture');
-    expect(matchesCanvasProduct(p, canvas)).toBe(false);
+    expect(matchesCanvasProduct({...p, category: 'Nails', fits: undefined}, canvas)).toBe(false);
   });
   it('matches hair services using recorded texture without excluding by skin tone', () => {
     const s = SPECIALISTS.find(s => s.id === 'amara-reed');
