@@ -28,10 +28,10 @@ export function suggestShade(productId: string, me: Pick<Profile, "depth" | "und
 export function swatchSplit(count: number, creatorDepths: Depth[]) {
   const w = DEPTHS.map((d) => creatorDepths.reduce((a, c) => a + Math.max(0, 3 - Math.abs(DEPTHS.indexOf(c) - DEPTHS.indexOf(d))), 0) + 1);
   const total = w.reduce((a, x) => a + x, 0);
-  return DEPTHS.map((d, i) => ({ depth: d, share: w[i] / total, n: Math.round((w[i] / total) * count) }));
+  return DEPTHS.map((d, i) => ({ depth: d, share: (w[i] ?? 0) / total, n: Math.round(((w[i] ?? 0) / total) * count) }));
 }
 
 /** The depth with the fewest swatches: a representation gap. */
 export function shadeGap(split: ReturnType<typeof swatchSplit>) {
-  return [...split].sort((a, b) => a.n - b.n)[0];
+  return [...split].sort((a, b) => a.n - b.n)[0]!;
 }
