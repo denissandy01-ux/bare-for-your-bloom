@@ -1,6 +1,6 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BareHeader, ListRow, Page, SectionTitle } from "@/components/bare/kit";
-import { DEPTH_SWATCH, toneLabel } from "@/lib/data";
+import { UNDERTONE_SWATCH, skinTags, toneLabel } from "@/lib/data";
 import { useBare, walletTotals, daysSince } from "@/lib/store";
 import { useAccount } from '@/lib/account';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,9 +26,9 @@ function Me() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-oat/15 pb-4"><p className="text-sm text-sand">{user ? user.email : ready ? 'Exploring as a guest' : 'Opening your account…'}</p>{user ? <Button variant="secondary" onClick={async()=>{await qc.cancelQueries();qc.clear();const {error}=await supabase.auth.signOut();if(error)return;reset();void nav({to:'/auth',replace:true});}}>Sign out</Button> : <Button asChild><Link to="/auth">Sign in / Create account</Link></Button>}</div>
         <SectionTitle meta="Your bare canvas">{toneLabel(p.depth, p.undertone)}</SectionTitle>
         <div className="flex items-center gap-4 rounded-[28px] bg-oat p-5 text-cocoa">
-          <span className="h-14 w-14 shrink-0 rounded-full ring-2 ring-sand" style={{ background: DEPTH_SWATCH[p.depth] }} />
+          <span className="h-14 w-14 shrink-0 rounded-full ring-2 ring-sand" style={{ background: UNDERTONE_SWATCH[p.depth][p.undertone] }} />
           <div className="min-w-0 text-[14px] text-umber">
-            <p>Skin: {p.skinType ?? "Not set"} · Barrier: {p.barrier ?? "Not set"}</p>
+            <p>Skin: {skinTags(p).join(", ") || "Not set"} · Barrier: {p.barrier ?? "Not set"}</p>
             <p>Hair: {p.hair ?? "Not set"} · Porosity: {p.porosity ?? "Not set"}</p>
             {p.goal && <p className="mt-1 font-display italic text-cocoa">“{p.goal}”</p>}
           </div>

@@ -5,7 +5,7 @@ import { canvasInsights, formulaById } from '@/lib/formula';
 import type { Product } from '@/lib/data';
 import { BareSheet } from './sheets';
 export function FormulaContent({product}:{product:Product}){
- const {state}=useBare();const formula=formulaById(product.id);
+ const {browseProfile}=useBare();const formula=formulaById(product.id);
  return <div className="space-y-5 text-sm leading-relaxed">
  <p className="text-umber">{product.brand} · {product.name}</p>
  {formula ? <>
@@ -14,7 +14,7 @@ export function FormulaContent({product}:{product:Product}){
  <details className="border-b border-sand pb-3"><summary className="cursor-pointer font-display text-lg">Full ingredient list · INCI</summary><p className="mt-3 break-words text-xs text-umber">{formula.inci}</p><p className="mt-2 text-xs text-umber">Formulas can change by market and over time. Your package label takes precedence.</p></details>
  <section><h3 className="font-display text-lg">Manufacturer Attributes</h3><ul className="mt-2 space-y-1 text-xs text-umber">{formula.recognition.map(r=><li key={r}>{r}</li>)}</ul></section>
  </> : <div className="border-y border-sand py-4"><p className="font-display text-lg">Ingredients Not Confirmed</p><p className="mt-1 text-umber">No verified ingredient deck or recognition is recorded for this sample listing. Check the current label before purchase.</p></div>}
- <section><h3 className="font-display text-lg">Why It Fits Your Canvas</h3><ul className="mt-2 space-y-2">{canvasInsights(product,state.profile).map(n=><li key={n} className="border-l-2 border-clay pl-3 text-umber">{n}</li>)}</ul><Link to="/consultation" className="mt-3 inline-block text-clay underline">My Canvas Consultation</Link></section>
+ <section><h3 className="font-display text-lg">Why It Fits Your Canvas</h3><ul className="mt-2 space-y-2">{canvasInsights(product,browseProfile).map(n=><li key={n} className="border-l-2 border-clay pl-3 text-umber">{n}</li>)}</ul><Link to="/consultation" className="mt-3 inline-block text-clay underline">My Canvas Consultation</Link></section>
  {formula&&<a href={formula.source} target="_blank" rel="noopener noreferrer" className="block text-xs text-clay underline">Manufacturer source · checked {formula.checked}</a>}
  </div>;
 }
