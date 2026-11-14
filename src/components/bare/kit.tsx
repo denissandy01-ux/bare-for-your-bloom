@@ -61,7 +61,7 @@ export function TabBar() {
           const active = isActive(path, t.to);
           return (
             <Link key={t.to} to={t.to} className={cn("flex h-11 min-w-[56px] flex-col items-center justify-center gap-0.5 text-[11px] font-medium", active ? "font-semibold text-clay" : "text-umber")}>
-              {t.icon ?? <span className="h-[22px] w-[22px] rounded-full ring-2 ring-sand" style={{ background: DEPTH_SWATCH[state.profile.depth] }} />}
+              <span className={active ? "nav-icon nav-icon-active" : "nav-icon"}>{t.icon ?? <span className="h-[22px] w-[22px] rounded-full ring-2 ring-sand" style={{ background: DEPTH_SWATCH[state.profile.depth] }} />}</span>
               {t.label}
             </Link>
           );
@@ -73,7 +73,7 @@ export function TabBar() {
           const active = isActive(path, t.to);
           return (
             <Link key={t.to} to={t.to} className={cn("flex h-12 items-center gap-3 rounded-full px-4 text-[14px] font-medium", active ? "bg-oat font-semibold text-clay" : "text-sand hover:bg-cocoa-soft")}>
-              {t.icon ?? <span className="h-[22px] w-[22px] rounded-full ring-2 ring-sand" style={{ background: DEPTH_SWATCH[state.profile.depth] }} />}
+              <span className={active ? "nav-icon nav-icon-active" : "nav-icon"}>{t.icon ?? <span className="h-[22px] w-[22px] rounded-full ring-2 ring-sand" style={{ background: DEPTH_SWATCH[state.profile.depth] }} />}</span>
               {t.label}
             </Link>
           );

@@ -1,3 +1,5 @@
+import { ShareButton } from './share-button';
+import { LikeBurst, useDoubleTapLike } from './like-burst';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Bookmark, Heart, Share2, MapPin } from 'lucide-react';
@@ -14,20 +16,21 @@ import type { ServicePost } from '@/lib/service-feed';
 export function ServiceFeedItem({ post }: { post: ServicePost }) {
   const specialist = specialistById(post.specialistId), { state, toggleSpecialist, toggleLike, toggleCreator } = useBare();
   const [roster, setRoster] = useState(false);
+  const doubleTap = useDoubleTapLike(state.likedPosts.includes(post.id), () => toggleLike(post.id));
   if (!specialist) return null;
   const liked = state.likedPosts.includes(post.id);
   const saved = state.savedSpecialists.includes(specialist.id);
   const first = specialist.name.split(' ')[0];
   const from = Math.min(...specialist.services.map(s => s.price));
   const team = studioTeam(specialist);
-  async function share() { const url = `${window.location.origin}/specialist/${post.specialistId}`; try { if (navigator.share) await navigator.share({ title: post.title, url }); else { await navigator.clipboard.writeText(url); toast('Link copied'); } } catch { /* dismissed */ } }
   return <section className="relative h-full snap-start overflow-hidden bg-cocoa" aria-label={`${post.category} service by ${specialist.name}`}>
-    <img src={post.image} width={768} height={1152} loading="lazy" alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
-    <div className="absolute inset-0 bg-gradient-to-t from-cocoa via-transparent to-cocoa/20" />
+    <img src={post.image} width={768} height={1152} loading="lazy" onDoubleClick={doubleTap.onDoubleClick} onTouchEnd={doubleTap.onTouchEnd} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
+    <LikeBurst burst={doubleTap.burst}/>
+    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-cocoa via-transparent to-cocoa/20" />
     <div className="feed-actions absolute right-3 bottom-[200px] flex flex-col gap-3">
       <Button variant="ghost" size="icon" aria-label={liked ? 'Unlike post' : 'Like post'} aria-pressed={liked} onClick={() => toggleLike(post.id)} className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"><Heart className={liked ? 'fill-clay text-clay' : ''} /></Button>
       <Button variant="ghost" size="icon" aria-label="Save artist" aria-pressed={saved} onClick={() => { toggleSpecialist(specialist.id); toast(saved ? 'Removed from saves' : `${first} saved`); }} className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"><Bookmark className={saved ? 'fill-current' : ''} /></Button>
-      <Button variant="ghost" size="icon" aria-label="Share artist" onClick={share} className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"><Share2 /></Button>
+      <ShareButton title={post.title} path={`/?post=${post.id}`} label="Share artist" className="h-12 w-12 rounded-full bg-cocoa/50 text-oat backdrop-blur"/>
     </div>
     <div className="feed-shop absolute inset-x-3 bottom-3 space-y-2.5">
       <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-oat">

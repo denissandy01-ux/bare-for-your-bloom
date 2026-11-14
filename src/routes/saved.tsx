@@ -1,3 +1,6 @@
+import { EmptyGallery } from '@/components/bare/empty-gallery';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -23,7 +26,7 @@ function Tile({ link, image, video, label, onRemove }: { link: ReactNode; image?
     {link}
     {image ? null : <ImageOff className="pointer-events-none absolute inset-0 m-auto h-6 w-6 text-sand" />}
     {video && <Play className="pointer-events-none absolute bottom-2 left-2 h-4 w-4 fill-oat text-oat drop-shadow" />}
-    <button type="button" aria-label={`Remove ${label} from Saved`} onClick={onRemove} className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-oat/90 text-cocoa"><Heart className="h-3.5 w-3.5 fill-cocoa" /></button>
+    <button type="button" aria-label={`Remove ${label} from Saved`} onClick={()=>{onRemove();toast.success('Removed from Saved');}} className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-oat/90 text-cocoa"><Heart className="h-3.5 w-3.5 fill-cocoa" /></button>
   </div>;
 }
 const img = (src?: string) => src ? <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" /> : null;
@@ -67,7 +70,7 @@ function Saved() {
     </div>
     <Page className="space-y-4 rounded-t-[28px] bg-oat pt-5 text-cocoa">
       <div className="flex items-baseline justify-between"><h2 className="font-display text-2xl">{tab}</h2><span className="text-xs text-umber">Newest first</span></div>
-      {tiles.length ? <div className="grid grid-cols-3 gap-1.5">{tiles}</div> : <div className="py-10 text-center"><p className="font-display text-xl">{title}</p><p className="mt-2 text-sm text-umber">{body}</p><Link to={to} className="mt-4 inline-flex h-11 items-center rounded-full bg-clay px-5 text-sm font-semibold text-oat">{to === "/" ? "Browse the feed" : "Go to Discover"}</Link></div>}
+      {tiles.length ? <div className="grid grid-cols-3 gap-1.5">{tiles}</div> : <EmptyGallery title={title} body={body} action={<Button asChild><Link to={to}>{to === "/" ? "Find your next inspiration" : "Discover your next favorite"}</Link></Button>}/>}
       {tab === "Products" && tiles.length > 0 && <p className="text-[11px] text-umber">Saving is a bookmark, not a purchase — it won't add anything to your shelf.</p>}
     </Page>
   </>;
