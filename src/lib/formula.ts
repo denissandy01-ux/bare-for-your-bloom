@@ -1,0 +1,21 @@
+import type { Product, Profile } from './data';
+export interface Ingredient { name: string; benefit: string; explanation: string }
+export interface Formula { source: string; checked: string; benefits: string[]; ingredients: Ingredient[]; inci: string; recognition: string[] }
+const squalane: Ingredient = { name:'Squalane', benefit:'Softness & moisture retention', explanation:'An emollient that softens skin and helps reduce moisture loss. It can also lubricate hair for a smoother feel. An ingredient function is not a guarantee of individual results.' };
+export const FORMULAS: Record<string, Formula> = {
+ 'squalane': { source:'https://theordinary.com/en-us/100-plant-derived-squalane-face-oil-100398.html', checked:'2026-11-14', benefits:['Moisture retention','Soft skin','Hair softness'], ingredients:[squalane], inci:'Squalane.', recognition:['Silicone-free · manufacturer attribute','Alcohol-free · manufacturer attribute'] },
+ 'skin-tint': { source:'https://iliabeauty.com/products/super-serum-skin-tint-spf-40', checked:'2026-11-14', benefits:['Hydration','Sheer coverage','SPF 40 · manufacturer claim'], ingredients:[squalane,{name:'Niacinamide',benefit:'Barrier support',explanation:'A form of vitamin B3 used to support skin barrier function and improve the appearance of uneven tone. Effect depends on the finished formula and use.'},{name:'Sodium Hyaluronate',benefit:'Water-binding hydration',explanation:'A humectant form of hyaluronic acid that attracts and holds water at the skin surface.'},{name:'Zinc Oxide',benefit:'UV filter',explanation:'A mineral UV filter. Use sunscreen as directed; protection depends on application amount and reapplication, not just the presence of this ingredient.'}], inci:'Active ingredient: Zinc Oxide 12.0%. Aqua/Water/Eau, Squalane, Shea Butter Ethyl Esters, Isoamyl Laurate, Polyglyceryl-3 Ricinoleate, Butyloctyl Salicylate, Propanediol, Isopropyl Isostearate, Polyglyceryl-3 Diisostearate, Methylpropanediol, Niacinamide, Sodium Chloride, Lecithin, Caprylyl Glycol, Silica, Aloe Barbadensis Leaf Juice Powder, Bisabolol, Hydrolyzed Sodium Hyaluronate, Allantoin, Phenylpropanol, Sodium Myristoyl Glutamate, Sodium Hyaluronate, Tetrasodium Glutamate Diacetate, Aluminum Hydroxide, Polyhydroxystearic Acid. May contain: CI 77491, CI 77492, CI 77499 (Iron Oxides), CI 77891 (Titanium Dioxide).', recognition:['Fragrance-free · manufacturer attribute','Silicone-free · manufacturer attribute','Vegan & cruelty-free · manufacturer claim'] }
+};
+export function canvasInsights(product: Product, profile: Profile): string[] {
+ const f=FORMULAS[product.id];
+ if (!f) return ['A confirmed ingredient list is needed before comparing this formula with your canvas.'];
+ const notes:string[]=[];
+ if(profile.skinType==='Dry' && f.ingredients.some(i=>i.name==='Squalane')) notes.push('For your dry skin: squalane helps soften skin and retain moisture.');
+ if(profile.skinType==='Sensitive' || profile.barrier==='Very reactive' || profile.skinType==='Rosacea-prone') notes.push('For your reactive canvas: try a small patch first. Ingredient information cannot predict a reaction.');
+ if(product.id==='squalane' && profile.hair && profile.hair!=='Shaved / beard focus') notes.push(`For your ${profile.hair} hair: the manufacturer also describes hair-softening use; begin with a small amount on the ends.`);
+ if(product.category==='Makeup') notes.push(`For your ${profile.depth} ${profile.undertone} canvas: compare a shade swatch in daylight. Formula ingredients do not determine your shade match.`);
+ if(profile.fragrance==='Avoid fragrance') notes.push(f.recognition.some(x=>x.startsWith('Fragrance-free'))?'Your fragrance preference: the manufacturer describes this product as fragrance-free.':'Your fragrance preference: check the current package ingredient list; no fragrance certification is recorded here.');
+ if(profile.exclusions?.trim()) notes.push(`Compare your exclusions (${profile.exclusions.trim()}) with the full label; synonyms and derivatives may need professional review.`);
+ return (notes.length?notes:['Explore the ingredient functions below; your individual results may vary.']).slice(0,3);
+}
+export const formulaById=(id:string)=>FORMULAS[id];
