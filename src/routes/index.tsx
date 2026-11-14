@@ -1,5 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bookmark, Heart, Play, Share2 } from "lucide-react";
+import { BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BareHeader, EmptyState, SecondaryButton } from "@/components/bare/kit";
@@ -113,7 +113,7 @@ function FeedItem({ post }: { post: FeedPost }) {
       </p>
 
 
-      <div className="feed-actions absolute bottom-[176px] right-3 z-10 flex flex-col items-center gap-4">
+      <div className="feed-actions absolute bottom-[150px] right-3 z-10 flex flex-col items-center gap-4">
         <button onClick={() => setFit(true)} className="flex flex-col items-center gap-1" aria-label={`Why this is a ${score}% ${MATCH_LABEL[kind]}`}>
           <div className="grid h-[58px] w-[58px] place-items-center rounded-full" style={{ background: `conic-gradient(var(--peach) ${score}%, color-mix(in oklab, var(--oat) 35%, transparent) 0)` }}>
             <div className="grid h-[44px] w-[44px] place-items-center rounded-full bg-cocoa/85 font-display text-[15px] font-semibold text-oat">{score}%</div>
@@ -137,21 +137,25 @@ function FeedItem({ post }: { post: FeedPost }) {
         <button onClick={share} className="grid h-10 w-10 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur" aria-label="Share"><Share2 className="h-4 w-4" /></button>
       </div>
 
-      <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-3">
-        <div className="flex items-center gap-3 rounded-[28px] bg-oat/95 p-3 pr-3">
-          <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
-            <img src={product.image} alt="" className="h-14 w-14 shrink-0 rounded-[16px] object-cover" />
-            <span className="min-w-0">
-              {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="block text-[11px] uppercase tracking-[0.14em] text-umber">{product.brand}</Link> : <span className="block text-[11px] text-umber">{product.brand}</span>}
-              <Link to="/product/$id" params={{id:product.id}} className="block truncate font-display text-[19px] leading-tight text-cocoa">{product.name}</Link>
-              <span className="block text-[13px] text-umber">{whereSold(product).label} · from {money(whereSold(product).from)}</span>
-            </span>
-          </div>
-          <div className="flex shrink-0 flex-col gap-1"><Button variant="ghost" onClick={()=>setFormula(true)} className="h-9 rounded-full px-2 font-display text-xs italic text-clay">Formula</Button><Button variant="ghost" onClick={()=>setFounder(true)} className="h-8 rounded-full px-2 font-display text-[11px] italic text-clay">Founder Story</Button></div>
+      <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-2.5">
+        <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-oat">
+          <span className="font-semibold">{post.creator.handle}</span>
+          <span className="text-sand">·</span>
+          {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="text-sand underline-offset-2 hover:underline">{product.brand}</Link> : <span className="text-sand">{product.brand}</span>}
+        </p>
+        <p className="max-w-[80%] text-[15px] text-oat">{post.caption}</p>
+        <div className="flex items-center gap-2 rounded-[22px] bg-cocoa/45 p-2 text-oat backdrop-blur-md">
+          <img src={product.image} alt="" className="h-11 w-11 shrink-0 rounded-[14px] object-cover" />
+          <span className="min-w-0 flex-1">
+            <Link to="/product/$id" params={{id:product.id}} className="block truncate font-display text-[16px] leading-tight">{product.name}</Link>
+            <span className="block truncate text-[12px] text-sand">{whereSold(product).label} · from {money(whereSold(product).from)}</span>
+          </span>
+          <button onClick={()=>setFormula(true)} aria-label="Inside the formula" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-oat/15"><FlaskConical className="h-4 w-4"/></button>
+          <button onClick={()=>setFounder(true)} aria-label="Founder story" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-oat/15"><BookOpen className="h-4 w-4"/></button>
+          <button onClick={() => setBuy(true)} aria-label={`Shop, earns about ${pointsFor(offer.price)} Bare Points`} className="feed-buy relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-clay text-oat">
+            <ShoppingBag className="h-4 w-4"/><Sparkles className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 fill-peach text-peach"/>
+          </button>
         </div>
-        <button onClick={() => setBuy(true)} className="feed-buy flex min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-0 rounded-full bg-clay px-2 py-2 text-[15px] font-semibold text-oat">
-          Shop & earn points <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">+{pointsFor(offer?.price ?? 0)} pts</span>
-        </button>
       </div>
 
       <WhereToBuySheet product={product} open={buy} onOpenChange={setBuy} />
