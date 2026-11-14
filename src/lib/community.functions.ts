@@ -8,7 +8,7 @@ export const publishPost = createServerFn({ method: 'POST' }).middleware([requir
   if (!path || path.includes('/')) throw new Error('Invalid media path.');
   const { data: files, error: fileError } = await context.supabase.storage.from('beauty-posts').list(context.userId, { search: path });
   if (fileError || !files?.some(f => f.name === path)) throw new Error('Upload your media before publishing.');
-  const { data: post, error } = await context.supabase.from('beauty_posts').insert({ ...data, owner_id: context.userId }).select('id').single();
+  const { data: post, error } = await context.supabase.from('beauty_posts').insert({ ...data, review_id:data.review_id ?? null, owner_id: context.userId }).select('id').single();
   if (error) throw new Error(error.message);
   return post;
 });
