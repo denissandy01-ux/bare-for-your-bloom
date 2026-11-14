@@ -11,7 +11,7 @@ import type { ServicePost } from '@/lib/service-feed';
 
 /** A service post belongs to the artist; the studio opens a roster of everyone who works there. */
 export function ServiceFeedItem({ post }: { post: ServicePost }) {
-  const specialist = specialistById(post.specialistId), { state, toggleSpecialist } = useBare();
+  const specialist = specialistById(post.specialistId), { state, toggleSpecialist, toggleLike } = useBare();
   const [roster, setRoster] = useState(false);
   if (!specialist) return null;
   const liked = state.likedPosts.includes(post.id);
