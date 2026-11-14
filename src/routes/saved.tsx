@@ -3,6 +3,9 @@ import { BareHeader, EmptyState, ListRow, Page, SectionTitle } from "@/component
 import { bestOffer, money, productById, proById, routineById } from "@/lib/data";
 import { useBare } from "@/lib/store";
 import { specialistById } from '@/lib/specialists';
+import { canvasInsights } from '@/lib/formula';
+import { BRANDS } from '@/lib/atlas';
+import { BrandCard } from '@/components/bare/atlas';
 
 export const Route = createFileRoute("/saved")({
   head: () => ({ meta: [{ title: "Saved · Becoming Bare" }, { name: "description", content: "Your saved products and pro routines." }, { property: "og:title", content: "Saved · Becoming Bare" }, { property: "og:description", content: "Your saved products and pro routines." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -24,9 +27,10 @@ function Saved() {
           {products.length === 0 ? (
             <EmptyState title="Your shelf is bare" body="Tap Save on any wear test to keep it here and compare prices later." action={<Link to="/" className="inline-flex h-11 items-center rounded-full bg-clay px-5 text-[14px] font-semibold text-oat">Browse the feed</Link>} />
           ) : (
-            <div className="grid gap-2 md:grid-cols-2">{products.map((p) => { const o = bestOffer(p); return <ListRow key={p.id} to="/product/$id" params={{ id: p.id }} image={p.image} title={p.name} meta={`${p.brand} · ${o.retailer} · ${money(o.price)}`} />; })}</div>
+            <div className="grid gap-3 md:grid-cols-2">{products.map((p) => { const o = bestOffer(p); return <div key={p.id}><ListRow to="/product/$id" params={{ id: p.id }} image={p.image} title={p.name} meta={`${p.brand} · ${o.retailer} · ${money(o.price)}`} /><p className="mt-2 px-3 text-xs leading-relaxed text-sand">{canvasInsights(p,state.profile)[0]}</p><Link to="/product/$id" params={{id:p.id}} className="ml-3 mt-1 inline-block text-xs text-peach">Inside the Formula →</Link></div>; })}</div>
           )}
         </section>
+        {state.followedBrands.length>0&&<section><SectionTitle meta="Your global discoveries">Followed brands</SectionTitle><div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3">{BRANDS.filter(b=>state.followedBrands.includes(b.id)).map(b=><BrandCard key={b.id} brand={b}/>)}</div></section>}
         <section className="space-y-3">
           <SectionTitle meta="Prescriptions">Saved routines</SectionTitle>
           {routines.length === 0 ? (

@@ -137,7 +137,7 @@ export const FEED: FeedPost[] = [
   { id: "p7", productId: "squalane", media: dropper, wearTest: "Wear test · 30 days, barrier back", swatches: 98, caption: "One oil for face, ends and beard.", creator: { handle: "@mei.light", depth: "Light", undertone: "Neutral", skinType: "Dry", hair: "1 Straight" } },
 ];
 
-export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; barrier?: string; hair?: string; porosity?: string; goal?: string }
+export interface Profile { depth: Depth; undertone: Undertone; skinType?: string; barrier?: string; hair?: string; porosity?: string; goal?: string; fragrance?: string; silicone?: string; exclusions?: string }
 
 /** Skin Twin score: how closely a wear-test creator's canvas matches yours. */
 export function skinTwinScore(creator: Creator, me: Profile) {

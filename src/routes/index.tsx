@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 import { FEED_SPECIALISTS, specialistById } from '@/lib/specialists';
 import { SERVICE_FEED, mixFeed } from '@/lib/service-feed';
 import { ServiceFeedItem } from '@/components/bare/service-feed-item';
+import { FormulaSheet } from '@/components/bare/formula';
+import { brandForProduct } from '@/lib/atlas';
+import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -67,6 +70,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   const [buy, setBuy] = useState(false);
   const [founder, setFounder] = useState(false);
   const [swatch, setSwatch] = useState(false);
+  const [formula,setFormula]=useState(false);
   const ref = useRef<HTMLElement>(null);
   const offer = product ? bestOffer(product) : undefined;
   const back = product && offer ? cashbackFor(offer.price, product.cashbackRate) : 0;
@@ -92,6 +96,7 @@ function FeedItem({ post }: { post: FeedPost }) {
   };
 
   if (!product || !offer) return null;
+  const brand=brandForProduct(product.id);
   return (
     <section ref={ref} className="relative h-full snap-start overflow-hidden bg-cocoa">
       <button onClick={() => setPaused((x) => !x)} className="absolute inset-0 block h-full w-full" aria-label={paused ? "Play wear test" : "Pause wear test"}>
@@ -132,15 +137,15 @@ function FeedItem({ post }: { post: FeedPost }) {
       <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-3">
         {specialist && <Link to="/specialist/$id" params={{ id: specialist.id }} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-oat/95 px-4 text-[12px] font-semibold text-cocoa"><MapPin className="h-3.5 w-3.5" />View studio & services<ArrowUpRight className="h-3.5 w-3.5" /></Link>}
         <div className="flex items-center gap-3 rounded-[28px] bg-oat/95 p-3 pr-3">
-          <button onClick={() => nav({ to: "/product/$id", params: { id: product.id } })} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+          <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
             <img src={product.image} alt="" className="h-14 w-14 shrink-0 rounded-[16px] object-cover" />
             <span className="min-w-0">
-              <span className="block text-[11px] uppercase tracking-[0.14em] text-umber">{product.brand}</span>
-              <span className="block truncate font-display text-[19px] leading-tight text-cocoa">{product.name}</span>
+              {brand ? <Link to="/brand/$id" params={{id:brand.id}} className="block text-[11px] uppercase tracking-[0.14em] text-umber">{product.brand}</Link> : <span className="block text-[11px] text-umber">{product.brand}</span>}
+              <Link to="/product/$id" params={{id:product.id}} className="block truncate font-display text-[19px] leading-tight text-cocoa">{product.name}</Link>
               <span className="block text-[13px] text-umber">{offer.retailer} · {money(offer.price)}</span>
             </span>
-          </button>
-          <SecondaryButton onClick={() => setFounder(true)} className="hidden min-[360px]:inline-flex">Founder Story</SecondaryButton>
+          </div>
+          <div className="flex shrink-0 flex-col gap-1"><Button variant="ghost" onClick={()=>setFormula(true)} className="h-9 rounded-full px-2 font-display text-xs italic text-clay">Formula</Button><Button variant="ghost" onClick={()=>setFounder(true)} className="h-8 rounded-full px-2 font-display text-[11px] italic text-clay">Founder Story</Button></div>
         </div>
         <button onClick={() => setBuy(true)} className="feed-buy flex min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-0 rounded-full bg-clay px-2 py-2 text-[15px] font-semibold text-oat">
           Shop & Earn {Math.round(product.cashbackRate * 100)}% Cashback <span className="rounded-full bg-oat/20 px-2 py-0.5 text-[13px]">{money(back)} back</span>
@@ -148,6 +153,7 @@ function FeedItem({ post }: { post: FeedPost }) {
       </div>
 
       <WhereToBuySheet product={product} open={buy} onOpenChange={setBuy} />
+      <FormulaSheet product={product} open={formula} onOpenChange={setFormula}/>
       <FounderSheet product={product} open={founder} onOpenChange={setFounder} />
       <SwatchSheet product={product} count={post.swatches} open={swatch} onOpenChange={setSwatch} />
     </section>

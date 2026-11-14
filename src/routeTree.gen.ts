@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CanvasRouteImport } from './routes/canvas'
 import { Route as ConsultationRouteImport } from './routes/consultation'
@@ -23,9 +24,13 @@ import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as AuthenticatedBrandRouteImport } from './routes/_authenticated/brand'
 import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator'
+import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
+import { Route as AtlasRegionRouteImport } from './routes/atlas.$region'
+import { Route as BrandIdRouteImport } from './routes/brand.$id'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as RoutineIdRouteImport } from './routes/routine.$id'
 import { Route as SpecialistIdRouteImport } from './routes/specialist.$id'
+import { Route as AtlasCountryCountryIdRouteImport } from './routes/atlas.country.$countryId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtlasRoute = AtlasRouteImport.update({
+  id: '/atlas',
+  path: '/atlas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -96,6 +106,21 @@ const AuthenticatedCreatorRoute = AuthenticatedCreatorRouteImport.update({
   path: '/creator',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AtlasIndexRoute = AtlasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AtlasRoute,
+} as any)
+const AtlasRegionRoute = AtlasRegionRouteImport.update({
+  id: '/$region',
+  path: '/$region',
+  getParentRoute: () => AtlasRoute,
+} as any)
+const BrandIdRoute = BrandIdRouteImport.update({
+  id: '/brand/$id',
+  path: '/brand/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -111,9 +136,15 @@ const SpecialistIdRoute = SpecialistIdRouteImport.update({
   path: '/specialist/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtlasCountryCountryIdRoute = AtlasCountryCountryIdRouteImport.update({
+  id: '/country/$countryId',
+  path: '/country/$countryId',
+  getParentRoute: () => AtlasRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/atlas': typeof AtlasRouteWithChildren
   '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
@@ -126,9 +157,13 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/brand': typeof AuthenticatedBrandRoute
   '/creator': typeof AuthenticatedCreatorRoute
+  '/atlas/$region': typeof AtlasRegionRoute
+  '/brand/$id': typeof BrandIdRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
+  '/atlas/': typeof AtlasIndexRoute
+  '/atlas/country/$countryId': typeof AtlasCountryCountryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -144,14 +179,19 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/brand': typeof AuthenticatedBrandRoute
   '/creator': typeof AuthenticatedCreatorRoute
+  '/atlas/$region': typeof AtlasRegionRoute
+  '/brand/$id': typeof BrandIdRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
+  '/atlas': typeof AtlasIndexRoute
+  '/atlas/country/$countryId': typeof AtlasCountryCountryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/atlas': typeof AtlasRouteWithChildren
   '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
   '/consultation': typeof ConsultationRoute
@@ -164,14 +204,19 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/_authenticated/brand': typeof AuthenticatedBrandRoute
   '/_authenticated/creator': typeof AuthenticatedCreatorRoute
+  '/atlas/$region': typeof AtlasRegionRoute
+  '/brand/$id': typeof BrandIdRoute
   '/product/$id': typeof ProductIdRoute
   '/routine/$id': typeof RoutineIdRoute
   '/specialist/$id': typeof SpecialistIdRoute
+  '/atlas/': typeof AtlasIndexRoute
+  '/atlas/country/$countryId': typeof AtlasCountryCountryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/atlas'
     | '/auth'
     | '/canvas'
     | '/consultation'
@@ -184,9 +229,13 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/brand'
     | '/creator'
+    | '/atlas/$region'
+    | '/brand/$id'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
+    | '/atlas/'
+    | '/atlas/country/$countryId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -202,13 +251,18 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/brand'
     | '/creator'
+    | '/atlas/$region'
+    | '/brand/$id'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
+    | '/atlas'
+    | '/atlas/country/$countryId'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/atlas'
     | '/auth'
     | '/canvas'
     | '/consultation'
@@ -221,14 +275,19 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/_authenticated/brand'
     | '/_authenticated/creator'
+    | '/atlas/$region'
+    | '/brand/$id'
     | '/product/$id'
     | '/routine/$id'
     | '/specialist/$id'
+    | '/atlas/'
+    | '/atlas/country/$countryId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AtlasRoute: typeof AtlasRouteWithChildren
   AuthRoute: typeof AuthRoute
   CanvasRoute: typeof CanvasRoute
   ConsultationRoute: typeof ConsultationRoute
@@ -239,6 +298,7 @@ export interface RootRouteChildren {
   SavedRoute: typeof SavedRoute
   StudioRoute: typeof StudioRoute
   WalletRoute: typeof WalletRoute
+  BrandIdRoute: typeof BrandIdRoute
   ProductIdRoute: typeof ProductIdRoute
   RoutineIdRoute: typeof RoutineIdRoute
   SpecialistIdRoute: typeof SpecialistIdRoute
@@ -258,6 +318,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atlas': {
+      id: '/atlas'
+      path: '/atlas'
+      fullPath: '/atlas'
+      preLoaderRoute: typeof AtlasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -344,6 +411,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCreatorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/atlas/': {
+      id: '/atlas/'
+      path: '/'
+      fullPath: '/atlas/'
+      preLoaderRoute: typeof AtlasIndexRouteImport
+      parentRoute: typeof AtlasRoute
+    }
+    '/atlas/$region': {
+      id: '/atlas/$region'
+      path: '/$region'
+      fullPath: '/atlas/$region'
+      preLoaderRoute: typeof AtlasRegionRouteImport
+      parentRoute: typeof AtlasRoute
+    }
+    '/brand/$id': {
+      id: '/brand/$id'
+      path: '/brand/$id'
+      fullPath: '/brand/$id'
+      preLoaderRoute: typeof BrandIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -365,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpecialistIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atlas/country/$countryId': {
+      id: '/atlas/country/$countryId'
+      path: '/country/$countryId'
+      fullPath: '/atlas/country/$countryId'
+      preLoaderRoute: typeof AtlasCountryCountryIdRouteImport
+      parentRoute: typeof AtlasRoute
+    }
   }
 }
 
@@ -381,9 +476,24 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AtlasRouteChildren {
+  AtlasRegionRoute: typeof AtlasRegionRoute
+  AtlasIndexRoute: typeof AtlasIndexRoute
+  AtlasCountryCountryIdRoute: typeof AtlasCountryCountryIdRoute
+}
+
+const AtlasRouteChildren: AtlasRouteChildren = {
+  AtlasRegionRoute: AtlasRegionRoute,
+  AtlasIndexRoute: AtlasIndexRoute,
+  AtlasCountryCountryIdRoute: AtlasCountryCountryIdRoute,
+}
+
+const AtlasRouteWithChildren = AtlasRoute._addFileChildren(AtlasRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AtlasRoute: AtlasRouteWithChildren,
   AuthRoute: AuthRoute,
   CanvasRoute: CanvasRoute,
   ConsultationRoute: ConsultationRoute,
@@ -394,6 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   SavedRoute: SavedRoute,
   StudioRoute: StudioRoute,
   WalletRoute: WalletRoute,
+  BrandIdRoute: BrandIdRoute,
   ProductIdRoute: ProductIdRoute,
   RoutineIdRoute: RoutineIdRoute,
   SpecialistIdRoute: SpecialistIdRoute,
