@@ -57,13 +57,13 @@ function StudioCompanion({ id }: { id: string }) {
         <p className="mt-1 flex items-center gap-1 text-xs text-sand"><MapPin className="h-3 w-3" />{s.neighborhood}, {s.city}</p>
         <div className="mt-3 flex items-center gap-2">
           <Button size="sm" variant="secondary" aria-pressed={saved} onClick={() => toggleSpecialist(s.id)}><Bookmark className={saved ? 'h-4 w-4 fill-current' : 'h-4 w-4'} />{saved ? 'Saved' : 'Save'}</Button>
-          <FollowPill following={state.followedCreators.includes(handle)} onToggle={() => toggleCreator(handle)} label={handle} />
+          <FollowPill following={state.followedCreators.includes(handle)} onToggle={() => toggleCreator(handle)} name={handle} />
         </div>
       </div>
       <nav aria-label="Studio links" className="flex flex-col gap-2">
         <Button asChild><Link to="/specialist/$id" params={{ id: s.id }}><Store className="h-4 w-4" />View studio & reviews</Link></Button>
         <Button asChild variant="secondary"><a href={maps} target="_blank" rel="noreferrer"><MapPin className="h-4 w-4" />Get directions</a></Button>
-        <ShareButton title={s.studio} path={`/specialist/${s.id}`} variant="secondary" label="Share artist" />
+        <div className="flex items-center justify-center gap-2 rounded-md bg-oat/10 text-sm"><ShareButton title={s.studio} path={`/specialist/${s.id}`} label="Share artist" className="text-oat hover:bg-transparent hover:text-peach" />Share artist</div>
       </nav>
       <section className="rounded-2xl border border-oat/15 p-4">
         <h3 className="text-sm font-semibold">Popular services</h3>
