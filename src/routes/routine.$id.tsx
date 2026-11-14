@@ -108,7 +108,7 @@ function RoutineDetail() {
 
       <div className="fixed inset-x-0 bottom-[calc(var(--tabs-h)+10px)] z-20 mx-auto flex max-w-[560px] items-center gap-3 px-3 md:bottom-4 md:pl-[calc(14rem+12px)] md:max-w-none md:justify-center">
         <button onClick={apply} className={cn("flex min-h-14 flex-1 items-center justify-center rounded-full px-5 py-2 text-center text-[14px] leading-snug text-oat shadow-lg md:max-w-[480px]", applied ? "bg-umber" : "bg-clay")}>
-          {applied ? <span className="inline-flex items-center gap-1.5 font-semibold"><Check className="h-4 w-4" />Code {pro.code} applied</span> : <span><b className="font-semibold">Apply Code {pro.code}</b> ({Math.round(pro.discount * 100)}% Off + {Math.round(pro.cashback * 100)}% Cashback)</span>}
+          {applied ? <span className="inline-flex items-center gap-1.5 font-semibold"><Check className="h-4 w-4" />Code {pro.code} applied</span> : <span><b className="font-semibold">Apply Code {pro.code}</b> ({Math.round(pro.discount * 100)}% Off + Bare Points)</span>}
         </button>
         <button onClick={() => { const a = toggleRoutine(routine.id); toast(a ? "Routine saved" : "Routine removed"); }} aria-pressed={saved} aria-label="Save Routine" className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-oat text-cocoa shadow-lg">
           <Bookmark className={cn("h-5 w-5", saved && "fill-current")} />
