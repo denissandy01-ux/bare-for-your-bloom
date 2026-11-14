@@ -1,3 +1,6 @@
+import { ShareButton } from '@/components/bare/share-button';
+import { LikeBurst, useDoubleTapLike } from '@/components/bare/like-burst';
+import { EmptyGallery } from '@/components/bare/empty-gallery';
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, Bell, Check, Plus, Search, X, BookOpen, Bookmark, FlaskConical, Heart, Play, Share2, ShoppingBag, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -83,7 +86,7 @@ function Feed() {
       <ToneSheet open={toneOpen} onOpenChange={setToneOpen} browsing />
       {posts.length === 0 && shared.length===0 && services.length===0 ? (
         <div className="flex h-full items-center px-6">
-          <EmptyState
+          <EmptyGallery
             title={query?'Nothing matches that yet':tab==='Following'?'Your people, your feed':tab==='Explore'&&topic==='Learn'?'Fresh lessons are on the way':tab==='Global'?'More global stories to come':tab==='Explore'?'Nothing here yet':'No wear tests for your tone yet'}
             body={query?'Try another word, ingredient or handle.':tab==='Following'?'Follow a creator or brand to keep their stories here.':tab==='Explore'&&topic==='Learn'?'Share a tutorial or explore ingredient education.':'Browse more discoveries or adjust your canvas.'}
             action={query?<Button onClick={()=>setQuery('')}>Clear search</Button>:tab==='Explore'&&topic==='Learn'?<Button asChild><Link to="/create">Share a tutorial</Link></Button>:tab==='Following'?<Button asChild><Link to="/discover">Discover brands</Link></Button>:<div className="flex flex-wrap justify-center gap-2"><Button onClick={() => {setShowAll(true);setTab('For You');}}>Show all tones</Button><Button variant="secondary" onClick={() => setToneOpen(true)}>Change tone</Button></div>}
@@ -134,25 +137,19 @@ function FeedItem({ post }: { post: FeedPost }) {
     io.observe(el); return () => io.disconnect();
   }, []);
 
-  const share = async () => {
-    if (!product) return;
-    const url = `${window.location.origin}/product/${product.id}`;
-    try {
-      if (navigator.share) await navigator.share({ title: `${product.brand} ${product.name}`, url });
-      else { await navigator.clipboard.writeText(url); toast("Link copied"); }
-    } catch { /* share dismissed */ }
-  };
+  const doubleTap = useDoubleTapLike(liked, () => toggleLike(post.id));
 
   if (!product || !offer) return null;
   const brand=brandForProduct(product.id);
   return (
     <section ref={ref} className="relative h-full snap-start overflow-hidden bg-cocoa">
-      <button onClick={() => setPaused((x) => !x)} className="absolute inset-0 block h-full w-full" aria-label={paused ? "Play wear test" : "Pause wear test"}>
+      <Button variant="ghost" onDoubleClick={doubleTap.onDoubleClick} onTouchEnd={doubleTap.onTouchEnd} onClick={() => setPaused((x) => !x)} className="absolute inset-0 block h-full w-full rounded-none p-0 hover:bg-transparent" aria-label={paused ? "Play wear test" : "Pause wear test"}>
         <img src={post.media} alt={`${post.creator.handle} wear test of ${product.name}`} className={cn("h-full w-full object-cover animate-kenburns", paused && "[animation-play-state:paused]")} />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cocoa/70 to-transparent" />
         <span className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-cocoa/40 to-transparent" />
         {paused && <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-oat/90 text-cocoa"><Play className="ml-1 h-6 w-6 fill-current" /></span>}
-      </button>
+      </Button>
+      <LikeBurst burst={doubleTap.burst}/>
 
       <p className="feed-wear-label pointer-events-none absolute left-4 top-[172px] z-10 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-oat/90">
         <span className="h-1.5 w-1.5 rounded-full bg-peach" />{post.wearTest}
@@ -177,11 +174,11 @@ function FeedItem({ post }: { post: FeedPost }) {
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur"><Heart className={cn("h-5 w-5", liked && "fill-clay text-clay")} /></span>
           <span className="text-[11px] text-oat/90">{likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}</span>
         </button>
-        <button onClick={() => { toggleProduct(product.id); togglePost(post.id); toast("Saved collection updated"); }} className="flex flex-col items-center gap-1" aria-pressed={saved}>
+        <button onClick={() => { toggleProduct(product.id); togglePost(post.id); toast.success(saved ? "Removed from Saved" : "Saved to Products & Media"); }} className="flex flex-col items-center gap-1" aria-pressed={saved}>
           <span className="grid h-12 w-12 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur"><Bookmark className={cn("h-5 w-5", saved && "fill-current")} /></span>
           <span className="text-[11px] text-oat/90">Save</span>
         </button>
-        <button onClick={share} className="grid h-10 w-10 place-items-center rounded-full bg-cocoa/45 text-oat backdrop-blur" aria-label="Share"><Share2 className="h-4 w-4" /></button>
+        <ShareButton title={post.caption} path={`/?post=${post.id}`} className="h-10 w-10 rounded-full bg-cocoa/45 text-oat backdrop-blur"/>
       </div>
 
       <div className="feed-shop absolute inset-x-3 bottom-3 z-10 space-y-2.5">

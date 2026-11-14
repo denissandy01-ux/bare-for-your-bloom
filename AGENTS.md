@@ -29,6 +29,9 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
+- Keep Canvas-only discovery predicates in a shared browser-safe module; recorded sample relevance is not verified formula compatibility.
+- Reuse the shared share control for native sharing, clipboard fallback and manual copy; feed links target the original post.
+
 - Keep illustrative specialist listings and distance/filter logic in a browser-safe module; clearly distinguish sample credentials and prices from verified live listings.
 - Use a dedicated specialist detail route shared by Discover, Pros, and feed links so provider information has one presentation.
 - Use shared layout tokens for viewport sizing and safe-area navigation; keep the vertical feed portrait-framed on wide screens.
