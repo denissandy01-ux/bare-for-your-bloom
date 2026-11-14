@@ -25,4 +25,7 @@
 - Measured engagement, confirmed commissions, live notifications and executed licensing payments remain unconnected; published consumer media is now available through Create.- [x] Feed tabs For You / Following / Explore (with Learn) / Global with region bubbles, feed search, Follow buttons and Following list.
 - [x] Private life stage, locs, silver/grey texture and hair length in the canvas.
 - [x] Me profile header, metric grid and slim canvas strip; Empty Bottle verdicts on products and Hall of Fame in Discover; multi-select studio services.
-- Studio map view and goal-based Beauty Journey not built yet.
+- [x] Goal-based Beauty Journey with optional journal entries and replies.
+- Studio map view remains unbuilt.
+- [ ] Redesign Me to match the profile reference, with editable identity and real owner-only posts.
+- [ ] Connect My Beauty and settings to existing tools; verify editing, tabs and navigation.
