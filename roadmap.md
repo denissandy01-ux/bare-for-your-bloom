@@ -1,4 +1,7 @@
 # Becoming Bare
+- [ ] Rename My Beauty tools, preserve collection entries, and add product usage statuses and service visits.
+- [ ] Build owner-private product/service reviews with optional publication and feed sharing.
+- [ ] Consolidate Discover reviews and verify privacy, metrics, and signed-in flows.
 - [x] Revise Discover with progressive categories, image grids, and immediate saves.
 - [x] Refine product and specialist details, published review browsing, and Atlas service entry.
 - [x] Verify privacy rules, collection persistence, navigation, and phone/desktop flows; 101 tests passed.

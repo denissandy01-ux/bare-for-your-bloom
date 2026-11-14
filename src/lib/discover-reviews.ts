@@ -8,6 +8,7 @@ export interface DiscoveryReview {
   id: string; author: string; text: string; productId?: string; specialistId?: string;
   kind: 'product' | 'empty' | 'service'; weeks?: number; repurchase?: boolean;
   rating?: number; service?: string; bookAgain?: 'Yes' | 'Maybe' | 'No';
+  decision?: 'Yes' | 'Maybe' | 'No';
   mediaType?: string; url?: string; date: string;
 }
 export function productReviews(posts: PublishedPost[], productId?: string): DiscoveryReview[] {
