@@ -18,7 +18,7 @@ export function BareHeader({ title, overlay }: { title?: string; overlay?: boole
   const browsing = path !== "/me" && path !== "/canvas";
   const canvas = browsing ? browseProfile : state.profile;
   const [open, setOpen] = useState(false);
-  const label = title ?? browsing && temporaryCanvas ? `Browsing · ${canvas.depth} ${canvas.undertone}` : toneLabel(canvas.depth, canvas.undertone);
+  const label = title ?? (browsing && temporaryCanvas ? `Browsing · ${canvas.depth} ${canvas.undertone}` : toneLabel(canvas.depth, canvas.undertone));
   return (
     <header className={cn("z-20 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 pt-3", overlay ? "absolute inset-x-0 top-0" : "relative")}>
       <Wordmark className="md:hidden" />
