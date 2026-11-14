@@ -188,3 +188,6 @@
 :root { --google-bg:#FFFFFF; --google-border:#747775; --google-text:#1F1F1F; }
 .google-auth { background:var(--google-bg); border:1px solid var(--google-border); color:var(--google-text); }
 .google-auth:hover { background:var(--google-bg); }
+
+.bare-feed .feed-actions { bottom: 225px; }
+@media (max-height: 620px) { .bare-feed .feed-actions { bottom: 16px; } .bare-feed .feed-wear-label { display:none; } }
