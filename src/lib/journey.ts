@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 export const GOAL_AREAS = ["Barrier repair & calm", "Even tone", "Clearer skin", "Scalp & length retention", "Curl & texture definition", "Grey & silver care", "Find my core routine", "Something else"] as const;
 
-export interface Goal { id: string; title: string; area: string; why?: string; created: string; done?: string }
-export interface Entry { id: string; goalId?: string; date: string; text: string; photo?: string; feel?: number; replies: { date: string; text: string }[] }
+export interface Goal { id: string; title: string; area: string; why?: string | undefined; created: string; done?: string | undefined }
+export interface Entry { id: string; goalId?: string | undefined; date: string; text: string; photo?: string | undefined; feel?: number | undefined; replies: { date: string; text: string }[] }
 export interface Journey { goals: Goal[]; entries: Entry[] }
 
 const KEY = "bb-journey-v1";
