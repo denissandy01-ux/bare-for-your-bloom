@@ -11,13 +11,6 @@ export const Route = createFileRoute("/canvas")({
   component: Journey,
 });
 
-async function shrink(file: File): Promise<string> {
-  const img = await createImageBitmap(file);
-  const s = Math.min(1, 480 / Math.max(img.width, img.height));
-  const c = document.createElement("canvas"); c.width = img.width * s; c.height = img.height * s;
-  c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-  return c.toDataURL("image/jpeg", 0.7);
-}
 const day = (d: string) => new Date(d).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 
 function Journey() {
@@ -30,8 +23,6 @@ function Journey() {
   const [editing, setEditing] = useState<string>();
   const [view, setView] = useState<"Journal" | "Calendar">("Journal");
   const [goalId, setGoalId] = useState<string>();
-  const [photo, setPhoto] = useState<string>();
-  const [feel, setFeel] = useState<number>();
   const [reply, setReply] = useState<Record<string, string>>({});
   const [open, setOpen] = useState<string>();
   const [filter, setFilter] = useState<string>();
