@@ -1,0 +1,5 @@
+DROP POLICY IF EXISTS "Read own or published beauty media" ON storage.objects;
+DROP POLICY IF EXISTS "Read published review media" ON storage.objects;
+CREATE POLICY "Read own beauty media" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'beauty-posts' AND (storage.foldername(name))[1] = (select auth.uid()::text));
+CREATE POLICY "Read published beauty media" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'beauty-posts' AND EXISTS (SELECT 1 FROM public.beauty_posts p WHERE p.media_path = storage.objects.name AND p.owner_id::text = (storage.foldername(storage.objects.name))[1]));
+CREATE POLICY "Read published review media" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'beauty-posts' AND EXISTS (SELECT 1 FROM public.beauty_reviews r WHERE r.media_path = storage.objects.name AND r.status = 'published' AND r.owner_id::text = (storage.foldername(storage.objects.name))[1]));

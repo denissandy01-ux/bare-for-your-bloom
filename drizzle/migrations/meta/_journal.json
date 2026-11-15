@@ -57,6 +57,13 @@
       "when": 1794699525790,
       "tag": "0007_allow_owner_text_posts_without_media",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794704196940,
+      "tag": "0008_bind_public_media_reads_to_owner",
+      "breakpoints": true
     }
   ]
 }
