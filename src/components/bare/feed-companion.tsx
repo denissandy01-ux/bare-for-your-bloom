@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ArrowRight, Bookmark, FlaskConical, MapPin, Store } from 'lucide-react';
 import { specialistById, handleFor } from '@/lib/specialists';
@@ -9,10 +10,14 @@ import { useBare } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 
 /** Desktop-only panel: shows the product from the post currently on screen. */
-export function FeedCompanion({ productId, specialistId }: { productId?: string | undefined; specialistId?: string | undefined }) {
+export function FeedCompanion({ productId, productIds, specialistId }: { productId?: string | undefined; productIds?: string[] | undefined; specialistId?: string | undefined }) {
   const { state, toggleProduct, browseProfile } = useBare();
+  const list = (productIds ?? []).map(productById).filter((x): x is NonNullable<typeof x> => !!x);
+  const [picked, setPicked] = useState<string>();
+  const key = list.map(x => x.id).join(',');
+  useEffect(() => setPicked(undefined), [key]);
   if (specialistId) return <StudioCompanion id={specialistId} />;
-  const p = productId ? productById(productId) : undefined;
+  const p = list.length > 1 ? (list.find(x => x.id === picked) ?? list[0]) : productId ? productById(productId) : undefined;
   if (!p) return <aside className="hidden lg:block w-[380px] xl:w-[420px]" />;
   const sold = whereSold(p);
   const f = formulaById(p.id);
@@ -20,8 +25,9 @@ export function FeedCompanion({ productId, specialistId }: { productId?: string 
   const related = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id).slice(0, 3);
   return (
     <aside aria-label="Product from this post" className="hidden lg:flex h-dvh w-[380px] xl:w-[420px] shrink-0 flex-col gap-4 overflow-y-auto py-10 text-oat">
-      <p className="text-xs uppercase tracking-[0.2em] text-sand">In this post</p>
-      <img src={p.image} alt={p.name} className="aspect-square w-full rounded-2xl object-cover" />
+      <p className="text-xs uppercase tracking-[0.2em] text-sand">In this post{list.length > 1 ? ` (${list.length})` : ''}</p>
+      {list.length > 1 ? <div className="grid grid-cols-3 gap-2" role="listbox" aria-label="Tagged products">{list.map(x => <button key={x.id} role="option" aria-selected={x.id === p.id} onClick={() => setPicked(x.id)} className="min-w-0 text-left"><img src={x.image} alt="" className={`aspect-square w-full rounded-xl object-cover ring-2 ${x.id === p.id ? 'ring-peach' : 'ring-transparent'}`} /><p className="mt-1 text-[11px] text-peach">{x.brand}</p><p className="line-clamp-2 text-xs">{x.name}</p><p className="text-[10px] text-sand">from {money(whereSold(x).from)}</p></button>)}</div>
+        : <img src={p.image} alt={p.name} className="aspect-square w-full rounded-2xl object-cover" />}
       <div><p className="text-xs text-peach">{p.brand} · {p.category}</p><h2 className="font-display text-2xl leading-tight">{p.name}</h2><p className="mt-1 text-sm text-sand">From {money(sold.from)} · {sold.label}</p></div>
       <div className="flex gap-2">
         <Button asChild className="flex-1"><Link to="/product/$id" params={{ id: p.id }}>View product <ArrowRight className="h-4 w-4" /></Link></Button>

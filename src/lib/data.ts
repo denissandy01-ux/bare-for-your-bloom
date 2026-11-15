@@ -203,6 +203,8 @@ export interface Creator { handle: string; depth: Depth; undertone: Undertone; s
 export interface FeedPost {
   id: string;
   productId: string;
+  /** Extra tagged products; when present the post shows a multi-product bar. */
+  productIds?: string[];
   media: string;
   wearTest: string;
   creator: Creator;
