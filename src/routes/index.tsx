@@ -1,3 +1,4 @@
+import { TaggedProductsBar, taggedProducts } from '@/components/bare/tagged-products';
 import { ShareButton } from '@/components/bare/share-button';
 import { LikeBurst, useDoubleTapLike } from '@/components/bare/like-burst';
 import { EmptyGallery } from '@/components/bare/empty-gallery';
@@ -78,9 +79,10 @@ function Feed() {
   const trackActive=(e:React.UIEvent<HTMLDivElement>)=>{
     const el=e.currentTarget; const idx=Math.round(el.scrollTop/el.clientHeight);
     const child=el.children[idx] as HTMLElement|undefined;
+    const multi=child?.dataset['products'];
     const pid=child?.dataset['product']??child?.querySelector<HTMLElement>('[data-product]')?.dataset['product'];
     const sid=child?.dataset['specialist'];
-    const id=sid?`s:${sid}`:pid?`p:${pid}`:undefined;
+    const id=sid?`s:${sid}`:multi&&multi.includes(',')?`m:${multi}`:pid?`p:${pid}`:undefined;
     if(id&&id!==active) setActive(id);
   };
   useEffect(()=>{ if(!active) setActive(posts[0]?`p:${posts[0].productId}`:undefined); },[posts,active]);
@@ -117,7 +119,7 @@ function Feed() {
         </div>
       )}
     </div>
-      <FeedCompanion productId={active?.startsWith('p:')?active.slice(2):undefined} specialistId={active?.startsWith('s:')?active.slice(2):undefined}/>
+      <FeedCompanion productIds={active?.startsWith('m:')?active.slice(2).split(','):undefined} productId={active?.startsWith('p:')?active.slice(2):undefined} specialistId={active?.startsWith('s:')?active.slice(2):undefined}/>
     </div>
   );
 }
@@ -154,9 +156,10 @@ function FeedItem({ post }: { post: FeedPost }) {
   const doubleTap = useDoubleTapLike(liked, () => toggleLike(post.id));
 
   if (!product || !offer) return null;
+  const tagged=taggedProducts([post.productId,...(post.productIds??[])]);
   const brand=brandForProduct(product.id);
   return (
-    <section ref={ref} data-product={product.id} className="relative h-full snap-start overflow-hidden bg-cocoa">
+    <section ref={ref} data-product={product.id} data-products={tagged.length>1?tagged.map(p=>p.id).join(','):undefined} className="relative h-full snap-start overflow-hidden bg-cocoa">
       <Button variant="ghost" onDoubleClick={doubleTap.onDoubleClick} onTouchEnd={doubleTap.onTouchEnd} onClick={() => setPaused((x) => !x)} className="absolute inset-0 block h-full w-full rounded-none p-0 hover:bg-transparent" aria-label={paused ? "Play wear test" : "Pause wear test"}>
         <img src={post.media} alt={`${post.creator.handle} wear test of ${product.name}`} className={cn("h-full w-full object-cover animate-kenburns", paused && "[animation-play-state:paused]")} />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cocoa/70 to-transparent" />
@@ -204,7 +207,7 @@ function FeedItem({ post }: { post: FeedPost }) {
           <FollowPill following={state.followedCreators.includes(post.creator.handle)} name={post.creator.handle} onToggle={()=>toggleCreator(post.creator.handle)}/>
         </p>
         <p className="max-w-[80%] text-[15px] text-oat">{post.caption}</p>
-        <div className="flex items-center gap-2 rounded-[22px] bg-cocoa/45 p-2 text-oat backdrop-blur-md">
+        {tagged.length>1 ? <TaggedProductsBar products={tagged} fit={p=>fitScore(p,post.creator,browseProfile)}/> : <div className="flex items-center gap-2 rounded-[22px] bg-cocoa/45 p-2 text-oat backdrop-blur-md">
           <img src={product.image} alt="" className="h-11 w-11 shrink-0 rounded-[14px] object-cover" />
           <span className="min-w-0 flex-1">
             <Link to="/product/$id" params={{id:product.id}} className="block truncate font-display text-[16px] leading-tight">{product.name}</Link>
@@ -214,7 +217,7 @@ function FeedItem({ post }: { post: FeedPost }) {
           <Button size="icon" onClick={() => setBuy(true)} aria-label={`Shop, earns about ${pointsFor(offer.price)} Bare Points`} className="feed-buy relative h-10 w-10 shrink-0 rounded-full bg-clay text-oat">
             <ShoppingBag className="h-4 w-4"/><Sparkles className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 fill-peach text-peach"/>
           </Button>
-        </div>
+        </div>}
         <div className="flex flex-wrap gap-2"><Button variant="secondary" size="sm" className="h-8 rounded-full bg-cocoa/60 text-xs text-oat hover:bg-cocoa-soft" onClick={()=>setFormula(true)}><FlaskConical className="h-3.5 w-3.5"/>Inside the Formula</Button><Button asChild variant="secondary" size="sm" className="h-8 rounded-full bg-cocoa/60 text-xs text-oat hover:bg-cocoa-soft"><Link to="/bare-or-buy" search={{product:product.id}}>Bare or Buy?</Link></Button></div>
       </div>
 
