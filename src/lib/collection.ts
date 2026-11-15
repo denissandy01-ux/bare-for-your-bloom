@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react';
 export const USAGE_STATUSES = ['Currently Using', 'Used Before', 'Finished'] as const;
 export type UsageStatus = typeof USAGE_STATUSES[number];
 export type VisitStatus = 'Upcoming' | 'Completed';
-export interface ServiceVisit { id: string; specialistId: string; service: string; date: string; notes: string; time?: string; status?: VisitStatus }
+export interface ServiceVisit { id: string; specialistId: string; service: string; date: string; notes: string; time?: string | undefined; status?: VisitStatus | undefined }
 /** One collection entry per service + specialist; repeat visits share the key. */
 export const serviceKey = (v: Pick<ServiceVisit,'specialistId'|'service'>) => `${v.specialistId}::${v.service.trim().toLowerCase().replace(/\s+/g,' ')}`;
 export function groupVisits(visits: ServiceVisit[]) {
