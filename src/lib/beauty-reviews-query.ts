@@ -9,7 +9,7 @@ export function beautyReviewsOptions(owner?: string) {
     if(error) throw new Error(error.message);
     const rows = data ?? [], paths = rows.flatMap(r => r.media_path ? [r.media_path] : []);
     if(!paths.length) return rows;
-    let urls: {path:string|null;signedUrl:string}[] = [];
+    let urls: {path:string|null;signedUrl:string|null}[] = [];
     if(owner){const res = await supabase.storage.from('beauty-posts').createSignedUrls(paths,3600); if(res.error) throw new Error(res.error.message); urls = res.data ?? [];}
     else urls = await signPublishedMedia({data:{paths}});
     return rows.map(r => ({...r,url:urls?.find(u => u.path === r.media_path)?.signedUrl ?? ''}));
