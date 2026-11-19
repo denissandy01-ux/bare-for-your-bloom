@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { signPublishedMedia } from './public-media.functions';
 export const communityOptions = {
   queryKey: ['community-posts'],
   queryFn: async () => {
@@ -7,8 +8,7 @@ export const communityOptions = {
     const posts = data ?? [];
     if (!posts.length) return [];
     const paths=posts.map(p=>p.media_path).filter(Boolean);
-    const { data: urls, error: mediaError } = paths.length ? await supabase.storage.from('beauty-posts').createSignedUrls(paths, 3600) : {data:[],error:null};
-    if (mediaError) throw new Error(mediaError.message);
+    const urls = paths.length ? await signPublishedMedia({ data: { paths } }) : [];
     return posts.map(p => ({ ...p, url: urls?.find(u => u.path === p.media_path)?.signedUrl ?? '' }));
   },
   staleTime: 60_000,

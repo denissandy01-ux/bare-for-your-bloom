@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { signPublishedMedia } from './public-media.functions';
 import type { BeautyReview } from './beauty-reviews';
 export function beautyReviewsOptions(owner?: string) {
   return {queryKey: ['beauty-reviews', owner ?? 'published'], queryFn: async (): Promise<BeautyReview[]> => {
@@ -8,8 +9,9 @@ export function beautyReviewsOptions(owner?: string) {
     if(error) throw new Error(error.message);
     const rows = data ?? [], paths = rows.flatMap(r => r.media_path ? [r.media_path] : []);
     if(!paths.length) return rows;
-    const {data:urls,error:mediaError} = await supabase.storage.from('beauty-posts').createSignedUrls(paths,3600);
-    if(mediaError) throw new Error(mediaError.message);
+    let urls: {path:string|null;signedUrl:string}[] = [];
+    if(owner){const res = await supabase.storage.from('beauty-posts').createSignedUrls(paths,3600); if(res.error) throw new Error(res.error.message); urls = res.data ?? [];}
+    else urls = await signPublishedMedia({data:{paths}});
     return rows.map(r => ({...r,url:urls?.find(u => u.path === r.media_path)?.signedUrl ?? ''}));
   }, staleTime: 30_000};
 }
